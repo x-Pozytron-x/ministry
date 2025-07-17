@@ -65,12 +65,15 @@ img {
 
 .table .tbody div {
   padding-top: 3px;
-      width: 100%;
+  width: 100%;
+  align-items: center;
 }
 
 .table span {
+  display: flex;
   padding: 2px;
-  margin: 0 3px;
+  margin: 0 2px;
+  cursor: default;
 }
 
 .publishers  span:nth-child(1) {
@@ -95,12 +98,19 @@ img {
   width: 55px;
 }
 .publishers  span:nth-child(8) {
-  width: 25px;
+  width: 30px;
 }
 .publishers  span:nth-child(n+9) {
-  width: 20px;
+  width: 25px;
+  font-size: 20px;
+  justify-content: center;
+  text-align: center;
 }
 
 .publishers .table .tbody i {
+  padding: 2px;
+  width: 25px;
+  font-style: normal;
+  color: #cf3045;
   cursor: pointer;
 }

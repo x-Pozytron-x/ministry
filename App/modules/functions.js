@@ -1,5 +1,5 @@
 const menuItems = document.querySelectorAll('.menu__item');
-
+functionName = "";
 menuItems.forEach((item, index) => {
   item.addEventListener('click', (e) => switchSection(e));
 });
@@ -48,20 +48,21 @@ async function loadDB() {
     }
 
     const [fileHandle] = await window.showOpenFilePicker(pickerOptions);
-
     window.lastFileHandle = fileHandle;
-
     const file = await fileHandle.getFile();
     
     const text = await file.text();
     const dbData = JSON.parse(text);
     window.dbData = dbData;
-    db = new JsonDB(dbData);
-  //  console.log(dbData);
+
+   // db = db.sortTable('tbl_publishers', 'surname');
+
     document.querySelector('.header__title').innerHTML = dbData.tbl_settings['congregationName'];
+
     if(functionName== "publishers") {
       render_publishers();
     }
+    return db = new JsonDB(dbData);
   } catch (error) {
     if (error.name === 'AbortError') {
       console.log('Пользователь отменил выбор файла');
@@ -101,89 +102,99 @@ async function saveDB() {
 
 
 
-
 class JsonDB {
   constructor(initialData) {
-    this.db = initialData || {
-      tbl_settings: {},
-      tbl_publishers: {}
-    };
+    // Инициализируем все таблицы как массивы
+    this.db = {};
+    for (const table in initialData) {
+      this.db[table] = this._convertToArray(initialData[table]);
+    }
+  }
+
+  // Преобразует объект в массив
+  _convertToArray(data) {
+    if (Array.isArray(data)) return data;
+    return Object.entries(data).map(([id, item]) => ({ id: parseInt(id), ...item }));
   }
 
   // CREATE - добавление новой записи
   create(table, data) {
     if (!this.db[table]) {
-      throw new Error(`Table ${table} does not exist`);
+      this.db[table] = [];
     }
 
-    // Генерируем новый ID как максимальный существующий + 1
-    const ids = Object.keys(this.db[table]).map(Number).filter(id => !isNaN(id));
-    const newId = ids.length > 0 ? Math.max(...ids) + 1 : 0;
+    // Генерируем новый ID
+    const ids = this.db[table].map(item => item.id);
+    const newId = ids.length > 0 ? Math.max(...ids) + 1 : 1;
 
-    this.db[table][newId] = data;
+    const newItem = { id: newId, ...data };
+    this.db[table].push(newItem);
     return newId;
   }
 
   // READ - чтение данных
-  read(table, id = null) {
+  read(table, options = {}) {
     if (!this.db[table]) {
       throw new Error(`Table ${table} does not exist`);
     }
 
-    if (id !== null) {
-      return this.db[table][id] || null;
+    let result = [...this.db[table]];
+
+    // Сортировка
+    if (options.sortBy) {
+      result.sort((a, b) => {
+        const valA = a[options.sortBy] || '';
+        const valB = b[options.sortBy] || '';
+        const direction = options.ascending === false ? -1 : 1;
+        
+        // Для дат
+        if (options.sortBy.includes('date') || options.sortBy.includes('day')) {
+          return (new Date(valA) - new Date(valB)) * direction;
+        }
+        
+        // Для чисел
+        if (!isNaN(valA)) {
+          return (valA - valB) * direction;
+        }
+        
+        // Для строк
+        return valA.localeCompare(valB) * direction;
+      });
     }
 
-    return this.db[table];
+    // Фильтрация
+    if (options.filter) {
+      result = result.filter(options.filter);
+    }
+
+    // Пагинация
+    if (options.limit || options.offset) {
+      const offset = options.offset || 0;
+      const limit = options.limit || result.length;
+      result = result.slice(offset, offset + limit);
+    }
+
+    return options.asObject 
+      ? result.reduce((acc, item) => ({ ...acc, [item.id]: item }), {})
+      : result;
   }
 
   // UPDATE - обновление данных
   update(table, id, data) {
-    if (!this.db[table]) {
-      throw new Error(`Table ${table} does not exist`);
-    }
-
-    if (!this.db[table][id]) {
+    const index = this.db[table]?.findIndex(item => item.id == id);
+    if (index === -1) {
       throw new Error(`Record with id ${id} not found in table ${table}`);
     }
 
-    this.db[table][id] = { ...this.db[table][id], ...data };
+    this.db[table][index] = { ...this.db[table][index], ...data };
     return true;
   }
 
   // DELETE - удаление данных
   delete(table, id) {
-    if (!this.db[table]) {
-      throw new Error(`Table ${table} does not exist`);
-    }
-
-    if (!this.db[table][id]) {
-      throw new Error(`Record with id ${id} not found in table ${table}`);
-    }
-
-    delete this.db[table][id];
-    return true;
-  }
-
-  // Поиск по полям
-  search(table, criteria) {
-    if (!this.db[table]) {
-      throw new Error(`Table ${table} does not exist`);
-    }
-
-    return Object.entries(this.db[table])
-      .filter(([id, record]) => {
-        return Object.entries(criteria).every(([key, value]) => {
-          if (typeof value === 'function') {
-            return value(record[key]);
-          }
-          return record[key] === value;
-        });
-      })
-      .reduce((acc, [id, record]) => {
-        acc[id] = record;
-        return acc;
-      }, {});
+    const initialLength = this.db[table]?.length || 0;
+    this.db[table] = this.db[table]?.filter(item => item.id != id) || [];
+    return initialLength !== this.db[table].length;
   }
 
   // Получение всей базы данных
@@ -191,10 +202,3 @@ class JsonDB {
     return this.db;
   }
 }
-
-
-//let db = new JsonDB(dbData);
-
-// READ пример
-// let allPublishers = db.read('tbl_publishers');
-// console.log('All publishers:', allPublishers);

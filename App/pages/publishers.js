@@ -17,20 +17,25 @@ function get_publishers() {
   if (typeof window.dbData === 'undefined') {
     arr_publ = "";
   } else {
+    publishers = db.read('tbl_publishers', {
+      sortBy: 'surname',
+      ascending: true
+    });
      arr_publ = "";
-    for (const arr in dbData.tbl_publishers) {
-      arr_publ += "<div data-publisher_id='"+arr[0]+"'>";
-      for (const key in dbData.tbl_publishers[arr]) {
-        if (dbData.tbl_publishers[arr][key] == true ) { 
+
+    for (const arr in publishers) {
+      arr_publ += "<div data-publisher_id='"+publishers[arr].id+"'>";
+      for (const key in publishers[arr]) {
+        if (publishers[arr][key] == true ) { 
           arr_publ += `<span>&#9745;</span>`;
-        } else if (dbData.tbl_publishers[arr][key] == false ) {
+        } else if (publishers[arr][key] == false ) {
           arr_publ += `<span>&#9744;</span>`;
-        } else {
-          arr_publ += `<span>${dbData.tbl_publishers[arr][key]}</span>`;
+        } else if (key != "id") {
+          arr_publ += `<span>${publishers[arr][key]}</span>`;
         }
       
       }
-      arr_publ += "<i onclick=publisher_delete(this)>X</i></div>";
+      arr_publ += "<i onclick=publisher_delete(this)>&#10060;</i></div>";
 
     }
   }
@@ -96,7 +101,7 @@ function publishers () {
             <span>Adres</span>
             <span>Birthday</span>
             <span>Baptisted</span>
-            <span>&#9892;</span>
+            <span>Gender</span>
             <span>&#128017;</span>
             <span>&#128366;</span>
             <span>&#129309;</span>
@@ -131,11 +136,11 @@ function publishers () {
         </label>
         <label>
           <span>Birthday</span> 
-          <input type="date" id="publisherBirthday">
+          <input type="text" id="publisherBirthday">
         </label>
         <label>
           <span>Baptised</span> 
-          <input type="date" id="publisherBaptised">
+          <input type="text" id="publisherBaptised">
         </label>
         <label>
           <span>Gender</span> 
