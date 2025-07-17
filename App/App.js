@@ -1,25 +1,30 @@
 initApp();
 
 async function initApp() {
-
   try {
+    window.addEventListener('beforeunload', (event) => {
+      if (true) {
+        event.returnValue = 'У вас есть несохранённые изменения. Вы уверены, что хотите уйти?';
+        return event.returnValue;
+      }
+    });
+
     window.App = document.getElementById('app');
 
     loadCSS('App/assets/css/styles.css');
+    await loadScripts([
+      'App/pages/home.js',
 
+      'App/components/Header/Header.js',
+      'App/components/Menu/Menu.js',
+      'App/components/Main/Main.js',
 
-    await loadScript('App/pages/home.js');
-
-    await loadScript('App/components/Header/Header.js');
-    await loadScript('App/components/Menu/Menu.js');
-    await loadScript('App/components/Main/Main.js');
-
-
-    await loadScript('App/pages/publishers.js');
-    await loadScript('App/pages/reports.js');
-    await loadScript('App/pages/settings.js');
-
-    await loadScript('App/modules/functions.js');
+      'App/pages/publishers.js',
+      'App/pages/reports.js',
+      'App/pages/settings.js',
+      'App/pages/s88.js',
+      'App/modules/functions.js'
+    ]);
 
   } catch (error) {
       console.error('Ошибка при загрузке скриптов:', error);
@@ -38,9 +43,14 @@ function loadScript(src, callback) {
   return new Promise((resolve, reject) => {
     const script = document.createElement('script');
     script.src = src;
-    script.type = 'text/javascript';
     script.onload = () => resolve();
     script.onerror = () => reject(new Error(`Ошибка загрузки скрипта: ${src}`));
     document.body.appendChild(script);
 });
+}
+
+async function loadScripts(srcArray) {
+  for (const src of srcArray) {
+    await loadScript(src);
+  }
 }

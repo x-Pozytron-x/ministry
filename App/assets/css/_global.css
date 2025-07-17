@@ -17,14 +17,15 @@ img {
 
 #app {
   display: grid;
-  grid-template-columns: var(--size_menu_width) auto;
-  grid-template-rows: var(--size_height_header) auto;
+  grid-template-columns: auto;
+  grid-template-rows: var(--size_height_header) var(--size_height_header) auto;
   grid-template-areas:
-    "header header"
-    "menu main";
+    "header"
+    "menu" 
+    "main";
   gap: 5px;
   height: 100vh;
-  width: 100vw;
+  /* width: 100vw; */
   background: var(--page_bg);
   color: var(--color_txt);
 }
@@ -32,4 +33,74 @@ img {
 .block {
   padding: 10px;
   background: var(--block_bg);
+}
+
+.table {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  margin-top: 25px;
+  max-width: 1024px;
+}
+
+.table .thead {
+  display: flex;
+  font-weight: bold;
+  padding-top: 10px;
+}
+
+.table .tbody {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.table div {
+  margin-top: 5px;
+  display: flex;
+  border-top: 1px solid;
+}
+
+.table .tbody div {
+  padding-top: 3px;
+      width: 100%;
+}
+
+.table span {
+  padding: 2px;
+  margin: 0 3px;
+}
+
+.publishers  span:nth-child(1) {
+  width: 110px;
+}
+.publishers  span:nth-child(2) {
+  width: 95px;
+}
+.publishers  span:nth-child(3) {
+  width: 115px;
+}
+.publishers  span:nth-child(4) {
+  width: 230px;
+}
+.publishers  span:nth-child(5) {
+  width: 90px;
+}
+.publishers  span:nth-child(6) {
+  width: 90px;
+}
+.publishers  span:nth-child(7) {
+  width: 55px;
+}
+.publishers  span:nth-child(8) {
+  width: 25px;
+}
+.publishers  span:nth-child(n+9) {
+  width: 20px;
+}
+
+.publishers .table .tbody i {
+  cursor: pointer;
 }

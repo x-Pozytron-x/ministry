@@ -2,7 +2,12 @@
   grid-area: menu;
 }
 
+.menu nav {
+  display: flex;
+  align-items: center;
+}
+
 .menu__item {
-  margin-top: 5px;
-  display: block;
+  margin: 10px;
+  /* display: block; */
 }

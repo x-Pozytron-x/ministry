@@ -1,63 +1,182 @@
 //--- Page publishers ---//
+function taaabs(){
+  const tabs = document.querySelectorAll('.tab');
+  const tabContents = document.querySelectorAll('.tab__content');
+    
+  tabs.forEach((tab, index) => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('tab_active'));
+      tabContents.forEach(c => c.classList.remove('tab__content_active'));
+      tab.classList.add('tab_active');
+      tabContents[index].classList.add('tab__content_active');
+    });
+  }); 
+}
 
 function get_publishers() {
-  
   if (typeof window.dbData === 'undefined') {
     arr_publ = "";
   } else {
-    //arr_publ = dbData.tbl_publishers;
-
-    
-    
-     arr_publ = "<tr>";
-    for (const key in dbData.tbl_publishers[0]) {
-      arr_publ += `<td>${dbData.tbl_publishers[0][key]}</td>`;
-    }
-    arr_publ += "</tr>";
-    
-    // console.log(result);
+     arr_publ = "";
+    for (const arr in dbData.tbl_publishers) {
+      arr_publ += "<div data-publisher_id='"+arr[0]+"'>";
+      for (const key in dbData.tbl_publishers[arr]) {
+        if (dbData.tbl_publishers[arr][key] == true ) { 
+          arr_publ += `<span>&#9745;</span>`;
+        } else if (dbData.tbl_publishers[arr][key] == false ) {
+          arr_publ += `<span>&#9744;</span>`;
+        } else {
+          arr_publ += `<span>${dbData.tbl_publishers[arr][key]}</span>`;
+        }
       
-    // const result = `<ul>${Object.entries(person).map(([key, value]) => `<li>${key}: ${value}</li>`).join("")}</ul>`;
-    // console.log(result);
-    
-    
-    // arr_publ = `<tr>${dbData.tbl_publishers[0].map(item => `<td>${item}</td>`).join("")}</tr>`;  
-  }
+      }
+      arr_publ += "<i onclick=publisher_delete(this)>X</i></div>";
 
+    }
+  }
   return arr_publ;
 }
 
+function publisher_delete (e) {
+  console.log(e.parentElement.dataset.publisher_id);
+  console.log(dbData.tbl_publishers[e.parentElement.dataset.publisher_id]["name"]);
+  db.delete("tbl_publishers", e.parentElement.dataset.publisher_id);
+  render_publishers();
+}
+
+function render_publishers()  {
+  document.getElementById('table_publishers').innerHTML = "";
+  document.getElementById('table_publishers').innerHTML = get_publishers();
+}
+
+function publisher_add () {
+  let publisher = {};
+  Object.assign(publisher, {"surname": document.getElementById('publisherSurname').value});
+  Object.assign(publisher, {"name": document.getElementById('publisherName').value});
+  Object.assign(publisher, {"phone": document.getElementById('publisherPhone').value});
+  Object.assign(publisher, {"adres": document.getElementById('publisherAdres').value});
+  Object.assign(publisher, {"birthday": document.getElementById('publisherBirthday').value});
+  Object.assign(publisher, {"baptismday": document.getElementById('publisherBaptised').value});
+  Object.assign(publisher, {"gender": document.getElementById('publisherGender').value});
+  Object.assign(publisher, {"hope": document.getElementById('publisherHope').value});
+  
+  Object.assign(publisher, {"isElder": document.getElementById('publisherElder').checked});
+  Object.assign(publisher, {"isServant": document.getElementById('publisherServant').checked});
+  Object.assign(publisher, {"isPioner": document.getElementById('publisherPioner').checked});
+  Object.assign(publisher, {"isSpecial": document.getElementById('publisherSpecial').checked});
+  Object.assign(publisher, {"isMissioner": document.getElementById('publisherMissioner').checked});
+
+  let lastPublisherID = Object.keys(dbData.tbl_publishers)[Object.keys(dbData.tbl_publishers).length - 1];
+
+  dbData.tbl_publishers[Number(lastPublisherID) + 1] = publisher;
+  render_publishers();
+}
+
 function publishers () {
-  console.log(get_publishers());
+  //console.log(get_publishers());
   const _component = document.createElement('section');
   _component.classList.add("section");
   _component.classList.add("publishers"); 
   _component.innerHTML = `
-    <h2>Publishers</h2>
-    <input type="text" id="publisherName"> <br>
-    <input type="text" id="publisherSurname"><br>
-    <button>Add publisher</button>
+    <header class="section__tabs">
+      <span class="tab tab_active">Publishers</span>
+      <span class="tab">Add</span>
+    </header>
 
-    <table>
-      <thead>
-        <th>Name</th>
-        <th>Surname</th>
-        <th>Phone</th>
-        <th>Adres</th>
-        <th>Birthday</th>
-        <th>Baptisted</th>
-        <th>&#9892;</th>
-        <th>&#128017;</th>
-        <th>&#128366;</th>
-        <th>&#129309;</th>
-        <th>50</th>
-        <th>90</th>
-        <th>&#127757;</th>
-      </thead>
-      <tbody>
-        ${get_publishers()}
-      </tbody>
-    </table>
+    <div class="section__content">
+
+
+      <div class="tab__content tab__content_active">
+        <h2>Publishers</h2>
+        <div class="table">
+          <div class="thead">
+            <span>Surname</span>
+            <span>Name</span>
+            <span>Phone</span>
+            <span>Adres</span>
+            <span>Birthday</span>
+            <span>Baptisted</span>
+            <span>&#9892;</span>
+            <span>&#128017;</span>
+            <span>&#128366;</span>
+            <span>&#129309;</span>
+            <span>50</span>
+            <span>90</span>
+            <span>&#127757;</span>
+            <span>x</span>
+          </div>
+          <div class="tbody" id="table_publishers">
+            ${get_publishers()}
+          </div>
+        </div>
+      </div>
+
+      <div class="tab__content">
+        <h2>Add Publisher</h2>
+        <label>
+          <span>Name</span>
+          <input type="text" id="publisherName">
+        </label>
+        <label>
+          <span>Surname</span> 
+          <input type="text" id="publisherSurname">
+        </label>
+        <label>
+          <span>Phone</span>
+          <input type="number" id="publisherPhone">
+        </label>
+        <label>
+          <span>Adres</span> 
+          <input type="text" id="publisherAdres">
+        </label>
+        <label>
+          <span>Birthday</span> 
+          <input type="date" id="publisherBirthday">
+        </label>
+        <label>
+          <span>Baptised</span> 
+          <input type="date" id="publisherBaptised">
+        </label>
+        <label>
+          <span>Gender</span> 
+          <select id="publisherGender">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </label>
+        <label>
+          <span>Hope</span> 
+          <select id="publisherHope">
+            <option value="OS">Other sheep</option>
+            <option value="SH">Sky Hope</option>
+          </select>
+        </label>
+        <label>
+          <span>Elder</span> 
+          <input type="checkbox" id="publisherElder">
+        </label>
+        <label>
+          <span>Servant</span> 
+          <input type="checkbox" id="publisherServant">
+        </label>
+        <label>
+          <span>Pioner</span> 
+          <input type="checkbox" id="publisherPioner">
+        </label>
+        <label>
+          <span>Special</span> 
+          <input type="checkbox" id="publisherSpecial">
+        </label>
+        <label>
+          <span>Missioner</span> 
+          <input type="checkbox" id="publisherMissioner">
+        </label>
+        
+        <button onclick="publisher_add()">Add publisher</button>
+      </div>
+
+    </div>
+
   `;
   return _component;
 };
