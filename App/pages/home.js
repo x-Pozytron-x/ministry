@@ -1,11 +1,7 @@
-//--- Page home ---//
-
-function home () {
-  const _component = document.createElement('section');
-  _component.classList.add("section");
-  _component.classList.add("home"); 
-  _component.innerHTML = `
-    <h2>Home page, or stats</h2>
-  `;
-  return _component;
+// App/pages/home.js
+MyApp.pages.home = {
+  render: function () {
+    const container = document.getElementById('content-area');
+    container.innerHTML = '<h2>Главная</h2><p>Добро пожаловать!</p>';
+  }
 };

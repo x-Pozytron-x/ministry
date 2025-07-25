@@ -1,23 +1,34 @@
 (function() {
 
   window.MyApp = {
-    state: {},
+    state: {
+      currentSection: 'home',
+      isLoading: false,
+    },
     data: {},
     toRender: {},
 
     load: {
       modules: [
         'core',
+        'router'
       ],
       components: [
         'Header',
         'Menu',
+        'Main',
       ],
       utils: [
         'renderApp',
+        'navigate'
       ],
-      pages: [],
+      pages: [
+        'home',
+        'settings'
+      ],
     },
+
+    pages: {},
 
     config: {
       basePath: 'App/',

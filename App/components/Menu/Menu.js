@@ -19,5 +19,5 @@ const menuItemsHtml = [
   // { link: 's21', text: 'S-21' },
   // { link: 's1', text: 'S-1' },
   { link: 'settings', text: 'Settings' }
-].map(item => ` <a class="menu__item" href="${item.link}">${item.text}</a> `
+].map(item => ` <button class="menu__item" data-section="${item.link}" >${item.text}</button> `
 ).join('');
