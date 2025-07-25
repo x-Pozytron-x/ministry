@@ -12,6 +12,7 @@ async function initApp() {
     window.App = document.getElementById('app');
 
     loadCSS('App/assets/css/styles.css');
+
     await loadScripts([
       'App/pages/home.js',
 
@@ -19,10 +20,7 @@ async function initApp() {
       'App/components/Menu/Menu.js',
       'App/components/Main/Main.js',
 
-      'App/pages/publishers.js',
-      'App/pages/reports.js',
-      'App/pages/settings.js',
-      'App/pages/s88.js',
+      
       'App/modules/functions.js'
     ]);
 
@@ -46,7 +44,7 @@ function loadScript(src, callback) {
     script.onload = () => resolve();
     script.onerror = () => reject(new Error(`Ошибка загрузки скрипта: ${src}`));
     document.body.appendChild(script);
-});
+  });
 }
 
 async function loadScripts(srcArray) {

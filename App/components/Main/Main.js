@@ -1,5 +1,13 @@
 //--- Main.js ---//
 
+await loadScripts([
+  'App/pages/home.js',
+  //'App/pages/publishers.js',
+  //'App/pages/reports.js',
+  'App/pages/settings.js',
+  //'App/pages/s88.js'
+]);
+
 (() => {
   const _component = document.createElement('main');
   _component.classList.add("block");

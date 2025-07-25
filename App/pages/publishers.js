@@ -17,21 +17,21 @@ function get_publishers() {
   if (typeof window.dbData === 'undefined') {
     arr_publ = "";
   } else {
-    publishers = db.read('tbl_publishers', {
+    let arr_publishers = db.read('tbl_publishers', {
       sortBy: 'surname',
       ascending: true
     });
      arr_publ = "";
 
-    for (const arr in publishers) {
-      arr_publ += "<div data-publisher_id='"+publishers[arr].id+"'>";
-      for (const key in publishers[arr]) {
-        if (publishers[arr][key] == true ) { 
+    for (const arr in arr_publishers) {
+      arr_publ += "<div data-publisher_id='"+arr_publishers[arr].id+"'>";
+      for (const key in arr_publishers[arr]) {
+        if (arr_publishers[arr][key] == true ) { 
           arr_publ += `<span>&#9745;</span>`;
-        } else if (publishers[arr][key] == false ) {
+        } else if (arr_publishers[arr][key] == false ) {
           arr_publ += `<span>&#9744;</span>`;
         } else if (key != "id") {
-          arr_publ += `<span>${publishers[arr][key]}</span>`;
+          arr_publ += `<span>${arr_publishers[arr][key]}</span>`;
         }
       
       }
@@ -56,14 +56,14 @@ function render_publishers()  {
 
 function publisher_add () {
   let publisher = {};
-  Object.assign(publisher, {"surname": document.getElementById('publisherSurname').value});
-  Object.assign(publisher, {"name": document.getElementById('publisherName').value});
-  Object.assign(publisher, {"phone": document.getElementById('publisherPhone').value});
-  Object.assign(publisher, {"adres": document.getElementById('publisherAdres').value});
-  Object.assign(publisher, {"birthday": document.getElementById('publisherBirthday').value});
-  Object.assign(publisher, {"baptismday": document.getElementById('publisherBaptised').value});
-  Object.assign(publisher, {"gender": document.getElementById('publisherGender').value});
-  Object.assign(publisher, {"hope": document.getElementById('publisherHope').value});
+  Object.assign(publisher, {"surname": document.getElementById('publisherSurname').value.trim()});
+  Object.assign(publisher, {"name": document.getElementById('publisherName').value.trim()});
+  Object.assign(publisher, {"phone": document.getElementById('publisherPhone').value.trim()});
+  Object.assign(publisher, {"adres": document.getElementById('publisherAdres').value.trim()});
+  Object.assign(publisher, {"birthday": document.getElementById('publisherBirthday').value.trim()});
+  Object.assign(publisher, {"baptismday": document.getElementById('publisherBaptised').value.trim()});
+  Object.assign(publisher, {"gender": document.getElementById('publisherGender').value.trim()});
+  Object.assign(publisher, {"hope": document.getElementById('publisherHope').value.trim()});
   
   Object.assign(publisher, {"isElder": document.getElementById('publisherElder').checked});
   Object.assign(publisher, {"isServant": document.getElementById('publisherServant').checked});
@@ -71,9 +71,15 @@ function publisher_add () {
   Object.assign(publisher, {"isSpecial": document.getElementById('publisherSpecial').checked});
   Object.assign(publisher, {"isMissioner": document.getElementById('publisherMissioner').checked});
 
-  let lastPublisherID = Object.keys(dbData.tbl_publishers)[Object.keys(dbData.tbl_publishers).length - 1];
+  Object.assign(publisher, {"id": document.getElementById('publisherMissioner').checked});
 
-  dbData.tbl_publishers[Number(lastPublisherID) + 1] = publisher;
+  // db.read("tbl_publishers", , {
+  //   filter: item => item.isElder
+  // });
+  //let lastPublisherID = Object.keys(db.tbl_publishers.length)[Object.keys(dbData.tbl_publishers).length].id;
+
+console.log (lastPublisherID)
+  //db.create(table, publisher);
   render_publishers();
 }
 

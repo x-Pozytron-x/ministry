@@ -1,8 +1,10 @@
 const menuItems = document.querySelectorAll('.menu__item');
-functionName = "";
+
 menuItems.forEach((item, index) => {
   item.addEventListener('click', (e) => switchSection(e));
 });
+
+functionName = "";
 
 
 // Функция переключения секций
@@ -13,7 +15,6 @@ const switchSection = (e) => {
   functionName = e.target.attributes[1].value;
 
   main.textContent = "";
-
   main.appendChild(window[functionName]());
 
   
@@ -22,7 +23,6 @@ taaabs();
   if (window[functionName] == "settings") {
     document.getElementById('set_congregationName').addEventListener('click', () => {
       window.dbData = {"tbl_settings" : {"congregationName" : document.getElementById('congregationName').value}  } ;
-      //console.log(window.dbData);
     });
   }
 };
@@ -54,8 +54,6 @@ async function loadDB() {
     const text = await file.text();
     const dbData = JSON.parse(text);
     window.dbData = dbData;
-
-   // db = db.sortTable('tbl_publishers', 'surname');
 
     document.querySelector('.header__title').innerHTML = dbData.tbl_settings['congregationName'];
 
@@ -197,8 +195,31 @@ class JsonDB {
     return initialLength !== this.db[table].length;
   }
 
+
+  getById(table, id) {
+  return this.db[table]?.find(item => item.id == id);
+}
+
+// Получение первого элемента, соответствующего условиям
+find(table, predicate) {
+  return this.db[table]?.find(predicate);
+}
+
+// Получение всех элементов, соответствующих условиям
+findAll(table, predicate) {
+  return this.db[table]?.filter(predicate);
+}
+
+// Количество записей в таблице
+count(table) {
+  return this.db[table]?.length || 0;
+}
+
+
   // Получение всей базы данных
   getDatabase() {
     return this.db;
   }
 }
+
+
