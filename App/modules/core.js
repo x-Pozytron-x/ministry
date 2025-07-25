@@ -1,4 +1,4 @@
-console.log('core');
+//console.log('core');
 
 function isExit() {
 

@@ -21,6 +21,7 @@
 
     config: {
       basePath: 'App/',
+      styles: 'assets/css/styles',
       appName: 'SafeData',
       version: '1.2.1'
     },
@@ -35,5 +36,4 @@
   const scriptsLoader = document.createElement('script');
   scriptsLoader.src = MyApp.config.basePath + 'Loader.js';
   document.head.appendChild(scriptsLoader);
-  console.log(MyApp)
 })();
