@@ -7,6 +7,7 @@ menuItems.forEach((item, index) => {
 functionName = "";
 
 
+
 // Функция переключения секций
 const switchSection = (e) => {
   e.preventDefault();
@@ -27,8 +28,8 @@ taaabs();
   }
 };
 
-document.getElementById('db_load').addEventListener('click', loadDB);
-document.getElementById('db_save').addEventListener('click', saveDB);
+// document.getElementById('db_load').addEventListener('click', loadDB);
+// document.getElementById('db_save').addEventListener('click', saveDB);
 
 async function loadDB() {
   try {

@@ -15,7 +15,7 @@ img {
   max-width: 100%;
 }
 
-#app {
+body {
   display: grid;
   grid-template-columns: auto;
   grid-template-rows: var(--size_height_header) var(--size_height_header) auto;
