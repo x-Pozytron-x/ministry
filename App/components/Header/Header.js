@@ -1,4 +1,5 @@
 //--- Header.js ---//
+addStyleComponent('Header');
 MyApp.toRender = MyApp.toRender || {};
 MyApp.toRender.Header = function () {
   return `

@@ -17,15 +17,13 @@ img {
 
 body {
   display: grid;
-  grid-template-columns: auto;
-  grid-template-rows: var(--size_height_header) var(--size_height_header) auto;
+  grid-template-columns: var(--size_menu_width) auto;
+  grid-template-rows: var(--size_height_header) auto;
   grid-template-areas:
-    "header"
-    "menu" 
-    "main";
+    "header header"
+    "menu main";
   gap: 5px;
   height: 100vh;
-  /* width: 100vw; */
   background: var(--page_bg);
   color: var(--color_txt);
 }

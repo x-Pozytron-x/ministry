@@ -4,10 +4,25 @@
 
 .menu nav {
   display: flex;
-  align-items: center;
+  flex-direction: column;
 }
 
-.menu__item {
-  margin: 10px;
-  /* display: block; */
+.menu__item { 
+  display: block;
+  margin-top: 4px;
+  border: 0;
+  outline: none;
+  padding: 2px 5px;
+  background: none;
+  color: var(--color_link);
+  cursor: pointer;
+  text-align: left;
+}
+
+.menu__item.active,
+.menu__item:hover {
+  border-left: 2px solid green;
+  padding-left: 10px;
+  margin-left: 2px;
+  color: var(--btn_bg);
 }

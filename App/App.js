@@ -30,6 +30,16 @@
 
     pages: {},
 
+    menuItems: [
+      { link: 'home', text: 'Home' },
+      { link: 'publishers', text: 'Publishers' },
+      { link: 'reports', text: 'Reports' },
+      { link: 's88', text: 'S-88' },
+      // { link: 's21', text: 'S-21' },
+      // { link: 's1', text: 'S-1' },
+      { link: 'settings', text: 'Settings' }
+    ],
+    
     config: {
       basePath: 'App/',
       styles: 'assets/css/styles',

@@ -1,23 +1,23 @@
 //--- Menu.js ---//
+addStyleComponent('Menu');
 
 MyApp.toRender = MyApp.toRender || {};
 MyApp.toRender.Menu = function () {
   return `
     <aside class="block menu">
       <nav>
-        ${menuItemsHtml}
+        ${renderMenu(MyApp.menuItems)}
       </nav>
     </aside>
   `;
 };
 
-const menuItemsHtml = [
-  { link: 'home', text: 'Home' },
-  { link: 'publishers', text: 'Publishers' },
-  { link: 'reports', text: 'Reports' },
-  { link: 's88', text: 'S-88' },
-  // { link: 's21', text: 'S-21' },
-  // { link: 's1', text: 'S-1' },
-  { link: 'settings', text: 'Settings' }
-].map(item => ` <button class="menu__item" data-section="${item.link}" >${item.text}</button> `
-).join('');
+function renderMenu(arr) {
+  let active;
+  return arr.map(item => {
+    if (item.link == MyApp.state.currentSection) {
+      active = " active";
+    } else {active = "";}
+    return ` <button class="menu__item${active}" data-section="${item.link}" >${item.text}</button> `
+  }).join('');
+}
