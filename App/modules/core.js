@@ -7,6 +7,7 @@ MyApp.setState = function (updates) {
 
 // }
 
+
 function addStyleComponent(component) {
   const style = document.createElement('link');
   style.rel = 'stylesheet';

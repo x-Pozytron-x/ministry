@@ -76,3 +76,44 @@
 .tab__content.tab__content_active {
   z-index: 2;
 }
+.s88-table {
+  border-collapse: collapse;
+  border: 1px solid grey;
+}
+.s88-table th,
+.s88-table td  {
+  padding: 5px;
+  text-align: center;
+  border-collapse: collapse;
+  border: 1px solid grey;
+}
+
+.s88-table th:nth-child(2), .s88-table th:nth-child(3) {
+  width: 70px;
+}
+
+.s88-table tr:nth-child(1) td,
+.s88-table tr:nth-child(3) td {
+  color: red;
+  font-size: 12px;
+}
+
+.s88-table__empty {
+  background: red;
+}
+
+.s88-table tr:nth-child(1) td:nth-child(1),
+.s88-table tr:nth-child(3) td:nth-child(1) {
+  color: white;
+  font-weight: bold;
+}
+.s88-table input {
+  width: 30px;
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: white;
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+}

@@ -1,8 +1,8 @@
 //--- Menu.js ---//
-addStyleComponent('Menu');
 
 MyApp.toRender = MyApp.toRender || {};
 MyApp.toRender.Menu = function () {
+  addStyleComponent('Menu');
   return `
     <aside class="block menu">
       <nav>
@@ -11,6 +11,7 @@ MyApp.toRender.Menu = function () {
     </aside>
   `;
 };
+
 
 function renderMenu(arr) {
   let active;

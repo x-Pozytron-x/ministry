@@ -11,8 +11,10 @@
   let scriptsLoaded = 0;
   for (let group in loadGroups) { scriptsToLoad += loadGroups[group].length; }
   function onScriptLoad() {
+    //console.log('toLoad - ' + scriptsToLoad + '; Loaded: ' + scriptsLoaded);
     scriptsLoaded++;
-    if (scriptsLoaded === scriptsToLoad) MyApp.init(); 
+    
+    if (scriptsLoaded === scriptsToLoad) MyApp.init();
   }
   for (path in MyApp.load) {
     for (const file in MyApp.load[path]) {
@@ -24,8 +26,9 @@
       const script = document.createElement('script');
       script.src = url;
       script.onload = onScriptLoad;
+      
       script.onerror = () => console.error('Load Error:', url);
-      document.head.appendChild(script);
+      document.body.appendChild(script);
     }
   }
 })();

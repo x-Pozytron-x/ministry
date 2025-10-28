@@ -24,7 +24,8 @@
       ],
       pages: [
         'home',
-        'settings'
+        'settings',
+        's88'
       ],
     },
 
@@ -56,5 +57,5 @@
 
   const scriptsLoader = document.createElement('script');
   scriptsLoader.src = MyApp.config.basePath + 'Loader.js';
-  document.head.appendChild(scriptsLoader);
+  document.body.appendChild(scriptsLoader);
 })();

@@ -7,7 +7,6 @@ menuItems.forEach((item, index) => {
 functionName = "";
 
 
-
 // Функция переключения секций
 const switchSection = (e) => {
   e.preventDefault();
@@ -222,5 +221,3 @@ count(table) {
     return this.db;
   }
 }
-
-

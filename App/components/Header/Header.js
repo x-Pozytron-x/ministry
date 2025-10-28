@@ -1,7 +1,7 @@
 //--- Header.js ---//
-addStyleComponent('Header');
 MyApp.toRender = MyApp.toRender || {};
 MyApp.toRender.Header = function () {
+  addStyleComponent('Header');
   return `
     <header class="block header">
       <div class='header__logo'>
