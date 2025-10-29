@@ -10,6 +10,7 @@
 
     load: {
       modules: [
+        'functions',
         'core',
         'router'
       ],

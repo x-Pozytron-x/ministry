@@ -5,8 +5,6 @@ menuItems.forEach((item, index) => {
 });
 
 functionName = "";
-
-
 // Функция переключения секций
 const switchSection = (e) => {
   e.preventDefault();
@@ -27,8 +25,6 @@ taaabs();
   }
 };
 
-// document.getElementById('db_load').addEventListener('click', loadDB);
-// document.getElementById('db_save').addEventListener('click', saveDB);
 
 async function loadDB() {
   try {
@@ -57,9 +53,10 @@ async function loadDB() {
 
     document.querySelector('.header__title').innerHTML = dbData.tbl_settings['congregationName'];
 
-    if(functionName== "publishers") {
+    if(functionName == "publishers") {
       render_publishers();
     }
+  MyApp.router.navigate(MyApp.state.currentSection);
     return db = new JsonDB(dbData);
   } catch (error) {
     if (error.name === 'AbortError') {

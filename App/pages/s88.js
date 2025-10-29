@@ -12,107 +12,57 @@ MyApp.pages.s88 = {
         firstYear = new Date().getFullYear() - 1;
         secondYear = new Date().getFullYear();
       }
-
-    container.innerHTML = `
-      <h2>S-88: ${firstYear}/${secondYear}</h2>
-      <button onclick="saveMonths()">Save</button>
-    ${printMonth(currYear, 9)}
-    ${printMonth(currYear, 10)}
-    ${printMonth(currYear, 11)}
-    ${printMonth(currYear, 12)}
-    ${printMonth(secondYear, 1)}
-      `;
+      if(typeof dbData !== 'undefined' ) {
+        container.innerHTML = `
+          <h2>S-88: ${firstYear}/${secondYear}</h2>
+          <button onclick="saveMonths()">Save</button>
+          ${printMonth(firstYear, 9)}
+          ${printMonth(firstYear, 10)}
+        `;
+      } else {
+        container.innerHTML = `please load db`;
+      }
   }
 }
 
-
-let s88_db = {
-  9 : [70, 78, 0, 0, 77, 90, 76, 0, 0, 0],
-  10 : [],
-  11 : [],
-  12 : [],
-  1 : []
-}
-
-let s88_db_map = new Map(Object.entries(s88_db));
-
-function saveMonths() {
-
-  for (i=0;i<=9;i++) {
-    let name = 'day_9_'+i;
-    let input = document.getElementsByName(name);
-    console.log(input[0].value);
-  } 
-  console.log('saved');
+function saveMonths() {  
+  let inputs = document.querySelectorAll("input");
+  let arr = {};
+  inputs.forEach((i) => {
+    month = i.name.split("_")[0];
+    if (!arr[month]) {
+      arr[month] = { midweek: [], weekend: [] };
+    }
+    if(i.classList.contains("midweek")) {
+      arr[month].midweek.push(i.value);
+    }
+    if(i.classList.contains("weekend")) {
+      arr[month].weekend.push(i.value);
+    }
+  })
+  dbData['tbl_s88'] = arr;
 }
 
 function getTuesdaysAndSaturdays(year, month) {
-  const dates = [];
+  const thisMonth = {};
+  const midweekCurr = [];
+  const weekendCurr = [];
   const firstDay = new Date(year, month - 1, 1);
   let currentDate = new Date(firstDay); 
-
   while (currentDate.getMonth() === month - 1) {
     const dayOfWeek = currentDate.getDay();
-
-    if (dayOfWeek === 2 || dayOfWeek === 6) { dates.push(currentDate.getDate());} 
-   
+    if (dayOfWeek === 2) { midweekCurr.push(currentDate.getDate());} 
+    if (dayOfWeek === 6) { weekendCurr.push(currentDate.getDate());} 
     currentDate.setDate(currentDate.getDate() + 1);
   }
-
-  let isFirst = new Date(year, month - 1, dates[0]);
-
-  if (isFirst.getDay() == 6 && dates.length == 9 ) {
-    dates.unshift(0)
+  if (midweekCurr[0] > weekendCurr[0]) {
+    if(midweekCurr.length < 5) midweekCurr.unshift(0);
+    if(weekendCurr.length < 5) weekendCurr.push(0);
+  } else {
+    if(weekendCurr.length < 5) weekendCurr.push(0);
   }
-  
-  if (isFirst.getDay() == 6 && dates.length == 8 ) {
-    dates.unshift(0)
-  }
-  
-  if (dates.length <10 ) {
-    dates.push(0)
-  }
-  if (dates.length <10 ) {
-    dates.push(0)
-  }
-  return dates;
-}
-
-function printMeetDates(year, month, meet) {
-  let meetsDates = getTuesdaysAndSaturdays(year, month)
-  let td = '';
-  for (i=0;i<meetsDates.length;i++) {
-
-    if (meetsDates[i] == 0) {
-       meetsDates[i] = "";
-    } else {
-      tdClass = "";
-    }
-
-    if ((meet == "midweek") && (i==0 || (i%2)==0)) {
-        td += '<td>'+meetsDates[i]+'</td>';
-    } else if ((meet == "weekend") && (i!=0 && (i%2)!=0)) { 
-        td += '<td>'+meetsDates[i]+'</td>'; 
-    }
-    tdClass = "";
-  } 
-  return td;
-}
-
-function printMeeCount(month, meet) {
-
-  let td = '';
-  let i;
-  if (meet == "midweek") {
-    i = 0;
-  } else if (meet == "weekend") {
-    i = 1;
-  }
-  for (i;i<10;i+=2) {
-    let count = (s88_db_map.get(month.toString())[i]) ? s88_db_map.get(month.toString())[i] : "";
-    td += '<td><input type="text" name="day_'+month+'_'+i+'" value="'+count+'"></td>';  
-  } 
-  return td;
+  thisMonth[month] = {'midweek': midweekCurr, 'weekend': weekendCurr};
+  return thisMonth;
 }
 
 function printMonth(currYear, month) {
@@ -133,7 +83,7 @@ function printMonth(currYear, month) {
     <td rowspan="2"></td>
   </tr> 
   <tr>
-    ${printMeeCount(month, "midweek")}
+   ${printMeetValues(month, "midweek")}
   </tr> 
   <tr>
     <td rowspan="2">Weekend</td>
@@ -142,14 +92,31 @@ function printMonth(currYear, month) {
     <td rowspan="2"></td>
   </tr>
   <tr>
-    ${printMeeCount(month, "weekend")}
+   ${printMeetValues(month, "weekend")}
   </tr> 
 
   </table>`;
 }
 
-function getMonthName(month) {
-  let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+function printMeetDates(year, month, meet) {
+  let meetsDates = getTuesdaysAndSaturdays(year, month);
+  let td = '';
+  for (i=0;i<5;i++) {
+    if (meetsDates[month][meet][i] == 0) {
+       meetsDates[month][meet][i] = "";
+    } else {
+      tdClass = "";
+    }
+    td += '<td>'+meetsDates[month][meet][i]+'</td>';
+    tdClass = "";
+  } 
+  return td;
+}
 
-  return months[parseInt(month) - 1];
+function printMeetValues(month, meet) {
+  let td = '';
+  for (i=0;i<5;i++) {
+    td += `<td><input type="text" class="${meet}" name="${month}_${i}" value="${dbData['tbl_s88'][month][meet][i]}"></td>`;
+  }
+  return td;
 }
