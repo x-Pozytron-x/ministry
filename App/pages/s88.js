@@ -5,23 +5,25 @@ MyApp.pages.s88 = {
     const container = document.getElementById('content-area');
     let currMonth = new Date().getMonth();
     let currYear = new Date().getFullYear();
-      if (currMonth >= 8) {
-        firstYear = new Date().getFullYear();
-        secondYear = new Date().getFullYear() + 1;
-      } else {
-        firstYear = new Date().getFullYear() - 1;
-        secondYear = new Date().getFullYear();
-      }
-      if(typeof dbData !== 'undefined' ) {
-        container.innerHTML = `
-          <h2>S-88: ${firstYear}/${secondYear}</h2>
-          <button onclick="saveMonths()">Save</button>
-          ${printMonth(firstYear, 9)}
-          ${printMonth(firstYear, 10)}
-        `;
-      } else {
-        container.innerHTML = `please load db`;
-      }
+    if (currMonth >= 8) {
+      firstYear = new Date().getFullYear();
+      secondYear = new Date().getFullYear() + 1;
+    } else {
+      firstYear = new Date().getFullYear() - 1;
+      secondYear = new Date().getFullYear();
+    }
+    if(typeof dbData !== 'undefined' ) {
+      container.innerHTML = `
+        <h2>S-88: ${firstYear}/${secondYear}</h2>
+        <!--<button onclick="saveMonths()">Save</button>-->
+        ${printMonth(firstYear, 9)}
+        ${printMonth(firstYear, 10)}
+        ${printMonth(firstYear, 11)}
+        ${printMonth(firstYear, 12)}
+      `;
+    } else {
+      container.innerHTML = `please load db`;
+    }
   }
 }
 
@@ -41,6 +43,7 @@ function saveMonths() {
     }
   })
   dbData['tbl_s88'] = arr;
+  console.log('S-88: Saved')
 }
 
 function getTuesdaysAndSaturdays(year, month) {
@@ -79,7 +82,7 @@ function printMonth(currYear, month) {
   <tr>
     <td rowspan="2">Midweek</td>
     ${printMeetDates(currYear, month, "midweek")}
-    <td rowspan="2"></td>
+    <td rowspan="2">${total(month, "midweek")}</td>
     <td rowspan="2"></td>
   </tr> 
   <tr>
@@ -116,7 +119,13 @@ function printMeetDates(year, month, meet) {
 function printMeetValues(month, meet) {
   let td = '';
   for (i=0;i<5;i++) {
-    td += `<td><input type="text" class="${meet}" name="${month}_${i}" value="${dbData['tbl_s88'][month][meet][i]}"></td>`;
+    const value = dbData?.['tbl_s88']?.[month]?.[meet]?.[i] ?? "";
+    td += `<td><input type="number" class="${meet}" name="${month}_${i}" value="${value}" oninput="saveMonths()"></td>`;
   }
   return td;
+}
+
+function total(month, meet) {
+  
+  return '888'
 }

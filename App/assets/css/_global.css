@@ -28,6 +28,20 @@ body {
   color: var(--color_txt);
 }
 
+/* Убираем стрелочки у input[type="number"] */
+input[type=number] {
+  -moz-appearance: textfield;   /* Firefox */
+  -webkit-appearance: none;     /* Chrome, Safari, Edge */
+  appearance: none;
+}
+
+/* Убираем стрелки в WebKit-браузерах (Chrome, Safari, новый Edge) */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 .block {
   padding: 10px;
   background: var(--block_bg);
