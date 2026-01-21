@@ -1,9 +1,11 @@
 .header {
+  position: fixed;
   grid-area: header;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 5px 10px;
+  width: 100%;
 }
 
 .header__logo {

@@ -12,7 +12,7 @@ MyApp.pages.s88 = {
       firstYear = new Date().getFullYear() - 1;
       secondYear = new Date().getFullYear();
     }
-    if(typeof dbData !== 'undefined' ) {
+    if (newdb.select('tbl_s88')) {
       container.innerHTML = `
         <h2>S-88: ${firstYear}/${secondYear}</h2>
         <!--<button onclick="saveMonths()">Save</button>-->
@@ -20,6 +20,7 @@ MyApp.pages.s88 = {
         ${printMonth(firstYear, 10)}
         ${printMonth(firstYear, 11)}
         ${printMonth(firstYear, 12)}
+        ${printMonth(secondYear, 1)}
       `;
     } else {
       container.innerHTML = `please load db`;
@@ -27,7 +28,8 @@ MyApp.pages.s88 = {
   }
 }
 
-function saveMonths() {  
+function saveMonths() {
+  // let offset = window.scrollY; 
   let inputs = document.querySelectorAll("input");
   let arr = {};
   inputs.forEach((i) => {
@@ -35,15 +37,18 @@ function saveMonths() {
     if (!arr[month]) {
       arr[month] = { midweek: [], weekend: [] };
     }
-    if(i.classList.contains("midweek")) {
+    if (i.classList.contains("midweek")) {
       arr[month].midweek.push(i.value);
     }
-    if(i.classList.contains("weekend")) {
+    if (i.classList.contains("weekend")) {
       arr[month].weekend.push(i.value);
     }
   })
-  dbData['tbl_s88'] = arr;
-  console.log('S-88: Saved')
+  // dbData['tbl_s88'] = arr;
+  // console.log('S-88: Saved - ' + arr)
+  newdb.update('tbl_s88', arr);
+  //MyApp.setState({ currentSection: 's88' });
+  //setTimeout(() => { window.scrollTo(0, offset) }, 1);
 }
 
 function getTuesdaysAndSaturdays(year, month) {
@@ -51,25 +56,26 @@ function getTuesdaysAndSaturdays(year, month) {
   const midweekCurr = [];
   const weekendCurr = [];
   const firstDay = new Date(year, month - 1, 1);
-  let currentDate = new Date(firstDay); 
+  let currentDate = new Date(firstDay);
   while (currentDate.getMonth() === month - 1) {
     const dayOfWeek = currentDate.getDay();
-    if (dayOfWeek === 2) { midweekCurr.push(currentDate.getDate());} 
-    if (dayOfWeek === 6) { weekendCurr.push(currentDate.getDate());} 
+    if (dayOfWeek === 2) { midweekCurr.push(currentDate.getDate()); }
+    if (dayOfWeek === 6) { weekendCurr.push(currentDate.getDate()); }
     currentDate.setDate(currentDate.getDate() + 1);
   }
   if (midweekCurr[0] > weekendCurr[0]) {
-    if(midweekCurr.length < 5) midweekCurr.unshift(0);
-    if(weekendCurr.length < 5) weekendCurr.push(0);
+    if (midweekCurr.length < 5) midweekCurr.unshift(0);
+    if (weekendCurr.length < 5) weekendCurr.push(0);
   } else {
-    if(weekendCurr.length < 5) weekendCurr.push(0);
+    if (weekendCurr.length < 5) weekendCurr.push(0);
   }
-  thisMonth[month] = {'midweek': midweekCurr, 'weekend': weekendCurr};
+  thisMonth[month] = { 'midweek': midweekCurr, 'weekend': weekendCurr };
   return thisMonth;
 }
 
 function printMonth(currYear, month) {
   return `
+
   <br>
   <table class="s88-table">
 
@@ -82,8 +88,8 @@ function printMonth(currYear, month) {
   <tr>
     <td rowspan="2">Midweek</td>
     ${printMeetDates(currYear, month, "midweek")}
-    <td rowspan="2">${total(month, "midweek")}</td>
-    <td rowspan="2"></td>
+    <td rowspan="2">${total(month, "midweek").sum}</td>
+    <td rowspan="2">${total(month, "midweek").avg}</td>
   </tr> 
   <tr>
    ${printMeetValues(month, "midweek")}
@@ -91,8 +97,8 @@ function printMonth(currYear, month) {
   <tr>
     <td rowspan="2">Weekend</td>
     ${printMeetDates(currYear, month, "weekend")}
-    <td rowspan="2"></td>
-    <td rowspan="2"></td>
+    <td rowspan="2">${total(month, "weekend").sum}</td>
+    <td rowspan="2">${total(month, "weekend").avg}</td>
   </tr>
   <tr>
    ${printMeetValues(month, "weekend")}
@@ -104,28 +110,36 @@ function printMonth(currYear, month) {
 function printMeetDates(year, month, meet) {
   let meetsDates = getTuesdaysAndSaturdays(year, month);
   let td = '';
-  for (i=0;i<5;i++) {
+  for (i = 0; i < 5; i++) {
     if (meetsDates[month][meet][i] == 0) {
-       meetsDates[month][meet][i] = "";
+      meetsDates[month][meet][i] = "";
     } else {
       tdClass = "";
     }
-    td += '<td>'+meetsDates[month][meet][i]+'</td>';
+    td += '<td>' + meetsDates[month][meet][i] + '</td>';
     tdClass = "";
-  } 
+  }
   return td;
 }
 
 function printMeetValues(month, meet) {
   let td = '';
-  for (i=0;i<5;i++) {
-    const value = dbData?.['tbl_s88']?.[month]?.[meet]?.[i] ?? "";
+  for (i = 0; i < 5; i++) {
+    const month1 = newdb.select('tbl_s88', month);
+    value = month1[meet]?.[i] ?? "";
     td += `<td><input type="number" class="${meet}" name="${month}_${i}" value="${value}" oninput="saveMonths()"></td>`;
   }
   return td;
 }
 
 function total(month, meet) {
-  
-  return '888'
+  const currMonth = newdb.select('tbl_s88', month);
+  let sum = 0;
+  let count = 0;
+  for (day of currMonth[meet]) {
+    sum += Number([day]);
+    if (day != 0) count++;
+  }
+  let avg = (sum / count) ? Math.round(sum / count) : 0;
+  return { sum: sum, avg: avg }
 }

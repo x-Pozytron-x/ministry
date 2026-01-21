@@ -15,12 +15,12 @@ const switchSection = (e) => {
   main.textContent = "";
   main.appendChild(window[functionName]());
 
-  
-taaabs();
+
+  taaabs();
 
   if (window[functionName] == "settings") {
     document.getElementById('set_congregationName').addEventListener('click', () => {
-      window.dbData = {"tbl_settings" : {"congregationName" : document.getElementById('congregationName').value}  } ;
+      window.dbData = { "tbl_settings": { "congregationName": document.getElementById('congregationName').value } };
     });
   }
 };
@@ -46,17 +46,18 @@ async function loadDB() {
     const [fileHandle] = await window.showOpenFilePicker(pickerOptions);
     window.lastFileHandle = fileHandle;
     const file = await fileHandle.getFile();
-    
+
     const text = await file.text();
     const dbData = JSON.parse(text);
     window.dbData = dbData;
 
-    document.querySelector('.header__title').innerHTML = dbData.tbl_settings['congregationName'];
+    saveToLocalStorage(dbData)
+    changeHeaderTitle();
 
-    if(functionName == "publishers") {
+    if (functionName == "publishers") {
       render_publishers();
     }
-  MyApp.router.navigate(MyApp.state.currentSection);
+    MyApp.router.navigate(MyApp.state.currentSection);
     return db = new JsonDB(dbData);
   } catch (error) {
     if (error.name === 'AbortError') {
@@ -141,17 +142,17 @@ class JsonDB {
         const valA = a[options.sortBy] || '';
         const valB = b[options.sortBy] || '';
         const direction = options.ascending === false ? -1 : 1;
-        
+
         // Для дат
         if (options.sortBy.includes('date') || options.sortBy.includes('day')) {
           return (new Date(valA) - new Date(valB)) * direction;
         }
-        
+
         // Для чисел
         if (!isNaN(valA)) {
           return (valA - valB) * direction;
         }
-        
+
         // Для строк
         return valA.localeCompare(valB) * direction;
       });
@@ -169,7 +170,7 @@ class JsonDB {
       result = result.slice(offset, offset + limit);
     }
 
-    return options.asObject 
+    return options.asObject
       ? result.reduce((acc, item) => ({ ...acc, [item.id]: item }), {})
       : result;
   }
@@ -194,23 +195,23 @@ class JsonDB {
 
 
   getById(table, id) {
-  return this.db[table]?.find(item => item.id == id);
-}
+    return this.db[table]?.find(item => item.id == id);
+  }
 
-// Получение первого элемента, соответствующего условиям
-find(table, predicate) {
-  return this.db[table]?.find(predicate);
-}
+  // Получение первого элемента, соответствующего условиям
+  find(table, predicate) {
+    return this.db[table]?.find(predicate);
+  }
 
-// Получение всех элементов, соответствующих условиям
-findAll(table, predicate) {
-  return this.db[table]?.filter(predicate);
-}
+  // Получение всех элементов, соответствующих условиям
+  findAll(table, predicate) {
+    return this.db[table]?.filter(predicate);
+  }
 
-// Количество записей в таблице
-count(table) {
-  return this.db[table]?.length || 0;
-}
+  // Количество записей в таблице
+  count(table) {
+    return this.db[table]?.length || 0;
+  }
 
 
   // Получение всей базы данных
@@ -218,3 +219,44 @@ count(table) {
     return this.db;
   }
 }
+
+function changeHeaderTitle() {
+  document.querySelector('.header__title').innerHTML = newdb.select('tbl_settings', 'congregationName');
+}
+
+
+function saveToLocalStorage(data) {
+  for (table in data) {
+    tablData = JSON.stringify(data[table], null, 2)
+    localStorage.setItem(table, tablData);
+  }
+}
+
+
+const newdb = {
+
+  select(tbl, row = "") {
+    try {
+      if (!row) {
+        return JSON.parse(localStorage.getItem(tbl));
+      } else {
+        return JSON.parse(localStorage.getItem(tbl))[row];
+      }
+    } catch {
+      return false
+    }
+  },
+
+  insert() {
+
+  },
+
+  update(tbl, data) {
+    localStorage.setItem(tbl, JSON.stringify(data, null, 2));
+  },
+
+  delete() {
+
+  }
+}
+
