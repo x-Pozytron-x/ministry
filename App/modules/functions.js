@@ -71,7 +71,12 @@ async function loadDB() {
 
 async function saveDB() {
   try {
-    if (!window.dbData) {
+    dbToSave = {
+      'tbl_settings': DB_local.select('tbl_settings'),
+      'tbl_publishers': DB_local.select('tbl_publishers'),
+      'tbl_s88': DB_local.select('tbl_s88')
+    }
+    if (!dbToSave) {
       alert('Нет данных для сохранения');
       return;
     }
@@ -86,7 +91,8 @@ async function saveDB() {
     });
 
     const writable = await fileHandle.createWritable();
-    await writable.write(JSON.stringify(window.dbData, null, 2));
+
+    await writable.write(JSON.stringify(dbToSave, null, 2));
     await writable.close();
 
     console.log('Данные сохранены в файл');
@@ -221,9 +227,8 @@ class JsonDB {
 }
 
 function changeHeaderTitle() {
-  document.querySelector('.header__title').innerHTML = newdb.select('tbl_settings', 'congregationName');
+  document.querySelector('.header__title').innerHTML = DB_local.select('tbl_settings', 'congregationName');
 }
-
 
 function saveToLocalStorage(data) {
   for (table in data) {
@@ -232,9 +237,7 @@ function saveToLocalStorage(data) {
   }
 }
 
-
-const newdb = {
-
+const DB_local = {
   select(tbl, row = "") {
     try {
       if (!row) {
@@ -247,16 +250,20 @@ const newdb = {
     }
   },
 
-  insert() {
+  insert(tbl, row) {
+    let dbTbl = JSON.parse(localStorage.getItem(tbl));
+    let newTbl = Object.assign({}, dbTbl, row);
 
+    localStorage.setItem(tbl, JSON.stringify(newTbl, null, 2));
   },
 
   update(tbl, data) {
     localStorage.setItem(tbl, JSON.stringify(data, null, 2));
   },
 
-  delete() {
-
+  delete(tbl, id) {
+    dbTbl = JSON.parse(localStorage.getItem(tbl));
+    delete dbTbl[id];
+    localStorage.setItem(tbl, JSON.stringify(dbTbl, null, 2));
   }
 }
-

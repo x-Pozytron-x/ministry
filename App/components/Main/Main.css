@@ -1,6 +1,8 @@
 .main {
-  margin-top: 17px;
+  /* margin-top: 17px; */
   grid-area: main;
+  overflow-y: hidden;
+  padding: 10px;
 }
 .publishers label {
   margin-top: 5px;
@@ -62,7 +64,7 @@
 }
 
 .tab__content {
-  margin-top: -1px;
+  overflow-y: scroll;
   z-index: 1;
   border-top: 1px solid #fff;
   position: absolute;
@@ -70,13 +72,19 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: calc(100vh - 96px);
+  height: calc(100vh - 103px);
   background: var(--block_bg);
 }
 
 .tab__content.tab__content_active {
   z-index: 2;
 }
+
+label {
+  display: block;
+}
+
+
 .s88-table {
   border-collapse: collapse;
   border: 1px solid grey;

@@ -2,7 +2,7 @@
 
 MyApp.toRender = MyApp.toRender || {};
 MyApp.toRender.Menu = function () {
-  addStyleComponent('Menu');
+  // addStyleComponent('Menu');
   return `
     <aside class="block menu">
       <nav>
@@ -18,7 +18,7 @@ function renderMenu(arr) {
   return arr.map(item => {
     if (item.link == MyApp.state.currentSection) {
       active = " active";
-    } else {active = "";}
+    } else { active = ""; }
     return ` <button class="menu__item${active}" data-section="${item.link}" >${item.text}</button> `
   }).join('');
 }

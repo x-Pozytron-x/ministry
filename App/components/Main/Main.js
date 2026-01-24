@@ -1,7 +1,7 @@
 //--- Main.js ---//
 MyApp.toRender = MyApp.toRender || {};
-MyApp.toRender.Main = function () {
-  addStyleComponent('Main');
+MyApp.toRender.Main = () => {
+  // addStyleComponent('Main');
   return `
     <main class="block main">
       <div id="content-area">

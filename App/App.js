@@ -1,4 +1,4 @@
-(function() {
+(function () {
 
   window.MyApp = {
     state: {
@@ -25,6 +25,7 @@
       ],
       pages: [
         'home',
+        'publishers',
         'settings',
         's88'
       ],
@@ -41,7 +42,7 @@
       // { link: 's1', text: 'S-1' },
       { link: 'settings', text: 'Settings' }
     ],
-    
+
     config: {
       basePath: 'App/',
       styles: 'assets/css/styles',
@@ -50,9 +51,9 @@
     },
 
     init: function () {
-      if (typeof renderApp === 'function') { renderApp(); } 
+      if (typeof renderApp === 'function') { renderApp(); }
       else { console.error('renderApp не найден!'); }
-    } 
+    }
 
   };
 

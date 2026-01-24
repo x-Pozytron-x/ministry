@@ -2,10 +2,13 @@ MyApp.router = {
   routes: {
     home: function () {
       MyApp.pages.home.render();
-    }, 
+    },
+    publishers: function () {
+      MyApp.pages.publishers.render();
+    },
     s88: function () {
       MyApp.pages.s88.render();
-    }, 
+    },
     settings: function () {
       MyApp.pages.settings.render();
     }

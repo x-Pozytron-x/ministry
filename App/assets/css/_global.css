@@ -26,6 +26,7 @@ body {
   height: 100vh;
   background: var(--page_bg);
   color: var(--color_txt);
+  /* overflow-y: hidden; */
 }
 
 /* Убираем стрелочки у input[type="number"] */

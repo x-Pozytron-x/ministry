@@ -1,9 +1,9 @@
 //--- Header.js ---//
 MyApp.toRender = MyApp.toRender || {};
 MyApp.toRender.Header = function () {
-  addStyleComponent('Header');
+  // addStyleComponent('Header');
 
-  const headerTitle = newdb.select('tbl_settings', 'congregationName');
+  const headerTitle = DB_local.select('tbl_settings', 'congregationName');
 
   return `
     <header class="block header">

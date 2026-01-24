@@ -1,5 +1,3 @@
-//--- Page S-88 ---//
-
 MyApp.pages.s88 = {
   render: function () {
     const container = document.getElementById('content-area');
@@ -12,10 +10,9 @@ MyApp.pages.s88 = {
       firstYear = new Date().getFullYear() - 1;
       secondYear = new Date().getFullYear();
     }
-    if (newdb.select('tbl_s88')) {
+    if (DB_local.select('tbl_s88')) {
       container.innerHTML = `
         <h2>S-88: ${firstYear}/${secondYear}</h2>
-        <!--<button onclick="saveMonths()">Save</button>-->
         ${printMonth(firstYear, 9)}
         ${printMonth(firstYear, 10)}
         ${printMonth(firstYear, 11)}
@@ -29,7 +26,6 @@ MyApp.pages.s88 = {
 }
 
 function saveMonths() {
-  // let offset = window.scrollY; 
   let inputs = document.querySelectorAll("input");
   let arr = {};
   inputs.forEach((i) => {
@@ -44,11 +40,7 @@ function saveMonths() {
       arr[month].weekend.push(i.value);
     }
   })
-  // dbData['tbl_s88'] = arr;
-  // console.log('S-88: Saved - ' + arr)
-  newdb.update('tbl_s88', arr);
-  //MyApp.setState({ currentSection: 's88' });
-  //setTimeout(() => { window.scrollTo(0, offset) }, 1);
+  DB_local.update('tbl_s88', arr);
 }
 
 function getTuesdaysAndSaturdays(year, month) {
@@ -125,7 +117,7 @@ function printMeetDates(year, month, meet) {
 function printMeetValues(month, meet) {
   let td = '';
   for (i = 0; i < 5; i++) {
-    const month1 = newdb.select('tbl_s88', month);
+    const month1 = DB_local.select('tbl_s88', month);
     value = month1[meet]?.[i] ?? "";
     td += `<td><input type="number" class="${meet}" name="${month}_${i}" value="${value}" oninput="saveMonths()"></td>`;
   }
@@ -133,7 +125,7 @@ function printMeetValues(month, meet) {
 }
 
 function total(month, meet) {
-  const currMonth = newdb.select('tbl_s88', month);
+  const currMonth = DB_local.select('tbl_s88', month);
   let sum = 0;
   let count = 0;
   for (day of currMonth[meet]) {
