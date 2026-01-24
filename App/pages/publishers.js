@@ -3,30 +3,26 @@ MyApp.pages.publishers = {
     const container = document.getElementById('content-area');
     if (DB_local.select('tbl_publishers')) {
       container.innerHTML = `
-        <header class="section__tabs">
-          <span class="tab tab_active">Publishers</span>
-          <span class="tab">Add</span>
-        </header>
+
         
-        <div class="section__content">
+        <div class="section__content publishers">
           <div class="tab__content tab__content_active">
-            <h2>Publishers</h2>
-            <div class="publishers table">
+            <h2>Publishers <span onclick=document.querySelector('.popup').classList.add('active')> + </span></h2>
+            <div class="table">
               <div class="thead">
-                <span>Surname</span>
-                <span>Name</span>
-                <span>Phone</span>
-                <span>Adres</span>
-                <span>Birthday</span>
-                <span>Baptisted</span>
-                <span>Gender</span>
-                <span>&#128017;</span>
-                <span>&#128366;</span>
-                <span>&#129309;</span>
-                <span>50</span>
-                <span>90</span>
-                <span>&#127757;</span>
-                <span>x</span>
+                <span class="fullname">FullName</span>
+                <span class="vps">VPS</span>
+                <span class="phone">Phone</span>
+                <span class="adres">Adres</span>
+                <span class="birthday">Birthday</span>
+                <span class="baptismday">Baptisted</span>
+                <span class="gender">🚻</span>
+                <span class="hope">&#128017;</span>
+                <span class="isElder">👨‍🏫</span>
+                <span class="isServant">&#129309;</span>
+                <span class="isPioner">50</span>
+                <span class="isSpecial">90</span>
+                <span class="isMissioner">&#127757;</span>
               </div>
               <div class="tbody" id="table_publishers">
                 ${get_publishers()}
@@ -34,8 +30,15 @@ MyApp.pages.publishers = {
             </div>
           </div>
 
-          <div class="tab__content">
+
+        </div>
+
+
+        
+          <div class="popup" style="z-index: 99">
+            <span class="popup_close" onclick=document.querySelector('.popup').classList.remove('active')>X</span>
             <h2>Add Publisher</h2>
+            <section>
             <label>
               <span>Name</span>
               <input type="text" id="publisherName">
@@ -63,8 +66,8 @@ MyApp.pages.publishers = {
             <label>
               <span>Gender</span> 
               <select id="publisherGender">
-                <option value="male">Male</option>
-                <option value="female">Female</option>
+                <option value="male">🚹</option>
+                <option value="female">🚺</option>
               </select>
             </label>
             <label>
@@ -96,8 +99,8 @@ MyApp.pages.publishers = {
             </label>
             
             <button onclick="publisher_add()">Add publisher</button>
+            </section>
           </div>
-        </div>
       `;
 
 
@@ -116,7 +119,14 @@ MyApp.pages.publishers = {
       container.innerHTML = `please load db`;
     }
   }
+
 }
+
+function popup_add_publisher() {
+  console.log('lol')
+    ;
+}
+
 
 function get_publishers() {
   if (!DB_local.select('tbl_publishers')) {
@@ -131,18 +141,51 @@ function get_publishers() {
       return valA.localeCompare(valB) * 1;
     });
     arr_publ = "";
-    for (const arr in arr_publishers) {
-      arr_publ += "<div data-publisher_id='" + arr_publishers[arr].id + "'>";
-      for (const key in arr_publishers[arr]) {
-        if (arr_publishers[arr][key] == true) {
-          arr_publ += `<span>&#9745;</span>`;
-        } else if (arr_publishers[arr][key] == false) {
-          arr_publ += `<span>&#9744;</span>`;
-        } else if (key != "id") {
-          arr_publ += `<span>${arr_publishers[arr][key]}</span>`;
-        }
-      }
-      arr_publ += "<i onclick=publisher_delete(this)>&#10060;</i></div>";
+    for (const publisher in arr_publishers) {
+      let row = arr_publishers[publisher];
+
+      arr_publ += "<div class='row' data-publisher_id='" + row.id + "'>";
+
+      row.gender = (row.gender == 'male') ? '🚹' : '🚺';
+      row.hope = (row.hope == 'OS') ? '🌐' : '☁';
+      const isCkd = (check) => check ? '☑' : '☐';
+
+      arr_publ += `
+        <span class="fullname">${row.surname} ${row.name}</span>
+        <span class="vps">0</span>
+        <span class="phone">${row.phone ? row.phone : '-'}</span>
+        <span class="adres">${row.adres}</span>
+        <span class="birthday">${row.birthday}</span>
+        <span class="baptismday">${row.baptismday ? row.baptismday : '-'}</span>
+        <span class="gender">${row.gender}</span>
+        <span class="hope">${row.hope}</span>
+        <span class="isElder">${isCkd(row.isElder)}</span>
+        <span class="isServant">${isCkd(row.isServant)}</span>
+        <span class="isPioner">${isCkd(row.isPioner)}</span>
+        <span class="isSpecial">${isCkd(row.isSpecial)}</span>
+        <span class="isMissioner">${isCkd(row.isMissioner)}</span>
+      `;
+
+
+      // for (const key in arr_publishers[arr]) {
+      //   if (arr_publishers[arr][key] == true) {
+      //     arr_publ += `<span>&#9745;</span>`;
+      //   } else if (arr_publishers[arr][key] == false) {
+      //     arr_publ += `<span>&#9744;</span>`;
+      //   } else if (key != "id") {
+      //     if (arr_publishers[arr][key] == 'male') {
+      //       arr_publishers[arr][key] = '🚹';
+      //     }
+      //     if (arr_publishers[arr][key] == 'female') {
+      //       arr_publishers[arr][key] = '🚺';
+      //     }
+      //     arr_publ += `<span>${arr_publishers[arr][key]}</span>`;
+      //   }
+      // }
+
+
+      arr_publ += "</div>";
+      // <i onclick=publisher_delete(this)>&#10060;</i>
     }
   }
   return arr_publ;
@@ -171,9 +214,9 @@ function publisher_add() {
   MyApp.pages.publishers.render();
 }
 
-
 function publisher_delete(e) {
   let id = e.parentElement.dataset.publisher_id;
   DB_local.delete("tbl_publishers", id);
   MyApp.pages.publishers.render();
 }
+

@@ -1,22 +1,15 @@
 .menu {
-  width: 120px;
-  /* position: fixed; */
-  /* margin-top: 17px; */
-  grid-area: menu;
-  padding-top: 0;
-  top: 66px;
-  height: calc(100vh - 66px);
+  margin-top: 10px;
 }
 
 .menu nav {
   display: flex;
-  flex-direction: column;
-  margin-top: 10px;
+  flex-direction: row;
 }
 
 .menu__item { 
   display: block;
-  margin-top: 4px;
+  margin: 4px;
   border: 0;
   outline: none;
   padding: 2px 5px;
@@ -28,8 +21,8 @@
 
 .menu__item.active,
 .menu__item:hover {
-  border-left: 2px solid green;
-  padding-left: 10px;
-  margin-left: 2px;
+  border-bottom: 2px solid green;
+  /* padding-left: 10px;
+  margin-left: 2px; */
   color: var(--btn_bg);
 }

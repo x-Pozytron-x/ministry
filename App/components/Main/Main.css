@@ -1,40 +1,7 @@
 .main {
-  /* margin-top: 17px; */
-  grid-area: main;
-  overflow-y: hidden;
-  padding: 10px;
+  margin-top: 10px;
+  min-height: calc(100vh - 125px);
 }
-.publishers label {
-  margin-top: 5px;
-  display: flex;
-}
-.publishers label span {
-  width: 100px;
-}
-
-.publishers table {
-  margin-top: 15px;
-  width: 100%;
-}
-
-.publishers th {
-  padding-bottom: 4px;
-}
-
-.publishers td {
-  padding-top: 2px;
-  margin: 0 3px;
-  font-size: 13px;
-  text-align: center;
-}
-
-.publishers th:nth-child(1),
-.publishers th:nth-child(2),
-.publishers td:nth-child(1),
-.publishers td:nth-child(2) {
-  text-align-last: left;
-}
-
 
 .section__content {
   position: relative;
@@ -64,15 +31,13 @@
 }
 
 .tab__content {
-  overflow-y: scroll;
   z-index: 1;
   border-top: 1px solid #fff;
   position: absolute;
-  padding-top: 15px;
   top: 0;
   left: 0;
   width: 100%;
-  height: calc(100vh - 103px);
+  padding: 10px;
   background: var(--block_bg);
 }
 
