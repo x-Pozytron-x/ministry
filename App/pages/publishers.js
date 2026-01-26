@@ -44,6 +44,15 @@ MyApp.pages.publishers = {
               <input type="text" id="publisherSurname">
             </label>
             <label>
+              <span>VPS</span>
+              <select id="publisherVPS">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+              </select>
+            </label>
+            <label>
               <span>Phone</span>
               <input type="number" id="publisherPhone">
             </label>
@@ -130,7 +139,7 @@ function get_publishers() {
 
       arr_publ += `
         <span class="fullname">${row.surname} ${row.name}</span>
-        <span class="vps">0</span>
+        <span class="vps">${row.vps}</span>
         <span class="phone">${row.phone ? row.phone : '-'}</span>
         <span class="adres">${row.adres}</span>
         <span class="birthday">${row.birthday}</span>
@@ -156,6 +165,7 @@ function publisher_add() {
     [lastPublisherID]: {
       "surname": document.getElementById('publisherSurname').value.trim(),
       "name": document.getElementById('publisherName').value.trim(),
+      "vps": document.getElementById('publisherVPS').value.trim(),
       "phone": document.getElementById('publisherPhone').value.trim(),
       "adres": document.getElementById('publisherAdres').value.trim(),
       "birthday": document.getElementById('publisherBirthday').value.trim(),
@@ -199,6 +209,15 @@ function popupEdit(e) {
             <label>
               <span>Surname</span> 
               <input type="text" id="edit_publisherSurname" value="${publisher.surname}">
+            </label>
+            <label>
+              <span>VPS</span>
+              <select id="edit_vps">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+              </select>
             </label>
             <label>
               <span>Phone</span>
@@ -267,6 +286,7 @@ function publisher_save(id) {
   let publisher = {
     "surname": document.getElementById('edit_publisherSurname').value.trim(),
     "name": document.getElementById('edit_publisherName').value.trim(),
+    "vps": document.getElementById('edit_vps').value.trim(),
     "phone": document.getElementById('edit_publisherPhone').value.trim(),
     "adres": document.getElementById('edit_publisherAdres').value.trim(),
     "birthday": document.getElementById('edit_publisherBirthday').value.trim(),

@@ -6,6 +6,12 @@
   font-weight: bold;
   cursor: pointer;
   line-height: 1;
+  display: block;
+  position: fixed;
+  background: #000;
+  right: 20px;
+  bottom: 15px;
+  box-shadow: 0 0 10px 0px black;
 }
 
 
@@ -99,6 +105,10 @@
   text-align: center;
 }
 
+.publishers .tbody .gender,
+.publishers .tbody .hope {
+  font-size: 15px;
+}
 .publishers .tbody .isElder,
 .publishers .tbody .isServant,
 .publishers .tbody .isPioner,
