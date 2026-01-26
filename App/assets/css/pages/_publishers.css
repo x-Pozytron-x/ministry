@@ -115,38 +115,81 @@
   cursor: pointer;
 } */
 
-.popup {
+.popupAdd,
+.popupEdit {
+  --p_w: 420px;
+  --p_h: 470px;
+
   display: none;
   position: fixed;
   z-index: 99;
   background: #000;
   padding: 15px;
+  width: var(--p_w); 
+  height: var(--p_h);
   top: 50%;
   left: 50%;
-  margin-left: -130px;
-  margin-top: -145px;
+  margin-top: calc(var(--p_h) /-2);
+  margin-left: calc(var(--p_w) /-2);
   border: 2px grey solid;
   border-radius: 16px;
   box-shadow: 0px 0px 10px 0px white, inset 0px 0px 10px 0px white;
 }
 
-.popup::before {
+.popupAdd::before,
+.popupEdit::before {
   content: '';
   display: block;
   top: 0;
-  left: 0;
+  left: 0; 
   position: fixed;
   background: #000;
-  opacity: 0.4;
+  opacity: 0.5;
   z-index: 98;
   width: 100vw;
   height: 100vh;
 }
 
-.popup section {
+.popupAdd h2,
+.popupEdit h2 {
+  margin: 10px 0;
+}
+
+.popupAdd section,
+.popupEdit section {
   position: relative;
   z-index: 999;
 }
+
+.popupAdd label,
+.popupEdit label {
+  margin-top: 5px;
+  display: flex;
+  width: 100%;
+}
+
+.popupAdd label span,
+.popupEdit label span {
+  width: 90px;
+}
+
+.popupAdd label input[type="text"],
+.popupEdit label input[type="text"],
+.popupAdd label input[type="number"],
+.popupEdit label input[type="number"]  {
+  padding: 2px 4px;
+  width: calc(100% - 90px);
+}
+
+.popupEdit button {
+  margin: 10px auto;
+  display: block;
+  width: 150px;
+  padding: 5px;
+  text-align: center;
+  border-radius: 8px;
+}
+
 
 .popup_close {
   position: absolute;
@@ -161,6 +204,7 @@
   cursor: pointer;
   z-index: 999;
 }
-.popup.active {
+.popupAdd.active,
+.popupEdit.active {
   display: block;
 } 
