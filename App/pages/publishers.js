@@ -1,26 +1,20 @@
 MyApp.pages.publishers = {
   render: function () {
     const container = document.getElementById('content-area');
-    if (DB_local.select('tbl_publishers')) {
+    let tbl = DB_local.select('tbl_publishers');
+    if (tbl) {
       container.innerHTML = `
         <div class="section__content publishers">
           <div class="tab__content tab__content_active">
-            <h2>Publishers <span onclick=document.querySelector('.popupAdd').classList.add('active')> + </span></h2>
+            <h2>Publishers [ ${Object.keys(tbl).length} ] <span onclick=document.querySelector('.popupAdd').classList.add('active')> + </span></h2>
             <div class="table">
               <div class="thead">
                 <span class="fullname">FullName</span>
                 <span class="vps">VPS</span>
                 <span class="phone">Phone</span>
                 <span class="adres">Adres</span>
-                <span class="birthday">Birthday</span>
-                <span class="baptismday">Baptisted</span>
-                <span class="gender">🚻</span>
-                <span class="hope">🐑</span>
-                <span class="isElder">👨‍🏫</span>
-                <span class="isServant">🤝</span>
-                <span class="isPioner">50</span>
-                <span class="isSpecial">90</span>
-                <span class="isMissioner">🌍</span>
+                <span class="fullname">Reserve Contact</span>
+                <span class="phone">Reserve Phone</span>
               </div>
               <div class="tbody" id="table_publishers">
                 ${get_publishers()}
@@ -57,8 +51,16 @@ MyApp.pages.publishers = {
               <input type="number" id="publisherPhone">
             </label>
             <label>
-              <span>Adres</span> 
+              <span>Adres</span>
               <input type="text" id="publisherAdres">
+            </label>
+            <label>
+              <span>Reserve Contact</span> 
+              <input type="text" id="publisherResContact">
+            </label>
+            <label>
+              <span>Reserve Phone</span>
+              <input type="number" id="publisherResPhone">
             </label>
             <label>
               <span>Birthday</span> 
@@ -142,15 +144,8 @@ function get_publishers() {
         <span class="vps">${row.vps}</span>
         <span class="phone">${row.phone ? row.phone : '-'}</span>
         <span class="adres">${row.adres}</span>
-        <span class="birthday">${row.birthday}</span>
-        <span class="baptismday">${row.baptismday ? row.baptismday : '-'}</span>
-        <span class="gender">${row.gender}</span>
-        <span class="hope">${row.hope}</span>
-        <span class="isElder">${isCkd(row.isElder)}</span>
-        <span class="isServant">${isCkd(row.isServant)}</span>
-        <span class="isPioner">${isCkd(row.isPioner)}</span>
-        <span class="isSpecial">${isCkd(row.isSpecial)}</span>
-        <span class="isMissioner">${isCkd(row.isMissioner)}</span>
+        <span class="fullname">${(row.resContact == undefined) ? '-' : row.resContact}</span>
+        <span class="phone">${(row.resPhone == undefined) ? '-' : row.resPhone}</span>
       `;
       arr_publ += "</div>";
     }
@@ -167,6 +162,8 @@ function publisher_add() {
       "name": document.getElementById('publisherName').value.trim(),
       "vps": document.getElementById('publisherVPS').value.trim(),
       "phone": document.getElementById('publisherPhone').value.trim(),
+      "resContact": document.getElementById('publisherResContact').value.trim(),
+      "resPhone": document.getElementById('publisherResPhone').value.trim(),
       "adres": document.getElementById('publisherAdres').value.trim(),
       "birthday": document.getElementById('publisherBirthday').value.trim(),
       "baptismday": document.getElementById('publisherBaptised').value.trim(),
@@ -226,6 +223,14 @@ function popupEdit(e) {
             <label>
               <span>Adres</span> 
               <input type="text" id="edit_publisherAdres" value="${publisher.adres}">
+            </label>
+            <label>
+              <span>Reserve Contact</span>
+              <input type="text" id="edit_publisherResContact" value="${(publisher.resContact != undefined) ? publisher.resContact : ''}">
+            </label>
+            <label>
+              <span>Reserve Phone</span>
+              <input type="number" id="edit_publisherResPhone" value="${(publisher.resPhone != undefined) ? publisher.resPhone : ''}">
             </label>
             <label>
               <span>Birthday</span> 
@@ -289,6 +294,8 @@ function publisher_save(id) {
     "vps": document.getElementById('edit_vps').value.trim(),
     "phone": document.getElementById('edit_publisherPhone').value.trim(),
     "adres": document.getElementById('edit_publisherAdres').value.trim(),
+    "resContact": document.getElementById('edit_publisherResContact').value.trim(),
+    "resPhone": document.getElementById('edit_publisherResPhone').value.trim(),
     "birthday": document.getElementById('edit_publisherBirthday').value.trim(),
     "baptismday": document.getElementById('edit_publisherBaptised').value.trim(),
     "gender": document.getElementById('edit_publisherGender').value.trim(),

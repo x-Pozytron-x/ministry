@@ -127,7 +127,7 @@
 
 .popupAdd,
 .popupEdit {
-  --p_w: 420px;
+  --p_w: 460px;
   --p_h: 470px;
 
   display: none;
@@ -180,7 +180,7 @@
 
 .popupAdd label span,
 .popupEdit label span {
-  width: 90px;
+  width: 130px;
 }
 
 .popupAdd label input[type="text"],
@@ -188,7 +188,7 @@
 .popupAdd label input[type="number"],
 .popupEdit label input[type="number"]  {
   padding: 2px 4px;
-  width: calc(100% - 90px);
+  width: calc(100% - 130px);
 }
 
 .popupEdit button {
