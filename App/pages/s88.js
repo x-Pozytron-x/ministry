@@ -18,6 +18,8 @@ MyApp.pages.s88 = {
         ${printMonth(firstYear, 11)}
         ${printMonth(firstYear, 12)}
         ${printMonth(secondYear, 1)}
+        ${printMonth(secondYear, 2)}
+        ${printMonth(secondYear, 3)}
       `;
     } else {
       container.innerHTML = `please load db`;
@@ -108,7 +110,12 @@ function printMeetDates(year, month, meet) {
     } else {
       tdClass = "";
     }
-    td += '<td>' + meetsDates[month][meet][i] + '</td>';
+    if (meetsDates[month][meet][i] === undefined) {
+      td += '<td></td>';
+    } else {
+      td += '<td>' + meetsDates[month][meet][i] + '</td>';
+    }
+
     tdClass = "";
   }
   return td;
@@ -118,8 +125,14 @@ function printMeetValues(month, meet) {
   let td = '';
   for (i = 0; i < 5; i++) {
     const month1 = DB_local.select('tbl_s88', month);
-    value = month1[meet]?.[i] ?? "";
-    td += `<td><input type="number" class="${meet}" name="${month}_${i}" value="${value}" oninput="saveMonths()"></td>`;
+
+    if (month1 === undefined) {
+      td += `<td><input type="number" class="${meet}" name="${month}_${i}" value="" oninput="saveMonths()"></td>`;
+    } else {
+      value = month1[meet]?.[i] ?? "";
+      td += `<td><input type="number" class="${meet}" name="${month}_${i}" value="${value}" oninput="saveMonths()"></td>`;
+    }
+
   }
   return td;
 }
@@ -128,6 +141,10 @@ function total(month, meet) {
   const currMonth = DB_local.select('tbl_s88', month);
   let sum = 0;
   let count = 0;
+
+  if (currMonth === undefined) {
+    return { sum: 0, avg: 0 }
+  }
   for (day of currMonth[meet]) {
     sum += Number([day]);
     if (day != 0) count++;
