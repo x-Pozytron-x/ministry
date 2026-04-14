@@ -127,7 +127,7 @@
 
 .popupAdd,
 .popupEdit {
-  --p_w: 460px;
+  --p_w: 480px;
   --p_h: 470px;
 
   display: none;
@@ -136,7 +136,7 @@
   background: #000;
   padding: 15px;
   width: var(--p_w); 
-  height: var(--p_h);
+  /* height: var(--p_h); */
   top: 50%;
   left: 50%;
   margin-top: calc(var(--p_h) /-2);
