@@ -10,10 +10,6 @@
   width: 40px;
 }
 
-.header__title {
-
-}
-
 .header__btn {
   background: var(--color_title);
   color: var(--block_bg);
