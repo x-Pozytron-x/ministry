@@ -1,12 +1,17 @@
 import { Link } from 'react-router-dom'
-// import './header.css'
+import './menu.css'
+
+import { routes } from '../../routes'
 
 export default function Menu() {
   return (
     <aside className='block menu'>
       <nav>
-        <Link className='menu__item' to="/">Home</Link>
-        <Link className='menu__item' to="/settings">Settings</Link>
+        {routes.map(route => (
+          <Link className='menu__item' key={route.path} to={route.path}>
+            {route.name}
+          </Link>
+        ))}
       </nav>
     </aside>
   )

@@ -1,0 +1,26 @@
+.menu {
+  margin-top: 10px;
+}
+
+.menu nav {
+  display: flex;
+  flex-direction: row;
+}
+
+.menu__item { 
+  display: block;
+  margin: 4px;
+  border: 0;
+  outline: none;
+  padding: 2px 5px;
+  background: none;
+  color: var(--color_link);
+  cursor: pointer;
+  text-align: left;
+}
+
+.menu__item.active,
+.menu__item:hover {
+  border-bottom: 2px solid green;
+  color: var(--btn_bg);
+}
