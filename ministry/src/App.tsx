@@ -5,18 +5,22 @@ import './App.css'
 import Header from './components/Header'
 import Menu from './components/Menu'
 
-const Home = () => <h1>Главная</h1>
-const Settings = () => <h1>Settings</h1>
+import { routes } from './routes'
 
-function App() {
+export const App: React.FC = () => {
   return (
     <>
       <Header />
       <Menu />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/settings" element={<Settings />} />
-      </Routes>
+      <main className="block main">
+        <div id="content-area">
+          <Routes>
+            {routes.map(route => (
+              <Route key={route.path} path={route.path} element={route.element} />
+            ))}
+          </Routes>
+        </div>
+      </main>
     </>
   )
 }
