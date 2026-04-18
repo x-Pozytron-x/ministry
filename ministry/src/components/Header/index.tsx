@@ -1,6 +1,6 @@
 import './header.css'
 import logo from '../../assets/logotype.png'
-import { useRef } from 'react'
+import { useRef, useEffect, useState } from 'react'
 
 export interface Settings {
   congregationName: string
@@ -36,6 +36,24 @@ export interface JsonData {
 
 export default function Header() {
 
+  const [db, setDb] = useState(false)
+  const [congName, setcongName] = useState("Please, load DB ⇒");
+
+  let getSettings = JSON.parse(localStorage.getItem("tbl_settings") || '""');
+
+  if (getSettings && getSettings != "" && !db) {
+    setDb(true);
+    setcongName(getSettings.congregationName);
+  }
+
+  useEffect(() => {
+    if (db) {
+      setcongName(getSettings.congregationName);
+    } else {
+      setcongName("Please, load DB ⇒");
+    }
+
+  }, [db]);
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -43,51 +61,43 @@ export default function Header() {
     try {
       const parsedData = JSON.parse(data) as JsonData
 
-      // Сохраняем настройки
       localStorage.setItem('tbl_settings', JSON.stringify(parsedData.tbl_settings, null, 2))
       console.log('✅ Сохранены настройки')
 
-      // Сохраняем издателей
       localStorage.setItem('tbl_publishers', JSON.stringify(parsedData.tbl_publishers, null, 2))
-      console.log(`✅ Сохранено издателей: ${Object.keys(parsedData.tbl_publishers).length}`)
+      console.log(`✅ Сохранено возвещателей: ${Object.keys(parsedData.tbl_publishers).length}`)
 
-      // Сохраняем статистику S88
       localStorage.setItem('tbl_s88', JSON.stringify(parsedData.tbl_s88, null, 2))
       console.log(`✅ Сохранено записей S88: ${Object.keys(parsedData.tbl_s88).length}`)
-
-      alert('Данные успешно загружены!')
+      setDb(true);
     } catch (error) {
       console.error('❌ Ошибка:', error)
-      alert('Ошибка при разборе JSON. Проверь формат файла.')
     }
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-
     if (!file) return
-
     const reader = new FileReader()
-
     reader.onload = (event) => {
       const content = event.target?.result
-
       if (typeof content === 'string') {
         saveToLocalStorage(content)
       } else {
         alert('Не удалось прочитать файл')
       }
     }
-
     reader.onerror = () => {
       alert('Ошибка чтения файла')
     }
-
     reader.readAsText(file)
   }
 
-  const handleButtonClick = () => {
-    fileInputRef.current?.click()
+  const clearStorage = () => {
+    localStorage.removeItem("tbl_settings");
+    localStorage.removeItem("tbl_s88");
+    localStorage.removeItem("tbl_publishers");
+    setDb(false)
   }
 
   return (
@@ -95,19 +105,23 @@ export default function Header() {
       <div className='header__logo'>
         <img className="" src={logo} />
       </div>
-      <h1 className='header__title'>Please, load DB &#8658;</h1>
-
-      <label className="header__btn">
-        Load DB
-        <input
-          type="file"
-          onChange={handleFileChange}
-          accept=".json"
-          style={{ display: 'none' }}
-        />
-      </label>
-
-      <button className='header__btn' id="db_save">Save DB</button>
+      <h1 className='header__title'>{congName}</h1>
+      {!db ? (
+        <label className="header__btn">
+          Load DB
+          <input
+            type="file"
+            onChange={handleFileChange}
+            accept=".json"
+            style={{ display: 'none' }}
+          />
+        </label>
+      ) : (
+        <>
+          <button className='header__btn'>Save DB</button>
+          <button className='header__btn' onClick={clearStorage}>Clear</button>
+        </>
+      )}
     </header>
   )
 }
