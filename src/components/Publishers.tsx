@@ -394,38 +394,105 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
         </div>
       )}
 
-      <div className="list">
+      <style>{`
+        .publishers-grid-container {
+          overflow-x: auto;
+          margin-top: 1em;
+          border: 1px solid var(--border-color, #ccc);
+          border-radius: 4px;
+        }
+        .excel-table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 0.85em;
+          background-color: var(--card-bg, #fff);
+          color: var(--text-primary, #000);
+          text-align: left;
+        }
+        .excel-table th, .excel-table td {
+          border: 1px solid var(--border-color, #ccc);
+          padding: 8px 12px;
+          vertical-align: middle;
+          white-space: nowrap;
+        }
+        .excel-table th {
+          background-color: var(--secondary-bg, #f5f5f5);
+          font-weight: 600;
+          position: sticky;
+          top: 0;
+        }
+        .excel-table tbody tr {
+          cursor: pointer;
+          transition: background-color 0.15s;
+        }
+        .excel-table tbody tr:hover {
+          background-color: var(--secondary-bg, #fafafa);
+        }
+        .excel-table .actions-cell {
+          text-align: center;
+          padding: 4px 8px;
+        }
+        .excel-table .actions-cell button {
+          padding: 4px 8px;
+          font-size: 1.1em;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          transition: transform 0.1s;
+        }
+        .excel-table .actions-cell button:hover {
+          transform: scale(1.15);
+        }
+      `}</style>
+
+      <div className="publishers-grid-container">
         {data.publishers.length === 0 ? (
-          <div className="empty">Нет возвещателей</div>
+          <div className="empty" style={{ padding: '2em', textAlign: 'center' }}>Нет возвещателей</div>
         ) : (
-          data.publishers.map((publisher) => (
-            <div key={publisher.id} className="list-item">
-              <div className="item-content">
-                <div className="item-title">
-                  {publisher.firstName} {publisher.lastName}
-                </div>
-                <div className="item-meta">
-                  {publisher.vpsGroup && <span className="badge">Группа {publisher.vpsGroup}</span>}
-                  <span>📞 {publisher.phonePrimary}</span>
-                  {publisher.gender === 'male' ? '♂️' : '♀️'}
-                  {getAssignmentLabels(publisher.assignments).map((label) => (
-                    <span key={label} className="badge">
-                      {label}
-                    </span>
-                  ))}
-                </div>
-                {publisher.address && <div className="item-notes">📍 {publisher.address}</div>}
-              </div>
-              <div className="item-actions">
-                <button onClick={() => handleEdit(publisher)} className="icon-button">
-                  ✏️
-                </button>
-                <button onClick={() => handleDelete(publisher.id)} className="icon-button">
-                  🗑️
-                </button>
-              </div>
-            </div>
-          ))
+          <table className="excel-table">
+            <thead>
+              <tr>
+                <th>ФИО</th>
+                <th>Телефон</th>
+                <th>ВПС</th>
+                <th>Дата крещения</th>
+                <th>Назначения</th>
+                <th>Адрес</th>
+                <th style={{ width: '80px', textAlign: 'center' }}>Действия</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.publishers.map((publisher) => {
+                const fullName = `${publisher.firstName} ${publisher.lastName}`;
+                const phone = publisher.phonePrimary || '—';
+                const vpsGroup = publisher.vpsGroup ? `${publisher.vpsGroup}` : '—';
+                const baptism = publisher.baptismDate || '—';
+                const assignments = getAssignmentLabels(publisher.assignments).join(', ') || '—';
+                const address = publisher.address || '—';
+
+                return (
+                  <tr key={publisher.id} onClick={() => handleEdit(publisher)}>
+                    <td style={{ fontWeight: 600 }}>{fullName}</td>
+                    <td>{phone}</td>
+                    <td>{vpsGroup}</td>
+                    <td>{baptism}</td>
+                    <td>{assignments}</td>
+                    <td style={{ maxWidth: '250px', overflow: 'hidden', textOverflow: 'ellipsis' }} title={address}>
+                      {address}
+                    </td>
+                    <td className="actions-cell" onClick={(e) => e.stopPropagation()}>
+                      <button onClick={() => handleEdit(publisher)} title="Редактировать">
+                        ✏️
+                      </button>
+                      <button onClick={() => handleDelete(publisher.id)} title="Удалить">
+                        🗑️
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         )}
       </div>
     </div>

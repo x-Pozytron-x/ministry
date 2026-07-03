@@ -48,7 +48,7 @@ export class ApplicationService {
       const decryptedJson = await this.cryptoService.decrypt(encryptedData, request.password);
       const data: CongregationData = JSON.parse(decryptedJson);
 
-      validateCongregationData(data);
+      this.validateLoadedData(data);
       return data;
     } catch (error) {
       if (error instanceof DecryptionError) {
@@ -56,6 +56,10 @@ export class ApplicationService {
       }
       throw new StorageError('Не удалось открыть файл');
     }
+  }
+
+  private validateLoadedData(data: CongregationData): void {
+    validateCongregationData(data);
   }
 
   async saveFile(request: SaveFileRequest): Promise<void> {
