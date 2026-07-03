@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create *)",
+      "Bash(where node *)",
+      "Bash(cmd *)"
+    ]
+  }
+}

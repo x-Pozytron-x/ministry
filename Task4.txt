@@ -1,0 +1,39 @@
+Refactor the system into a single-congregation offline data model.
+
+The application must store everything inside one encrypted JSON snapshot representing a congregation.
+
+Core structure:
+
+1. CongregationSettings
+- name
+- vpsGroupsCount
+- language
+
+2. Publisher (members of congregation)
+- personal data
+- assignments
+- group (VPS group)
+
+3. ServiceRecord (S-21)
+- monthly structured service data per publisher
+
+4. AttendanceReport (S-88)
+- congregation meeting attendance statistics (NOT per person)
+
+Rules:
+- AttendanceReport refers to congregation meetings only (weekday/weekend attendance totals)
+- All data belongs to a single congregation context
+- No multi-congregation architecture
+- No generic CRM structures
+- Everything must be stored in encrypted file format
+- Settings must be part of exported JSON
+
+UI:
+- “Settings” is renamed to “Congregation Profile”
+- Changes in settings must be saved into JSON export/import flow
+
+Keep:
+- offline-first architecture
+- Web Crypto API encryption
+- file-based import/export system
+- PWA structure
