@@ -92,6 +92,8 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<Partial<Publisher>>(createEmptyPublisherForm);
   const [error, setError] = useState('');
+  const [sortKey, setSortKey] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>(null);
 
   const handleSubmit = () => {
     setError('');
@@ -122,10 +124,8 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
   };
 
   const handleDelete = (publisherId: string) => {
-    if (confirm('Удалить возвещателя? Это также удалит связанные отчёты о служении.')) {
-      const updated = PublisherService.removePublisher(data, publisherId);
-      onUpdate(updated);
-    }
+    const updated = PublisherService.removePublisher(data, publisherId);
+    onUpdate(updated);
   };
 
   const resetForm = () => {
@@ -145,6 +145,73 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
     if (assignments.specialPioneer) labels.push('Специальный пионер');
     if (assignments.missionary) labels.push('Миссионер');
     return labels;
+  };
+
+  const handleHeaderClick = (key: string) => {
+    if (sortKey !== key) {
+      setSortKey(key);
+      setSortDirection('asc');
+    } else {
+      if (sortDirection === 'asc') {
+        setSortDirection('desc');
+      } else if (sortDirection === 'desc') {
+        setSortDirection(null);
+        setSortKey(null);
+      } else {
+        setSortDirection('asc');
+      }
+    }
+  };
+
+  const sortedPublishers = [...data.publishers].sort((a, b) => {
+    if (!sortKey || !sortDirection) return 0;
+
+    let valA: any = '';
+    let valB: any = '';
+
+    switch (sortKey) {
+      case 'fullName':
+        valA = `${a.lastName} ${a.firstName}`.toLowerCase();
+        valB = `${b.lastName} ${b.firstName}`.toLowerCase();
+        break;
+      case 'phone':
+        valA = (a.phonePrimary || '').toLowerCase();
+        valB = (b.phonePrimary || '').toLowerCase();
+        break;
+      case 'address':
+        valA = (a.address || '').toLowerCase();
+        valB = (b.address || '').toLowerCase();
+        break;
+      case 'vpsGroup':
+        valA = a.vpsGroup ?? 9999;
+        valB = b.vpsGroup ?? 9999;
+        break;
+      case 'birthDate':
+        valA = a.birthDate || '9999-99-99';
+        valB = b.birthDate || '9999-99-99';
+        break;
+      case 'baptismDate':
+        valA = a.baptismDate || '9999-99-99';
+        valB = b.baptismDate || '9999-99-99';
+        break;
+      case 'emergencyContact':
+        const nameA = `${a.emergencyContact?.firstName || ''} ${a.emergencyContact?.lastName || ''}`.trim();
+        const nameB = `${b.emergencyContact?.firstName || ''} ${b.emergencyContact?.lastName || ''}`.trim();
+        valA = nameA.toLowerCase();
+        valB = nameB.toLowerCase();
+        break;
+      default:
+        return 0;
+    }
+
+    if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
+    if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  const renderSortIndicator = (key: string) => {
+    if (sortKey !== key) return ' ↕';
+    return sortDirection === 'asc' ? ' ▲' : ' ▼';
   };
 
   return (
@@ -390,6 +457,23 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
                 Отмена
               </button>
             </div>
+
+            {editingId && (
+              <div style={{ marginTop: '0.75em', textAlign: 'right' }}>
+                <button
+                  onClick={() => {
+                    if (confirm('Удалить возвещателя? Это действие нельзя отменить')) {
+                      handleDelete(editingId!);
+                      resetForm();
+                    }
+                  }}
+                  className="danger"
+                  style={{ background: 'var(--danger, #d9534f)', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: 4 }}
+                >
+                  Удалить возвещателя
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -400,6 +484,8 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
           margin-top: 1em;
           border: 1px solid var(--border-color, #ccc);
           border-radius: 4px;
+          max-height: 600px;
+          overflow-y: auto;
         }
         .excel-table {
           width: 100%;
@@ -420,6 +506,13 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
           font-weight: 600;
           position: sticky;
           top: 0;
+          z-index: 10;
+          cursor: pointer;
+          user-select: none;
+          box-shadow: inset 0 -1px 0 var(--border-color, #ccc);
+        }
+        .excel-table th:hover {
+          background-color: var(--border-color, #e0e0e0);
         }
         .excel-table tbody tr {
           cursor: pointer;
@@ -452,41 +545,46 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
           <table className="excel-table">
             <thead>
               <tr>
-                <th>ФИО</th>
-                <th>Телефон</th>
-                <th>ВПС</th>
-                <th>Дата крещения</th>
-                <th>Назначения</th>
-                <th>Адрес</th>
-                <th style={{ width: '80px', textAlign: 'center' }}>Действия</th>
+                <th onClick={() => handleHeaderClick('fullName')}>ФИО{renderSortIndicator('fullName')}</th>
+                <th onClick={() => handleHeaderClick('phone')}>Телефон{renderSortIndicator('phone')}</th>
+                <th onClick={() => handleHeaderClick('address')}>Адрес{renderSortIndicator('address')}</th>
+                <th onClick={() => handleHeaderClick('vpsGroup')}>ВПС{renderSortIndicator('vpsGroup')}</th>
+                <th onClick={() => handleHeaderClick('birthDate')}>Дата рождения{renderSortIndicator('birthDate')}</th>
+                <th onClick={() => handleHeaderClick('baptismDate')}>Дата крещения{renderSortIndicator('baptismDate')}</th>
+                <th onClick={() => handleHeaderClick('emergencyContact')}>Экстренная связь{renderSortIndicator('emergencyContact')}</th>
               </tr>
             </thead>
             <tbody>
-              {data.publishers.map((publisher) => {
-                const fullName = `${publisher.firstName} ${publisher.lastName}`;
+              {sortedPublishers.map((publisher) => {
+                const fullName = `${publisher.lastName} ${publisher.firstName}`;
                 const phone = publisher.phonePrimary || '—';
-                const vpsGroup = publisher.vpsGroup ? `${publisher.vpsGroup}` : '—';
-                const baptism = publisher.baptismDate || '—';
-                const assignments = getAssignmentLabels(publisher.assignments).join(', ') || '—';
                 const address = publisher.address || '—';
+                const vpsGroup = publisher.vpsGroup ? `Группа ${publisher.vpsGroup}` : '—';
+                const birth = publisher.birthDate || '—';
+                const baptism = publisher.baptismDate || '—';
+
+                const emName = `${publisher.emergencyContact?.firstName || ''} ${publisher.emergencyContact?.lastName || ''}`.trim();
+                const emPhone = publisher.emergencyContact?.phone || '';
 
                 return (
                   <tr key={publisher.id} onClick={() => handleEdit(publisher)}>
                     <td style={{ fontWeight: 600 }}>{fullName}</td>
                     <td>{phone}</td>
-                    <td>{vpsGroup}</td>
-                    <td>{baptism}</td>
-                    <td>{assignments}</td>
-                    <td style={{ maxWidth: '250px', overflow: 'hidden', textOverflow: 'ellipsis' }} title={address}>
+                    <td style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis' }} title={address}>
                       {address}
                     </td>
-                    <td className="actions-cell" onClick={(e) => e.stopPropagation()}>
-                      <button onClick={() => handleEdit(publisher)} title="Редактировать">
-                        ✏️
-                      </button>
-                      <button onClick={() => handleDelete(publisher.id)} title="Удалить">
-                        🗑️
-                      </button>
+                    <td>{vpsGroup}</td>
+                    <td>{birth}</td>
+                    <td>{baptism}</td>
+                    <td>
+                      {emName || emPhone ? (
+                        <>
+                          <div style={{ fontWeight: 500 }}>{emName || '—'}</div>
+                          <div style={{ fontSize: '0.9em', color: 'var(--text-secondary, #666)' }}>{emPhone || '—'}</div>
+                        </>
+                      ) : (
+                        '—'
+                      )}
                     </td>
                   </tr>
                 );
