@@ -191,6 +191,62 @@ export class AttendanceReportService {
   }
 }
 
+// App-level services for members, reports, and attendance (minimal helpers used by components)
+export class MemberService {
+  static addMember(data: any, member: any) {
+    return { ...data, members: [...(data.members || []), member] };
+  }
+
+  static updateMember(data: any, memberId: string, updates: any) {
+    return { ...data, members: (data.members || []).map((m: any) => (m.id === memberId ? { ...m, ...updates } : m)) };
+  }
+
+  static removeMember(data: any, memberId: string) {
+    // Also remove related attendance records
+    const members = (data.members || []).filter((m: any) => m.id !== memberId);
+    const attendance = (data.attendance || []).filter((a: any) => a.memberId !== memberId);
+    return { ...data, members, attendance };
+  }
+}
+
+export class ReportService {
+  static addReport(data: any, report: any) {
+    return { ...data, reports: [...(data.reports || []), report] };
+  }
+
+  static updateReport(data: any, reportId: string, updates: any) {
+    return { ...data, reports: (data.reports || []).map((r: any) => (r.id === reportId ? { ...r, ...updates } : r)) };
+  }
+
+  static removeReport(data: any, reportId: string) {
+    return { ...data, reports: (data.reports || []).filter((r: any) => r.id !== reportId) };
+  }
+}
+
+export class AttendanceService {
+  static addAttendance(data: any, record: any) {
+    return { ...data, attendance: [...(data.attendance || []), record] };
+  }
+
+  static updateAttendance(data: any, recordId: string, updates: any) {
+    return { ...data, attendance: (data.attendance || []).map((r: any) => (r.id === recordId ? { ...r, ...updates } : r)) };
+  }
+
+  static removeAttendance(data: any, recordId: string) {
+    return { ...data, attendance: (data.attendance || []).filter((r: any) => r.id !== recordId) };
+  }
+
+  static getAttendanceStats(data: any, memberId: string) {
+    const records = (data.attendance || []).filter((r: any) => r.memberId === memberId);
+    const total = records.length;
+    const present = records.filter((r: any) => r.status === 'present').length;
+    const late = records.filter((r: any) => r.status === 'late').length;
+    const attendanceRate = total > 0 ? (present + late) / total : 0;
+    return { total, present, late, attendanceRate };
+  }
+}
+
+
 // ID generation helper
 export const generateId = (): string => {
   return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;

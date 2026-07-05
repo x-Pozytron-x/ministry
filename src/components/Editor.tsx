@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { DecryptedData } from '../types';
-import { encryptData, decryptData } from '../crypto';
+import { cryptoService } from '../crypto';
 import { downloadFile } from '../utils/fileUtils';
 
 interface EditorProps {
@@ -29,7 +29,8 @@ export default function Editor({ initialData, currentPassword }: EditorProps) {
     setLoading(true);
 
     try {
-      const encryptedData = await encryptData(data, password);
+      const plainData = JSON.stringify(data);
+      const encryptedData = await cryptoService.encrypt(plainData, password);
       downloadFile(encryptedData);
       setSuccess('Файл успешно скачан');
     } catch (err) {

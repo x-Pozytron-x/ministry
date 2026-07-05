@@ -6,7 +6,7 @@ import type { ApplicationService } from '../application';
 import { useAutoSave } from '../hooks';
 import Publishers from './Publishers';
 import ServiceRecords from './ServiceRecords';
-import MeetingAttendance from './MeetingAttendance';
+import Attendance from './Attendance';
 import CongregationProfile from './CongregationProfile';
 
 interface MainAppProps {
@@ -198,7 +198,7 @@ export default function MainApp({ initialData, currentPassword, applicationServi
       <main className="app-content">
         {activeTab === 'publishers' && <Publishers data={data} onUpdate={handleDataUpdate} />}
         {activeTab === 'service-records' && <ServiceRecords data={data} onUpdate={handleDataUpdate} />}
-        {activeTab === 'meeting-attendance' && <MeetingAttendance data={data} onUpdate={handleDataUpdate} />}
+        {activeTab === 'meeting-attendance' && <Attendance data={data} onUpdate={handleDataUpdate} />}
         {activeTab === 'profile' && (
           <>
             {showChangePassword ? (

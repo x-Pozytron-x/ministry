@@ -199,6 +199,22 @@ export const validateAttendanceReport = (report: Partial<AttendanceReport>): voi
   }
 };
 
+// Simple validators for app-level members, reports, and attendance records
+export const validateMember = (member: Partial<Member>): void => {
+  if (!member.name || member.name.trim() === '') throw new ValidationError('Имя участника обязательно');
+};
+
+export const validateReport = (report: Partial<Report>): void => {
+  if (!report.title || report.title.trim() === '') throw new ValidationError('Заголовок отчёта обязателен');
+  if (!report.content || report.content.trim() === '') throw new ValidationError('Содержимое отчёта обязательно');
+};
+
+export const validateAttendanceRecord = (record: Partial<AttendanceRecord>): void => {
+  if (!record.memberId) throw new ValidationError('Участник обязателен');
+  if (!record.date) throw new ValidationError('Дата обязательна');
+  if (!record.status || !['present', 'absent', 'excused', 'late'].includes(record.status)) throw new ValidationError('Неверный статус посещения');
+};
+
 export const validateCongregationData = (data: Partial<CongregationData>): void => {
   if (!data.version || data.version < 1) {
     throw new ValidationError('Некорректная версия данных');

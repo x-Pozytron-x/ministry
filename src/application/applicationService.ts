@@ -46,7 +46,12 @@ export class ApplicationService {
     try {
       const encryptedData = await this.storageAdapter.load(request.file);
       const decryptedJson = await this.cryptoService.decrypt(encryptedData, request.password);
-      const data: CongregationData = JSON.parse(decryptedJson);
+      const raw = JSON.parse(decryptedJson);
+
+      // Migrate legacy shapes (in-memory) to canonical schema before validation.
+      // This preserves backward compatibility with older saved JSON files.
+      const { migrateCongregationData } = await import('../domain');
+      const data = migrateCongregationData(raw);
 
       this.validateLoadedData(data);
       return data;

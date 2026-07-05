@@ -1,5 +1,52 @@
 // Domain entities for single-congregation data model
 
+export interface Member {
+  id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  role?: string;
+  joinedAt?: string;
+  isActive: boolean;
+}
+
+export interface Report {
+  id: string;
+  title: string;
+  content: string;
+  authorId: string;
+  createdAt: string;
+  updatedAt: string;
+  tags?: string[];
+}
+
+export interface S88Report {
+  id: string;
+  date: string; // YYYY-MM-DD
+  meetingType: 'weekday' | 'weekend';
+  attendanceCount: number;
+  notes?: string;
+}
+
+export interface AttendanceRecord {
+  id: string;
+  memberId: string;
+  date: string; // YYYY-MM-DD
+  status: 'present' | 'absent' | 'excused' | 'late';
+  notes?: string;
+}
+
+export interface AppData {
+  members: Member[];
+  reports: Report[];
+  attendance: AttendanceRecord[];
+  s88Reports?: S88Report[];
+  settings?: {
+    weekdayMeetingDay: string;
+    weekendMeetingDay: string;
+  };
+}
+
 export interface CongregationSettings {
   name: string;
   vpsGroupsCount: number;
@@ -23,6 +70,8 @@ export interface ServiceRecordPublisherSnapshot {
   lastName: string;
 }
 
+// Canonical Publisher model. Legacy/older stored JSON shapes are transformed to this structure
+// at load-time by the migration layer (see domain/migration.ts). Do NOT remove legacy reading logic.
 export interface Publisher {
   id: string;
   lastName: string;
@@ -101,6 +150,48 @@ export interface DataVersion {
   timestamp: string;
   changeDescription?: string;
   snapshot?: CongregationData;
+}
+
+// S-88 (attendance) domain types
+// These are type/interface definitions only — no business logic, generators, UI, or persistence changes.
+
+export interface ServiceYearS88 {
+  /** Starting calendar year, e.g. 2025 */
+  yearStart: number;
+  /** Ending calendar year, e.g. 2026 */
+  yearEnd: number;
+  /** Canonical service year format, e.g. "2025/2026" */
+  format: ServiceYear;
+}
+
+export interface S88Cell {
+  /** ISO date string (YYYY-MM-DD) */
+  date: string;
+  /** Attendance count for the meeting on that date, or null when not recorded */
+  attendance: number | null;
+}
+
+export interface S88WeekGroup {
+  /** Sequential week index within the service year (starting at 1) */
+  weekIndex: number;
+  /** Weekday meeting cell (may be null if no meeting) */
+  weekdayCell: S88Cell | null;
+  /** Weekend meeting cell (may be null if no meeting) */
+  weekendCell: S88Cell | null;
+}
+
+export interface S88Month {
+  /** Month name (e.g. "September", "October", ... "August") */
+  month: string;
+  /** Service year this month belongs to, e.g. "2025/2026" */
+  serviceYear: ServiceYear;
+  /** Weekly groups within the month */
+  weeks: S88WeekGroup[];
+}
+
+export interface S88Record {
+  id: string;
+  months: S88Month[];
 }
 
 // Initial empty data structure

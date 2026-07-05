@@ -179,7 +179,7 @@
   border: none;
   border-bottom: 3px solid transparent;
   border-radius: 0;
-  padding: 1em 1.5em;
+  padding: 8px;
   font-weight: 500;
   transition: all 0.25s;
 }
@@ -195,7 +195,7 @@
 
 .app-content {
   flex: 1;
-  padding: 2em;
+  padding: 10px;
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;

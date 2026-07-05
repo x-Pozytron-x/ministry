@@ -497,7 +497,7 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
         }
         .excel-table th, .excel-table td {
           border: 1px solid var(--border-color, #ccc);
-          padding: 8px 12px;
+          padding: 3px 5px;
           vertical-align: middle;
           white-space: nowrap;
         }

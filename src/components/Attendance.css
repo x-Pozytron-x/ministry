@@ -1,0 +1,74 @@
+.s88-view-container {
+  margin-top: 20px;
+}
+
+.s88-month-view-card {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.s88-month-view-card h3 {
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.2em;
+}
+
+.s88-grid-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.s88-grid-table th,
+.s88-grid-table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
+  min-width: 100px; /* Ensure cells have a minimum width */
+}
+
+.s88-grid-table thead th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.s88-grid-table tbody td {
+  vertical-align: top;
+}
+
+.s88-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 80px; /* Fixed height for cells */
+}
+
+.s88-date {
+  font-size: 0.9em;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.s88-attendance-input {
+  width: 70px;
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.s88-attendance-input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.s88-no-meeting {
+  color: #999;
+  font-style: italic;
+}
