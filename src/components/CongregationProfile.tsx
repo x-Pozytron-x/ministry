@@ -4,6 +4,10 @@ import { useState } from 'react';
 import type { CongregationData, CongregationSettings } from '../domain';
 import { CongregationService, validateCongregationSettings } from '../domain';
 
+const WEEK_DAYS = [
+  'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
+];
+
 interface CongregationProfileProps {
   data: CongregationData;
   onUpdate: (data: CongregationData) => void;
@@ -20,7 +24,11 @@ export default function CongregationProfile({
   onToggleAutoSave
 }: CongregationProfileProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState<CongregationSettings>(data.settings);
+  const [formData, setFormData] = useState<CongregationSettings>({
+    ...data.settings,
+    weekdayMeetingDay: data.settings.weekdayMeetingDay || 'Tuesday',
+    weekendMeetingDay: data.settings.weekendMeetingDay || 'Saturday',
+  });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -106,6 +114,37 @@ export default function CongregationProfile({
                 <option value="cs">Čeština</option>
               </select>
             </div>
+
+            {/* New Weekday Meeting Day Dropdown */}
+            <div className="form-group">
+              <label>День будничного собрания</label>
+              <select
+                value={formData.weekdayMeetingDay}
+                onChange={(e) => setFormData({ ...formData, weekdayMeetingDay: e.target.value })}
+              >
+                {WEEK_DAYS.map((day) => (
+                  <option key={day} value={day}>
+                    {day}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* New Weekend Meeting Day Dropdown */}
+            <div className="form-group">
+              <label>День собрания в выходные</label>
+              <select
+                value={formData.weekendMeetingDay}
+                onChange={(e) => setFormData({ ...formData, weekendMeetingDay: e.target.value })}
+              >
+                {WEEK_DAYS.map((day) => (
+                  <option key={day} value={day}>
+                    {day}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <div className="button-group">
               <button onClick={handleSave} className="primary">
                 Сохранить
