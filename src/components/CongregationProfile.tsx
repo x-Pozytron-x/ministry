@@ -8,6 +8,12 @@ const WEEK_DAYS = [
   'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
 ];
 
+const normalizeSettings = (settings: CongregationSettings): CongregationSettings => ({
+  ...settings,
+  weekdayMeetingDay: settings.weekdayMeetingDay || 'Tuesday',
+  weekendMeetingDay: settings.weekendMeetingDay || 'Saturday',
+});
+
 interface CongregationProfileProps {
   data: CongregationData;
   onUpdate: (data: CongregationData) => void;
@@ -24,11 +30,9 @@ export default function CongregationProfile({
   onToggleAutoSave
 }: CongregationProfileProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState<CongregationSettings>({
-    ...data.settings,
-    weekdayMeetingDay: data.settings.weekdayMeetingDay || 'Tuesday',
-    weekendMeetingDay: data.settings.weekendMeetingDay || 'Saturday',
-  });
+  const [formData, setFormData] = useState<CongregationSettings>(
+    normalizeSettings(data.settings)
+  );
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -49,7 +53,7 @@ export default function CongregationProfile({
   };
 
   const handleCancel = () => {
-    setFormData(data.settings);
+    setFormData(normalizeSettings(data.settings));
     setIsEditing(false);
     setError('');
   };
@@ -80,6 +84,8 @@ export default function CongregationProfile({
             <p><strong>Название:</strong> {data.settings.name || 'Не указано'}</p>
             <p><strong>Количество групп проповеднического служения:</strong> {data.settings.vpsGroupsCount}</p>
             <p><strong>Язык:</strong> {data.settings.language}</p>
+            <p><strong>День будничного собрания:</strong> {normalizeSettings(data.settings).weekdayMeetingDay}</p>
+            <p><strong>День собрания в выходные:</strong> {normalizeSettings(data.settings).weekendMeetingDay}</p>
           </div>
         ) : (
           <div className="form">
