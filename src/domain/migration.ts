@@ -144,9 +144,23 @@ const migrateMonthlyServiceData = (raw: any): MonthlyServiceData => {
 
 const migrateServiceRecord = (raw: any): ServiceRecord => {
   const id = raw.id || generateId();
-  const publisherId = raw.publisherId ?? raw.publisher_id ?? '';
+  const publisherId = raw.publisherId ?? raw.publisher_id ?? undefined;
   const serviceYear = raw.serviceYear;
-  const publisherSnapshot = raw.publisherSnapshot;
+
+  // Build publisherSnapshot - required field
+  let publisherSnapshot: ServiceRecordPublisherSnapshot;
+  if (raw.publisherSnapshot) {
+    publisherSnapshot = {
+      firstName: String(raw.publisherSnapshot.firstName ?? ''),
+      lastName: String(raw.publisherSnapshot.lastName ?? '')
+    };
+  } else {
+    // Legacy records without snapshot - provide default empty values
+    publisherSnapshot = {
+      firstName: String(raw.firstName ?? raw.first_name ?? ''),
+      lastName: String(raw.lastName ?? raw.last_name ?? '')
+    };
+  }
 
   // Migrate monthlyData array if present
   let monthlyData: MonthlyServiceData[] | undefined;

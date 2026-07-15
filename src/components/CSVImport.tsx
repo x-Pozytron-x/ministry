@@ -1,13 +1,21 @@
 import { useState } from 'react';
 import type { CongregationData, Publisher, MonthlyServiceData } from '../domain';
-import { generateId } from '../domain/services';
 import { parseCSV, parseBooleanValue, parseNumberValue, parseHoursValue, CSVServiceReport } from '../utils/csvParser';
 
 interface CSVImportProps {
   data: CongregationData;
   selectedMonth: string; // YYYY-MM format
-  onImport: (records: MonthlyServiceData[], publisherIds: string[]) => void;
+  onImport: (records: ImportRecord[]) => void;
   onClose: () => void;
+}
+
+export interface ImportRecord {
+  monthlyData: MonthlyServiceData;
+  publisherId?: string;
+  publisherSnapshot: {
+    firstName: string;
+    lastName: string;
+  };
 }
 
 interface UnmatchedPublisher {
@@ -18,7 +26,7 @@ interface UnmatchedPublisher {
 
 type MatchDecision =
   | { type: 'link'; publisherId: string }
-  | { type: 'create' }
+  | { type: 'historical' }
   | { type: 'skip' };
 
 const SERVICE_MONTHS = [
@@ -35,6 +43,20 @@ const SERVICE_MONTHS = [
   { value: '07', label: 'Июль' },
   { value: '08', label: 'Август' }
 ];
+
+const parseFullName = (fullName: string): { firstName: string; lastName: string } => {
+  const parts = fullName.trim().split(/\s+/);
+  if (parts.length >= 2) {
+    return {
+      firstName: parts[0],
+      lastName: parts.slice(1).join(' ')
+    };
+  }
+  return {
+    firstName: fullName,
+    lastName: ''
+  };
+};
 
 export default function CSVImport({ data, selectedMonth, onImport, onClose }: CSVImportProps) {
   const [csvFile, setCSVFile] = useState<File | null>(null);
@@ -123,24 +145,46 @@ export default function CSVImport({ data, selectedMonth, onImport, onClose }: CS
   };
 
   const handleConfirmImport = () => {
-    const monthlyDataList: MonthlyServiceData[] = [];
-    const publisherIdsList: string[] = [];
+    const importRecords: ImportRecord[] = [];
 
     for (const record of csvRecords) {
       let publisher = findPublisherByName(record.publisherName);
+      let publisherId: string | undefined;
+      let publisherSnapshot: { firstName: string; lastName: string };
 
       // If not found, check match decisions
       if (!publisher) {
         const decision = matchDecisions.get(record.publisherName);
+
         if (decision?.type === 'link') {
           publisher = data.publishers.find(p => p.id === decision.publisherId) || null;
+          if (publisher) {
+            publisherId = publisher.id;
+            publisherSnapshot = {
+              firstName: publisher.firstName,
+              lastName: publisher.lastName
+            };
+          } else {
+            continue; // Should not happen
+          }
+        } else if (decision?.type === 'historical') {
+          // Import as historical record without publisherId
+          publisherId = undefined;
+          publisherSnapshot = parseFullName(record.publisherName);
         } else if (decision?.type === 'skip') {
           continue;
+        } else {
+          // No decision made - skip
+          continue;
         }
-        // 'create' decision would need to be handled by parent component
+      } else {
+        // Publisher found - link to existing
+        publisherId = publisher.id;
+        publisherSnapshot = {
+          firstName: publisher.firstName,
+          lastName: publisher.lastName
+        };
       }
-
-      if (!publisher) continue;
 
       const monthlyData: MonthlyServiceData = {
         month: selectedMonth,
@@ -152,11 +196,14 @@ export default function CSVImport({ data, selectedMonth, onImport, onClose }: CS
         note: record.notes
       };
 
-      monthlyDataList.push(monthlyData);
-      publisherIdsList.push(publisher.id);
+      importRecords.push({
+        monthlyData,
+        publisherId,
+        publisherSnapshot
+      });
     }
 
-    onImport(monthlyDataList, publisherIdsList);
+    onImport(importRecords);
   };
 
   return (
@@ -215,10 +262,10 @@ export default function CSVImport({ data, selectedMonth, onImport, onClose }: CS
                         <input
                           type="radio"
                           name={`decision-${index}`}
-                          checked={decision?.type === 'skip'}
-                          onChange={() => handleMatchDecision(item.csvName, { type: 'skip' })}
+                          checked={decision?.type === 'historical'}
+                          onChange={() => handleMatchDecision(item.csvName, { type: 'historical' })}
                         />
-                        Пропустить
+                        Импортировать как историческую запись
                       </label>
 
                       {item.suggestedPublishers.length > 0 && (
@@ -237,6 +284,16 @@ export default function CSVImport({ data, selectedMonth, onImport, onClose }: CS
                           ))}
                         </div>
                       )}
+
+                      <label>
+                        <input
+                          type="radio"
+                          name={`decision-${index}`}
+                          checked={decision?.type === 'skip'}
+                          onChange={() => handleMatchDecision(item.csvName, { type: 'skip' })}
+                        />
+                        Пропустить
+                      </label>
                     </div>
                   </div>
                 );

@@ -35,6 +35,13 @@ export const validateCongregationSettings = (settings: Partial<CongregationSetti
   if (settings.language && !['ru', 'en', 'uk', 'cs'].includes(settings.language)) {
     throw new ValidationError('Неподдерживаемый язык');
   }
+
+  if (settings.serviceYearStart !== undefined) {
+    const year = settings.serviceYearStart;
+    if (!Number.isInteger(year) || year < 2000 || year > 2100) {
+      throw new ValidationError('Год служебного года должен быть целым числом от 2000 до 2100');
+    }
+  }
 };
 
 export const validatePublisher = (publisher: Partial<Publisher>): void => {

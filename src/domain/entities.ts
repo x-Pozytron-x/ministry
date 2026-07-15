@@ -53,6 +53,8 @@ export interface CongregationSettings {
   language: string;
   weekdayMeetingDay?: string;
   weekendMeetingDay?: string;
+  /** Starting calendar year of the service year (e.g. 2025 → "2025/2026"). If absent, computed from current date. */
+  serviceYearStart?: number;
 }
 
 export type ServiceYear = `${number}/${number}`;
@@ -110,10 +112,10 @@ export interface Publisher {
 
 export interface ServiceRecord {
   id: string;
-  publisherId: string;
+  publisherId?: string; // Optional - historical records may not have a current publisher
   serviceYear?: ServiceYear;
   monthlyData?: MonthlyServiceData[];
-  publisherSnapshot?: ServiceRecordPublisherSnapshot;
+  publisherSnapshot: ServiceRecordPublisherSnapshot; // Required - always store name for historical data
 
   /** @deprecated Legacy flat monthly S-21 fields retained for stored JSON compatibility. */
   month?: string; // YYYY-MM format
@@ -230,3 +232,14 @@ export const touchCongregationData = (data: CongregationData): CongregationData 
     updatedAt: new Date().toISOString()
   }
 });
+
+/** Format a start year into display label, e.g. 2025 → "2025/2026" */
+export const getServiceYearLabel = (startYear: number): string =>
+  `${startYear}/${startYear + 1}`;
+
+/** Compute the current service year start from today's date.
+ *  Service year starts in September. If month ≥ September, current year; otherwise previous year. */
+export const getCurrentServiceYearStart = (): number => {
+  const now = new Date();
+  return now.getMonth() >= 8 ? now.getFullYear() : now.getFullYear() - 1;
+};

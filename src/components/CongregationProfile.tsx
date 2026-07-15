@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import type { CongregationData, CongregationSettings } from '../domain';
-import { CongregationService, validateCongregationSettings } from '../domain';
+import { CongregationService, validateCongregationSettings, getServiceYearLabel, getCurrentServiceYearStart } from '../domain';
 
 const WEEK_DAYS = [
   'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
@@ -12,6 +12,7 @@ const normalizeSettings = (settings: CongregationSettings): CongregationSettings
   ...settings,
   weekdayMeetingDay: settings.weekdayMeetingDay || 'Tuesday',
   weekendMeetingDay: settings.weekendMeetingDay || 'Saturday',
+  serviceYearStart: settings.serviceYearStart ?? getCurrentServiceYearStart(),
 });
 
 interface CongregationProfileProps {
@@ -86,6 +87,7 @@ export default function CongregationProfile({
             <p><strong>Язык:</strong> {data.settings.language}</p>
             <p><strong>День будничного собрания:</strong> {normalizeSettings(data.settings).weekdayMeetingDay}</p>
             <p><strong>День собрания в выходные:</strong> {normalizeSettings(data.settings).weekendMeetingDay}</p>
+            <p><strong>Служебный год:</strong> {getServiceYearLabel(normalizeSettings(data.settings).serviceYearStart!)}</p>
           </div>
         ) : (
           <div className="form">
@@ -149,6 +151,28 @@ export default function CongregationProfile({
                   </option>
                 ))}
               </select>
+            </div>
+
+            {/* Service Year Start */}
+            <div className="form-group">
+              <label>Служебный год (начальный)</label>
+              <input
+                type="number"
+                min="2000"
+                max="2100"
+                value={formData.serviceYearStart ?? ''}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setFormData({
+                    ...formData,
+                    serviceYearStart: val ? Number(val) : undefined
+                  });
+                }}
+                placeholder="Например: 2025"
+              />
+              <small className="form-hint">
+                Текущий: {getServiceYearLabel(formData.serviceYearStart ?? getCurrentServiceYearStart())}
+              </small>
             </div>
 
             <div className="button-group">
