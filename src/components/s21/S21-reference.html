@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>S-21 — Записи собрания о служении возвещателя</title>
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 28px 16px;
+    background: #ececec;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #111;
+    display: flex;
+    justify-content: center;
+  }
+
+  .card {
+    width: 780px;
+    min-width: 780px;
+    background: #fff;
+    border: 2px solid #000;
+    padding: 16px 18px 10px;
+  }
+
+  .title {
+    text-align: center;
+    font-weight: 800;
+    font-size: 19px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    margin: 2px 0 14px;
+  }
+
+  /* ---- верхние строки: ФИО / даты / роли ---- */
+
+  .line {
+    display: flex;
+    align-items: baseline;
+    font-size: 13.5px;
+    padding: 3px 0;
+    white-space: nowrap;
+  }
+
+  .label {
+    font-weight: 700;
+    margin-right: 6px;
+  }
+
+  .value {
+    font-weight: 400;
+  }
+
+  .row-with-options {
+    display: flex;
+    align-items: baseline;
+    width: 100%;
+  }
+
+  .row-with-options .lv {
+    flex: 0 0 470px;
+  }
+
+  .options {
+    display: flex;
+    align-items: baseline;
+    flex: 1;
+  }
+
+  .option {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    flex: 0 0 130px;
+    font-weight: 700;
+    font-size: 13.5px;
+  }
+
+  .roles-line {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    row-gap: 4px;
+    padding: 6px 0 10px;
+    font-weight: 700;
+    font-size: 13.5px;
+    border-bottom: 2px solid #000;
+    margin-bottom: 12px;
+  }
+
+  .role {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-right: 20px;
+    max-width: 170px;
+  }
+
+  .box {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 1.4px solid #000;
+    flex: 0 0 12px;
+    position: relative;
+    top: 1px;
+  }
+
+  .box.checked::after {
+    content: "\2713";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 12px;
+    line-height: 1;
+    font-weight: 700;
+  }
+
+  /* ---- таблица служения ---- */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 2px solid #000;
+  }
+
+  col.c1 { width: 20%; }
+  col.c2 { width: 7.6%; }
+  col.c3 { width: 12%; }
+  col.c4 { width: 7.6%; }
+  col.c5 { width: 18%; }
+  col.c6 { width: 34.8%; }
+
+  thead th {
+    border: 1px solid #000;
+    padding: 6px;
+    font-size: 12.5px;
+    font-weight: 700;
+    background: #fff;
+  }
+
+  .service-year-value {
+    display: block;
+    font-weight: 700;
+    font-size: 15px;
+    margin-top: 3px;
+  }
+
+  tbody td {
+    border: 1px solid #000;
+    border-top: none;
+    padding: 4px 8px;
+    font-size: 13px;
+    height: 24px;
+  }
+
+  tbody tr:first-child td { border-top: 1px solid #000; }
+
+  td.chk { text-align: center; }
+  td.hours { text-align: center; font-size: 15px; }
+  td.notes { font-size: 12.5px; }
+
+  tr.total td {
+    border-top: 2px solid #000;
+    font-weight: 700;
+  }
+
+  tr.total td.label {
+    text-align: right;
+    font-size: 13px;
+  }
+
+  tr.total td.hours {
+    font-size: 16px;
+  }
+
+  .footer-code {
+    font-size: 10px;
+    color: #444;
+    margin-top: 10px;
+  }
+</style>
+</head>
+<body>
+
+  <div class="card">
+
+    <div class="title">Записи собрания о служении возвещателя</div>
+
+    <div class="line">
+      <span class="label">ФИО:</span>
+      <span class="value">Зубашку Ионела</span>
+    </div>
+
+    <div class="row-with-options">
+      <div class="line lv">
+        <span class="label">Дата рождения:</span>
+        <span class="value">2007.07.15</span>
+      </div>
+      <div class="options">
+        <span class="option"><span class="box"></span>Мужчина</span>
+        <span class="option"><span class="box checked"></span>Женщина</span>
+      </div>
+    </div>
+
+    <div class="row-with-options">
+      <div class="line lv">
+        <span class="label">Дата крещения:</span>
+        <span class="value">2020.08.02</span>
+      </div>
+      <div class="options">
+        <span class="option"><span class="box checked"></span>Другая овца</span>
+        <span class="option"><span class="box"></span>Помазанный</span>
+      </div>
+    </div>
+
+    <div class="roles-line">
+      <span class="role"><span class="box"></span>Старейшина</span>
+      <span class="role"><span class="box"></span>Помощник собрания</span>
+      <span class="role"><span class="box checked"></span>Общий пионер</span>
+      <span class="role"><span class="box"></span>Специальный пионер</span>
+      <span class="role"><span class="box"></span>Миссионер</span>
+    </div>
+
+    <table>
+      <colgroup>
+        <col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"><col class="c6">
+      </colgroup>
+      <thead>
+        <tr>
+          <th>
+            Служебный год
+            <span class="service-year-value">2025/2026</span>
+          </th>
+          <th>Участвовал<br>в служении</th>
+          <th>Изучения<br>Библии</th>
+          <th>Подсобный<br>пионер</th>
+          <th>Часы<br>(если пионер<br>или миссионер)</th>
+          <th>Примечания</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td></td>
+          <td class="chk"><span class="box checked"></span></td>
+          <td></td>
+          <td class="chk"><span class="box"></span></td>
+          <td class="hours">50</td>
+          <td class="notes"></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="chk"><span class="box checked"></span></td>
+          <td></td>
+          <td class="chk"><span class="box"></span></td>
+          <td class="hours">52</td>
+          <td class="notes">8 час. на стр. зала</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="chk"><span class="box checked"></span></td>
+          <td></td>
+          <td class="chk"><span class="box"></span></td>
+          <td class="hours">50</td>
+          <td class="notes">27 час. на стр. зала</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="chk"><span class="box checked"></span></td>
+          <td></td>
+          <td class="chk"><span class="box"></span></td>
+          <td class="hours">50</td>
+          <td class="notes">15 час. на стр. зала</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="chk"><span class="box checked"></span></td>
+          <td></td>
+          <td class="chk"><span class="box"></span></td>
+          <td class="hours">50</td>
+          <td class="notes"></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="chk"><span class="box checked"></span></td>
+          <td></td>
+          <td class="chk"><span class="box"></span></td>
+          <td class="hours">50</td>
+          <td class="notes"></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="chk"><span class="box checked"></span></td>
+          <td></td>
+          <td class="chk"><span class="box"></span></td>
+          <td class="hours">50</td>
+          <td class="notes"></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="chk"><span class="box checked"></span></td>
+          <td></td>
+          <td class="chk"><span class="box"></span></td>
+          <td class="hours">46</td>
+          <td class="notes"></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="chk"><span class="box checked"></span></td>
+          <td></td>
+          <td class="chk"><span class="box"></span></td>
+          <td class="hours">50</td>
+          <td class="notes"></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="chk"><span class="box"></span></td>
+          <td></td>
+          <td class="chk"><span class="box"></span></td>
+          <td class="hours"></td>
+          <td class="notes"></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="chk"><span class="box"></span></td>
+          <td></td>
+          <td class="chk"><span class="box"></span></td>
+          <td class="hours"></td>
+          <td class="notes"></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="chk"><span class="box"></span></td>
+          <td></td>
+          <td class="chk"><span class="box"></span></td>
+          <td class="hours"></td>
+          <td class="notes"></td>
+        </tr>
+        <tr class="total">
+          <td colspan="4" class="label">Итого</td>
+          <td class="hours">448</td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="footer-code">S-21-U&nbsp;&nbsp;&nbsp;11/23</div>
+
+  </div>
+
+</body>
+</html>

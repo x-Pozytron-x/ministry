@@ -10,6 +10,7 @@ import Attendance from './Attendance';
 import CongregationProfile from './CongregationProfile';
 import Dashboard from './Dashboard';
 import ServiceReports from './ServiceReports';
+import S21Page from './s21/S21Page';
 
 interface MainAppProps {
   initialData: CongregationData;
@@ -212,7 +213,7 @@ export default function MainApp({ initialData, currentPassword, applicationServi
       <main className="app-content">
         {activeTab === 'dashboard' && <Dashboard data={data} />}
         {activeTab === 'publishers' && <Publishers data={data} onUpdate={handleDataUpdate} />}
-        {activeTab === 'service-records' && <ServiceRecords data={data} onUpdate={handleDataUpdate} />}
+        {activeTab === 'service-records' && <S21Page data={data} onUpdate={handleDataUpdate} />}
         {activeTab === 'service-reports' && <ServiceReports data={data} onUpdate={handleDataUpdate} />}
         {activeTab === 'meeting-attendance' && <Attendance data={data} onUpdate={handleDataUpdate} />}
         {activeTab === 'profile' && (
