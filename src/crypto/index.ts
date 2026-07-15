@@ -68,13 +68,16 @@ class WebCryptoService implements CryptoService {
   }
 
   async encrypt(plainData: string, password: string): Promise<EncryptedData> {
+    console.log('  🔑 Key derivation started');
     try {
       const salt = this.generateRandomBytes(SALT_LENGTH);
       const iv = this.generateRandomBytes(IV_LENGTH);
 
       const key = await this.deriveKey(password, salt);
+      console.log('  ✅ Key derived');
       const dataBuffer = this.stringToBuffer(plainData);
 
+      console.log('  🔐 AES encryption started');
       const encryptedBuffer = await crypto.subtle.encrypt(
         {
           name: 'AES-GCM',
@@ -83,6 +86,7 @@ class WebCryptoService implements CryptoService {
         key,
         dataBuffer
       );
+      console.log('  ✅ AES encryption completed');
 
       return {
         version: 1,
@@ -91,6 +95,7 @@ class WebCryptoService implements CryptoService {
         data: this.bufferToBase64(encryptedBuffer)
       };
     } catch (error) {
+      console.error('  ❌ ENCRYPTION FAILED', error);
       throw new EncryptionError('Не удалось зашифровать данные');
     }
   }

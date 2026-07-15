@@ -43,22 +43,37 @@ export class ApplicationService {
   }
 
   async openFile(request: OpenFileRequest): Promise<CongregationData> {
+    console.log('📂 OPEN FILE START');
     try {
+      console.log('📄 File selected: ' + request.file.name);
+      console.log('📏 File size: ' + request.file.size + ' bytes');
+
+      console.log('🔓 Decryption started');
       const encryptedData = await this.storageAdapter.load(request.file);
       const decryptedJson = await this.cryptoService.decrypt(encryptedData, request.password);
+      console.log('✅ Decryption successful');
+
+      console.log('📦 JSON parsing started');
       const raw = JSON.parse(decryptedJson);
+      console.log('✅ JSON parsed');
 
       // Migrate legacy shapes (in-memory) to canonical schema before validation.
       // This preserves backward compatibility with older saved JSON files.
       const { migrateCongregationData } = await import('../domain');
       const data = migrateCongregationData(raw);
 
+      console.log('🔍 Validation started');
       this.validateLoadedData(data);
+      console.log('✅ Validation successful');
+
+      console.log('🎉 File loaded');
       return data;
     } catch (error) {
       if (error instanceof DecryptionError) {
+        console.error('❌ DECRYPTION FAILED', error);
         throw error;
       }
+      console.error('❌ OPEN FILE FAILED', error);
       throw new StorageError('Не удалось открыть файл');
     }
   }
@@ -68,15 +83,26 @@ export class ApplicationService {
   }
 
   async saveFile(request: SaveFileRequest): Promise<void> {
+    console.log('🚀 SAVE START');
     try {
+      console.log('📦 Data validation started');
       validateCongregationData(request.data);
+      console.log('✅ Validation successful');
 
+      console.log('📄 JSON serialization started');
       const dataJson = JSON.stringify(request.data);
+      console.log('✅ JSON created (' + new Blob([dataJson]).size + ' bytes)');
+
+      console.log('🔐 Encryption started');
       const encryptedData = await this.cryptoService.encrypt(dataJson, request.password);
+      console.log('✅ Encryption successful (encrypted size: ' + JSON.stringify(encryptedData).length + ' bytes)');
 
       const filename = request.filename || 'congregation-data.enc.json';
+      console.log('💾 Browser save started (filename: ' + filename + ')');
       await this.storageAdapter.save(filename, encryptedData);
+      console.log('✅ File save triggered');
     } catch (error) {
+      console.error('❌ SAVE FAILED', error);
       throw new StorageError('Не удалось сохранить файл');
     }
   }

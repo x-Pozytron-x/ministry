@@ -6,8 +6,10 @@ import { StorageError } from './interfaces';
 
 export class BrowserStorageAdapter implements StorageAdapter {
   async save(filename: string, data: EncryptedData): Promise<void> {
+    console.log('  💾 Download preparation');
     try {
       const json = JSON.stringify(data, null, 2);
+      console.log('  📎 Blob created (' + json.length + ' bytes)');
       const blob = new Blob([json], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
 
@@ -16,6 +18,7 @@ export class BrowserStorageAdapter implements StorageAdapter {
       a.download = filename;
       a.style.display = 'none';
       document.body.appendChild(a);
+      console.log('  ⬇️ Download link created (filename: ' + filename + ')');
       a.click();
 
       // Cleanup after download starts
@@ -23,7 +26,9 @@ export class BrowserStorageAdapter implements StorageAdapter {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
       }, 100);
+      console.log('  ✅ Download triggered');
     } catch (error) {
+      console.error('  ❌ BROWSER SAVE FAILED', error);
       throw new StorageError('Не удалось сохранить файл');
     }
   }

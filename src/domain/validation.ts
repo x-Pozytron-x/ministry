@@ -155,8 +155,8 @@ export const validateServiceRecord = (record: Partial<ServiceRecord>): void => {
     throw new ValidationError(`S-21 must not duplicate Publisher field: ${duplicatedField}`);
   }
 
-  if (!record.publisherId) {
-    throw new ValidationError('Publisher ID is required');
+  if (!record.publisherId && !record.publisherSnapshot?.firstName && !record.publisherSnapshot?.lastName) {
+    throw new ValidationError('Publisher ID or publisher snapshot is required');
   }
 
   if (record.serviceYear !== undefined && !isValidServiceYearFormat(record.serviceYear)) {

@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import type { CongregationData, MonthlyServiceData, ServiceRecord, Publisher } from '../domain';
+import type { CongregationData, MonthlyServiceData, ServiceRecord } from '../domain';
 import { generateId, touchCongregationData } from '../domain';
-import CSVImport from './CSVImport';
+import CSVImport, { type ImportRecord } from './CSVImport';
 
 interface ServiceReportsProps {
   data: CongregationData;
@@ -51,27 +51,56 @@ export default function ServiceReports({ data, onUpdate }: ServiceReportsProps) 
   const [selectedMonth, setSelectedMonth] = useState('09');
   const [showImport, setShowImport] = useState(false);
   const [showReplaceWarning, setShowReplaceWarning] = useState(false);
-  const [pendingImportData, setPendingImportData] = useState<{
-    records: MonthlyServiceData[];
-    publisherIds: string[];
-  } | null>(null);
+  const [pendingImportData, setPendingImportData] = useState<ImportRecord[] | null>(null);
 
   const monthYearFormat = getMonthYearFormat(selectedServiceYear, selectedMonth);
 
   // Get monthly reports for selected month
-  const getMonthlyReports = (): Array<{
-    publisher: Publisher;
-    report: MonthlyServiceData | null;
-  }> => {
-    return data.publishers.map(publisher => {
-      const serviceRecord = data.serviceRecords.find(sr => sr.publisherId === publisher.id);
-      const monthlyData = serviceRecord?.monthlyData?.find(md => md.month === monthYearFormat);
+  // Rows come from ServiceRecords with monthlyData for the selected month,
+  // NOT from current publishers list. This preserves historical records.
+  const getMonthlyReports = () => {
+    const rows: Array<{
+      id: string;
+      displayLastName: string;
+      displayFirstName: string;
+      report: MonthlyServiceData;
+      isRegularPioneer: boolean;
+    }> = [];
 
-      return {
-        publisher,
-        report: monthlyData || null
-      };
+    for (const sr of data.serviceRecords) {
+      const monthlyData = sr.monthlyData?.find(md => md.month === monthYearFormat);
+      if (!monthlyData) continue;
+
+      // Start with publisherSnapshot for historical name preservation
+      let lastName = sr.publisherSnapshot?.lastName ?? '';
+      let firstName = sr.publisherSnapshot?.firstName ?? '';
+
+      // Determine pioneer status from linked publisher if available
+      let isRegularPioneer = false;
+      if (sr.publisherId) {
+        const currentPublisher = data.publishers.find(p => p.id === sr.publisherId);
+        if (currentPublisher) {
+          isRegularPioneer = currentPublisher.assignments.pioneer;
+        }
+      }
+
+      rows.push({
+        id: sr.id,
+        displayLastName: lastName,
+        displayFirstName: firstName,
+        report: monthlyData,
+        isRegularPioneer
+      });
+    }
+
+    // Sort by LastName, then FirstName (ascending)
+    rows.sort((a, b) => {
+      const lastCmp = a.displayLastName.localeCompare(b.displayLastName);
+      if (lastCmp !== 0) return lastCmp;
+      return a.displayFirstName.localeCompare(b.displayFirstName);
     });
+
+    return rows;
   };
 
   const hasExistingReports = (): boolean => {
@@ -93,20 +122,23 @@ export default function ServiceReports({ data, onUpdate }: ServiceReportsProps) 
     setShowImport(true);
   };
 
-  const handleImport = (records: MonthlyServiceData[], publisherIds: string[]) => {
+  const handleImport = (records: ImportRecord[]) => {
     if (hasExistingReports() && !pendingImportData) {
       // Store pending import and show warning
-      setPendingImportData({ records, publisherIds });
+      setPendingImportData(records);
       setShowImport(false);
       setShowReplaceWarning(true);
       return;
     }
 
-    applyImport(records, publisherIds);
+    applyImport(records);
   };
 
-  const applyImport = (records: MonthlyServiceData[], publisherIds: string[]) => {
-    const newServiceRecords = [...data.serviceRecords];
+  const applyImport = (records: ImportRecord[]) => {
+    const newServiceRecords = data.serviceRecords.map(sr => ({
+      ...sr,
+      monthlyData: sr.monthlyData ? [...sr.monthlyData] : undefined
+    }));
 
     // Remove existing reports for this month
     for (const sr of newServiceRecords) {
@@ -116,22 +148,22 @@ export default function ServiceReports({ data, onUpdate }: ServiceReportsProps) 
     }
 
     // Add new reports
-    records.forEach((monthlyData, index) => {
-      const publisherId = publisherIds[index];
-      let serviceRecord = newServiceRecords.find(sr => sr.publisherId === publisherId);
+    for (const record of records) {
+      const publisherId = record.publisherId;
+
+      let serviceRecord: ServiceRecord | undefined;
+      if (publisherId != null) {
+        serviceRecord = newServiceRecords.find(sr => sr.publisherId === publisherId);
+      }
 
       if (!serviceRecord) {
         // Create new service record
-        const publisher = data.publishers.find(p => p.id === publisherId);
         serviceRecord = {
           id: generateId(),
           publisherId,
           serviceYear: selectedServiceYear,
           monthlyData: [],
-          publisherSnapshot: publisher ? {
-            firstName: publisher.firstName,
-            lastName: publisher.lastName
-          } : undefined
+          publisherSnapshot: record.publisherSnapshot
         };
         newServiceRecords.push(serviceRecord);
       }
@@ -140,8 +172,8 @@ export default function ServiceReports({ data, onUpdate }: ServiceReportsProps) 
         serviceRecord.monthlyData = [];
       }
 
-      serviceRecord.monthlyData.push(monthlyData);
-    });
+      serviceRecord.monthlyData.push(record.monthlyData);
+    }
 
     const updatedData = touchCongregationData({
       ...data,
@@ -197,12 +229,11 @@ export default function ServiceReports({ data, onUpdate }: ServiceReportsProps) 
           <tbody>
             {monthlyReports.map((item, index) => {
               const report = item.report;
-              const isRegularPioneer = item.publisher.assignments.pioneer;
 
               return (
-                <tr key={item.publisher.id}>
+                <tr key={item.id}>
                   <td>{index + 1}</td>
-                  <td>{item.publisher.firstName} {item.publisher.lastName}</td>
+                  <td>{item.displayLastName} {item.displayFirstName}</td>
                   <td>
                     {report?.participated !== undefined ? (
                       <span className={report.participated ? 'badge-yes' : 'badge-no'}>
@@ -216,8 +247,8 @@ export default function ServiceReports({ data, onUpdate }: ServiceReportsProps) 
                   <td>{report?.hours !== undefined && report.hours !== null ? report.hours : '-'}</td>
                   <td className="note-cell">{report?.note || '-'}</td>
                   <td>
-                    {isRegularPioneer && <span className="badge-yes">Да</span>}
-                    {!isRegularPioneer && <span className="badge-no">Нет</span>}
+                    {item.isRegularPioneer && <span className="badge-yes">Да</span>}
+                    {!item.isRegularPioneer && <span className="badge-no">Нет</span>}
                   </td>
                   <td>
                     {report?.auxiliaryPioneer && <span className="badge-yes">Да</span>}
@@ -259,7 +290,7 @@ export default function ServiceReports({ data, onUpdate }: ServiceReportsProps) 
                 <button
                   onClick={() => {
                     if (pendingImportData) {
-                      applyImport(pendingImportData.records, pendingImportData.publisherIds);
+                      applyImport(pendingImportData);
                     } else {
                       handleConfirmReplace();
                     }

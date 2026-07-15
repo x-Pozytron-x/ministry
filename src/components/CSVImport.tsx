@@ -18,17 +18,6 @@ export interface ImportRecord {
   };
 }
 
-interface UnmatchedPublisher {
-  csvName: string;
-  csvRecord: CSVServiceReport;
-  suggestedPublishers: Publisher[];
-}
-
-type MatchDecision =
-  | { type: 'link'; publisherId: string }
-  | { type: 'historical' }
-  | { type: 'skip' };
-
 const SERVICE_MONTHS = [
   { value: '09', label: 'Сентябрь' },
   { value: '10', label: 'Октябрь' },
@@ -48,23 +37,22 @@ const parseFullName = (fullName: string): { firstName: string; lastName: string 
   const parts = fullName.trim().split(/\s+/);
   if (parts.length >= 2) {
     return {
-      firstName: parts[0],
-      lastName: parts.slice(1).join(' ')
+      firstName: parts.slice(1).join(' '),
+      lastName: parts[0]
     };
   }
   return {
-    firstName: fullName,
-    lastName: ''
+    firstName: '',
+    lastName: fullName
   };
 };
 
 export default function CSVImport({ data, selectedMonth, onImport, onClose }: CSVImportProps) {
   const [csvFile, setCSVFile] = useState<File | null>(null);
   const [csvRecords, setCSVRecords] = useState<CSVServiceReport[]>([]);
-  const [unmatched, setUnmatched] = useState<UnmatchedPublisher[]>([]);
-  const [matchDecisions, setMatchDecisions] = useState<Map<string, MatchDecision>>(new Map());
+  const [unmatchedCount, setUnmatchedCount] = useState(0);
   const [error, setError] = useState('');
-  const [step, setStep] = useState<'upload' | 'resolve' | 'confirm'>('upload');
+  const [step, setStep] = useState<'upload' | 'confirm'>('upload');
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -88,16 +76,6 @@ export default function CSVImport({ data, selectedMonth, onImport, onClose }: CS
     }) || null;
   };
 
-  const findSimilarPublishers = (name: string): Publisher[] => {
-    const normalized = name.toLowerCase().trim();
-    const words = normalized.split(/\s+/);
-
-    return data.publishers.filter(p => {
-      const fullName = `${p.firstName} ${p.lastName}`.toLowerCase();
-      return words.some(word => fullName.includes(word));
-    }).slice(0, 5);
-  };
-
   const handleParse = async () => {
     if (!csvFile) return;
 
@@ -106,84 +84,42 @@ export default function CSVImport({ data, selectedMonth, onImport, onClose }: CS
       const records = parseCSV(text);
       setCSVRecords(records);
 
-      // Find unmatched publishers
-      const unmatchedList: UnmatchedPublisher[] = [];
-
+      // Count unmatched publishers (they will be imported as historical)
+      let count = 0;
       for (const record of records) {
         const publisher = findPublisherByName(record.publisherName);
         if (!publisher) {
-          const similar = findSimilarPublishers(record.publisherName);
-          unmatchedList.push({
-            csvName: record.publisherName,
-            csvRecord: record,
-            suggestedPublishers: similar
-          });
+          count++;
         }
       }
+      setUnmatchedCount(count);
 
-      if (unmatchedList.length > 0) {
-        setUnmatched(unmatchedList);
-        setStep('resolve');
-      } else {
-        setStep('confirm');
-      }
-
+      setStep('confirm');
       setError('');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ошибка парсинга CSV');
     }
   };
 
-  const handleMatchDecision = (csvName: string, decision: MatchDecision) => {
-    const newDecisions = new Map(matchDecisions);
-    newDecisions.set(csvName, decision);
-    setMatchDecisions(newDecisions);
-  };
-
-  const handleResolveComplete = () => {
-    setStep('confirm');
-  };
-
   const handleConfirmImport = () => {
     const importRecords: ImportRecord[] = [];
 
     for (const record of csvRecords) {
-      let publisher = findPublisherByName(record.publisherName);
+      const publisher = findPublisherByName(record.publisherName);
       let publisherId: string | undefined;
       let publisherSnapshot: { firstName: string; lastName: string };
 
-      // If not found, check match decisions
-      if (!publisher) {
-        const decision = matchDecisions.get(record.publisherName);
-
-        if (decision?.type === 'link') {
-          publisher = data.publishers.find(p => p.id === decision.publisherId) || null;
-          if (publisher) {
-            publisherId = publisher.id;
-            publisherSnapshot = {
-              firstName: publisher.firstName,
-              lastName: publisher.lastName
-            };
-          } else {
-            continue; // Should not happen
-          }
-        } else if (decision?.type === 'historical') {
-          // Import as historical record without publisherId
-          publisherId = undefined;
-          publisherSnapshot = parseFullName(record.publisherName);
-        } else if (decision?.type === 'skip') {
-          continue;
-        } else {
-          // No decision made - skip
-          continue;
-        }
-      } else {
-        // Publisher found - link to existing
+      if (publisher) {
+        // Publisher matched - link to existing publisher
         publisherId = publisher.id;
         publisherSnapshot = {
           firstName: publisher.firstName,
           lastName: publisher.lastName
         };
+      } else {
+        // Unmatched publisher - import as historical record
+        publisherId = undefined;
+        publisherSnapshot = parseFullName(record.publisherName);
       }
 
       const monthlyData: MonthlyServiceData = {
@@ -245,79 +181,15 @@ export default function CSVImport({ data, selectedMonth, onImport, onClose }: CS
           </div>
         )}
 
-        {step === 'resolve' && unmatched.length > 0 && (
-          <div className="modal-body">
-            <p>Найдены неизвестные возвещатели. Выберите действие для каждого:</p>
-
-            <div className="unmatched-list">
-              {unmatched.map((item, index) => {
-                const decision = matchDecisions.get(item.csvName);
-
-                return (
-                  <div key={index} className="unmatched-item">
-                    <div className="unmatched-name">{item.csvName}</div>
-
-                    <div className="decision-group">
-                      <label>
-                        <input
-                          type="radio"
-                          name={`decision-${index}`}
-                          checked={decision?.type === 'historical'}
-                          onChange={() => handleMatchDecision(item.csvName, { type: 'historical' })}
-                        />
-                        Импортировать как историческую запись
-                      </label>
-
-                      {item.suggestedPublishers.length > 0 && (
-                        <div className="suggestions">
-                          <label>Связать с существующим:</label>
-                          {item.suggestedPublishers.map(pub => (
-                            <label key={pub.id}>
-                              <input
-                                type="radio"
-                                name={`decision-${index}`}
-                                checked={decision?.type === 'link' && decision.publisherId === pub.id}
-                                onChange={() => handleMatchDecision(item.csvName, { type: 'link', publisherId: pub.id })}
-                              />
-                              {pub.firstName} {pub.lastName}
-                            </label>
-                          ))}
-                        </div>
-                      )}
-
-                      <label>
-                        <input
-                          type="radio"
-                          name={`decision-${index}`}
-                          checked={decision?.type === 'skip'}
-                          onChange={() => handleMatchDecision(item.csvName, { type: 'skip' })}
-                        />
-                        Пропустить
-                      </label>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="button-group">
-              <button
-                onClick={handleResolveComplete}
-                disabled={Array.from(matchDecisions.values()).length < unmatched.length}
-                className="primary"
-              >
-                Далее
-              </button>
-              <button onClick={onClose} className="secondary">
-                Отмена
-              </button>
-            </div>
-          </div>
-        )}
-
         {step === 'confirm' && (
           <div className="modal-body">
             <p>Готово к импорту: {csvRecords.length} записей</p>
+            {unmatchedCount > 0 && (
+              <p className="warning">
+                Обнаружено неизвестных возвещателей: {unmatchedCount}.
+                Они будут импортированы как исторические записи.
+              </p>
+            )}
             <p>Месяц: {SERVICE_MONTHS.find(m => selectedMonth.endsWith(m.value))?.label}</p>
 
             <div className="button-group">
