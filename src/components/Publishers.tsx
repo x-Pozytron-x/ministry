@@ -15,9 +15,9 @@ const createEmptyPublisherForm = (): Partial<Publisher> => ({
   phonePrimary: '',
   address: '',
   emergencyContact: {
-    firstName: '',
-    lastName: '',
-    phone: ''
+    firstName: '-',
+    lastName: '-',
+    phone: '-'
   },
   vpsGroup: undefined,
   birthDate: '',
@@ -92,8 +92,8 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<Partial<Publisher>>(createEmptyPublisherForm);
   const [error, setError] = useState('');
-  const [sortKey, setSortKey] = useState<string | null>(null);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>(null);
+  const [sortKey, setSortKey] = useState<string | null>('fullName');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>('asc');
 
   const handleSubmit = () => {
     setError('');
@@ -137,15 +137,17 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
 
   const groupOptions = Array.from({ length: data.settings.vpsGroupsCount }, (_, i) => i + 1);
 
+  /*
   const getAssignmentLabels = (assignments: Publisher['assignments']): string[] => {
     const labels: string[] = [];
     if (assignments.elder) labels.push('Старейшина');
-    if (assignments.assistantServant) labels.push('Помощник служителя');
+    if (assignments.assistantServant) labels.push('Помощник собрания');
     if (assignments.pioneer) labels.push('Пионер');
     if (assignments.specialPioneer) labels.push('Специальный пионер');
     if (assignments.missionary) labels.push('Миссионер');
     return labels;
   };
+  */
 
   const handleHeaderClick = (key: string) => {
     if (sortKey !== key) {
@@ -331,7 +333,7 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
             <div className="form-group">
               <label>Дата рождения</label>
               <input
-                type="date"
+                type="text"
                 value={formData.birthDate}
                 onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
               />
@@ -340,7 +342,7 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
             <div className="form-group">
               <label>Дата крещения</label>
               <input
-                type="date"
+                type="text"
                 value={formData.baptismDate}
                 onChange={(e) => setFormData({ ...formData, baptismDate: e.target.value })}
               />
@@ -559,7 +561,7 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
                 const fullName = `${publisher.lastName} ${publisher.firstName}`;
                 const phone = publisher.phonePrimary || '—';
                 const address = publisher.address || '—';
-                const vpsGroup = publisher.vpsGroup ? `Группа ${publisher.vpsGroup}` : '—';
+                const vpsGroup = publisher.vpsGroup ? `№ ${publisher.vpsGroup}` : '—';
                 const birth = publisher.birthDate || '—';
                 const baptism = publisher.baptismDate || '—';
 

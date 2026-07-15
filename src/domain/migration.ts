@@ -124,7 +124,7 @@ export const migrateCongregationData = (rawData: any): CongregationData => {
   const settings = data.settings ?? { name: '', vpsGroupsCount: 1, language: 'ru' };
 
   const publishersRaw = Array.isArray(data.publishers) ? data.publishers : [];
-  const publishers = publishersRaw.map((p) => migratePublisher(p));
+  const publishers = publishersRaw.map((p: any) => migratePublisher(p));
 
   return {
     version: data.version ?? 1,

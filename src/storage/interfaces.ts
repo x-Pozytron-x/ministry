@@ -9,7 +9,7 @@ export interface StorageAdapter {
 }
 
 export interface VersionManager {
-  createSnapshot(data: CongregationData): CongregationData;
+  createSnapshot(data: CongregationData, changeDescription?: string): CongregationData;
   getVersionHistory(data: CongregationData): Array<{ version: number; timestamp: string; changeDescription?: string }>;
   restoreVersion(data: CongregationData, version: number): CongregationData | null;
 }

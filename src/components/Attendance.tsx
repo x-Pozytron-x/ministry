@@ -1,7 +1,7 @@
 // Attendance S-88 — FULL CLEAN VERSION (FIXED MATRIX + SUM/AVG + INLINE EDIT)
 
 import { useState } from 'react';
-import type { AttendanceReport, CongregationData } from '../domain';
+import { CongregationData } from '../domain';
 import { AttendanceReportService, generateId } from '../domain';
 
 interface AttendanceProps {

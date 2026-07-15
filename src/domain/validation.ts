@@ -6,7 +6,10 @@ import type {
   MonthlyServiceData,
   AttendanceReport,
   CongregationData,
-  CongregationSettings
+  CongregationSettings,
+  Member,
+  Report,
+  AttendanceRecord
 } from './entities';
 
 export class ValidationError extends Error {

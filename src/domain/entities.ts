@@ -51,6 +51,8 @@ export interface CongregationSettings {
   name: string;
   vpsGroupsCount: number;
   language: string;
+  weekdayMeetingDay?: string;
+  weekendMeetingDay?: string;
 }
 
 export type ServiceYear = `${number}/${number}`;

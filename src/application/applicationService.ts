@@ -1,7 +1,7 @@
 // Application layer - use cases and orchestration
 
 import type { CongregationData } from '../domain';
-import type { CryptoService, EncryptedData } from '../crypto';
+import type { CryptoService } from '../crypto';
 import type { StorageAdapter, VersionManager } from '../storage';
 import { validateCongregationData } from '../domain';
 import { DecryptionError } from '../crypto';

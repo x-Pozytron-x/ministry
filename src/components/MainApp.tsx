@@ -8,6 +8,7 @@ import Publishers from './Publishers';
 import ServiceRecords from './ServiceRecords';
 import Attendance from './Attendance';
 import CongregationProfile from './CongregationProfile';
+import Dashboard from './Dashboard';
 
 interface MainAppProps {
   initialData: CongregationData;
@@ -16,12 +17,12 @@ interface MainAppProps {
   onLogout: () => void;
 }
 
-type Tab = 'publishers' | 'service-records' | 'meeting-attendance' | 'profile';
+type Tab = 'dashboard' | 'publishers' | 'service-records' | 'meeting-attendance' | 'profile';
 
 export default function MainApp({ initialData, currentPassword, applicationService, onLogout }: MainAppProps) {
   const [data, setData] = useState<CongregationData>(initialData);
   const [password, setPassword] = useState(currentPassword);
-  const [activeTab, setActiveTab] = useState<Tab>('publishers');
+  const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -170,32 +171,39 @@ export default function MainApp({ initialData, currentPassword, applicationServi
 
       <nav className="tabs">
         <button
+          className={activeTab === 'dashboard' ? 'active' : ''}
+          onClick={() => setActiveTab('dashboard')}
+        >
+          📊 Dashboard
+        </button>
+        <button
           className={activeTab === 'publishers' ? 'active' : ''}
           onClick={() => setActiveTab('publishers')}
         >
-          👥 Возвещатели
+          👥 Proclaimers
         </button>
         <button
           className={activeTab === 'service-records' ? 'active' : ''}
           onClick={() => setActiveTab('service-records')}
         >
-          📋 Отчёты S-21
+          S-21
         </button>
         <button
           className={activeTab === 'meeting-attendance' ? 'active' : ''}
           onClick={() => setActiveTab('meeting-attendance')}
         >
-          📊 Посещаемость S-88
+          S-88
         </button>
         <button
           className={activeTab === 'profile' ? 'active' : ''}
           onClick={() => setActiveTab('profile')}
         >
-          ⚙️ Профиль собрания
+          ⚙️
         </button>
       </nav>
 
       <main className="app-content">
+        {activeTab === 'dashboard' && <Dashboard data={data} />}
         {activeTab === 'publishers' && <Publishers data={data} onUpdate={handleDataUpdate} />}
         {activeTab === 'service-records' && <ServiceRecords data={data} onUpdate={handleDataUpdate} />}
         {activeTab === 'meeting-attendance' && <Attendance data={data} onUpdate={handleDataUpdate} />}

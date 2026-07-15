@@ -14,7 +14,7 @@ class WebCryptoService implements CryptoService {
   }
 
   private stringToBuffer(str: string): ArrayBuffer {
-    return new TextEncoder().encode(str);
+    return new TextEncoder().encode(str).buffer;
   }
 
   private bufferToString(buffer: ArrayBuffer): string {
@@ -53,7 +53,7 @@ class WebCryptoService implements CryptoService {
     return crypto.subtle.deriveKey(
       {
         name: 'PBKDF2',
-        salt,
+        salt: salt.buffer as ArrayBuffer,
         iterations: ITERATIONS,
         hash: 'SHA-256'
       },
@@ -78,7 +78,7 @@ class WebCryptoService implements CryptoService {
       const encryptedBuffer = await crypto.subtle.encrypt(
         {
           name: 'AES-GCM',
-          iv
+          iv: iv.buffer as ArrayBuffer
         },
         key,
         dataBuffer
@@ -86,8 +86,8 @@ class WebCryptoService implements CryptoService {
 
       return {
         version: 1,
-        salt: this.bufferToBase64(salt),
-        iv: this.bufferToBase64(iv),
+        salt: this.bufferToBase64(salt.buffer as ArrayBuffer),
+        iv: this.bufferToBase64(iv.buffer as ArrayBuffer),
         data: this.bufferToBase64(encryptedBuffer)
       };
     } catch (error) {
@@ -106,7 +106,7 @@ class WebCryptoService implements CryptoService {
       const decryptedBuffer = await crypto.subtle.decrypt(
         {
           name: 'AES-GCM',
-          iv
+          iv: iv.buffer
         },
         key,
         data
