@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import type { CongregationData, CongregationSettings } from '../domain';
-import { CongregationService, validateCongregationSettings, getServiceYearLabel, getCurrentServiceYearStart } from '../domain';
+import { CongregationService, validateCongregationSettings, getServiceYearLabel, getCurrentServiceYearStart, touchCongregationData } from '../domain';
 
 const WEEK_DAYS = [
   'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
@@ -57,6 +57,38 @@ export default function CongregationProfile({
     setFormData(normalizeSettings(data.settings));
     setIsEditing(false);
     setError('');
+  };
+
+  const totalRecords = data.serviceRecords.length;
+  const recordsWithMonthlyData = data.serviceRecords.filter(
+    sr => sr.monthlyData && sr.monthlyData.length > 0
+  ).length;
+  const emptyRecords = data.serviceRecords.filter(
+    sr => sr.monthlyData && sr.monthlyData.length === 0
+  ).length;
+  const totalMonthlyEntries = data.serviceRecords.reduce(
+    (sum, sr) => sum + (sr.monthlyData?.length ?? 0), 0
+  );
+
+  const handleCleanEmptyRecords = () => {
+    if (emptyRecords === 0) {
+      setError('Нет пустых записей для очистки');
+      setTimeout(() => setError(''), 3000);
+      return;
+    }
+    if (!confirm(`Будет удалено ${emptyRecords} пустых записей служения. Продолжить?`)) {
+      return;
+    }
+    const cleaned = data.serviceRecords.filter(
+      sr => !(sr.monthlyData && sr.monthlyData.length === 0)
+    );
+    const updated = touchCongregationData({
+      ...data,
+      serviceRecords: cleaned
+    });
+    onUpdate(updated);
+    setSuccess(`Удалено ${emptyRecords} пустых записей`);
+    setTimeout(() => setSuccess(''), 3000);
   };
 
   return (
@@ -215,10 +247,20 @@ export default function CongregationProfile({
         <h3>О данных</h3>
         <p>Версия данных: {data.version}</p>
         <p>Возвещателей: {data.publishers.length}</p>
-        <p>Отчётов о служении: {data.serviceRecords.length}</p>
+        <p>Записей служения: {totalRecords}</p>
+        <p style={{ marginLeft: '1em', fontSize: '0.9em', color: '#666' }}>
+          с monthlyData: {recordsWithMonthlyData}
+          {emptyRecords > 0 && <>, пустых: {emptyRecords}</>}
+          , всего записей в monthlyData: {totalMonthlyEntries}
+        </p>
         <p>Отчётов о посещаемости: {data.attendanceReports.length}</p>
         <p>Создано: {new Date(data.metadata.createdAt).toLocaleString()}</p>
         <p>Обновлено: {new Date(data.metadata.updatedAt).toLocaleString()}</p>
+        {emptyRecords > 0 && (
+          <button onClick={handleCleanEmptyRecords} className="secondary" style={{ marginTop: '8px' }}>
+            🧹 Clean empty service records ({emptyRecords})
+          </button>
+        )}
       </div>
     </div>
   );

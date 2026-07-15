@@ -145,6 +145,13 @@ export default function ServiceReports({ data, onUpdate }: ServiceReportsProps) 
       let serviceRecord: ServiceRecord | undefined;
       if (publisherId != null) {
         serviceRecord = newServiceRecords.find(sr => sr.publisherId === publisherId);
+      } else {
+        // Match historical records by snapshot name to reuse existing record
+        serviceRecord = newServiceRecords.find(sr =>
+          sr.publisherId == null &&
+          sr.publisherSnapshot?.firstName === record.publisherSnapshot.firstName &&
+          sr.publisherSnapshot?.lastName === record.publisherSnapshot.lastName
+        );
       }
 
       if (!serviceRecord) {
@@ -166,9 +173,14 @@ export default function ServiceReports({ data, onUpdate }: ServiceReportsProps) 
       serviceRecord.monthlyData.push(record.monthlyData);
     }
 
+    // Remove orphan ServiceRecords with empty monthlyData (no useful data)
+    const cleaned = newServiceRecords.filter(sr =>
+      !(sr.monthlyData && sr.monthlyData.length === 0)
+    );
+
     const updatedData = touchCongregationData({
       ...data,
-      serviceRecords: newServiceRecords
+      serviceRecords: cleaned
     });
 
     onUpdate(updatedData);
