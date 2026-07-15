@@ -486,7 +486,7 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
           margin-top: 1em;
           border: 1px solid var(--border-color, #ccc);
           border-radius: 4px;
-          max-height: 600px;
+          
           overflow-y: auto;
         }
         .excel-table {

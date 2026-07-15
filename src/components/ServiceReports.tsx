@@ -222,7 +222,7 @@ export default function ServiceReports({ data, onUpdate }: ServiceReportsProps) 
               <th>Часы</th>
               <th>Примечание</th>
               <th>Пионер</th>
-              <th>Подсобный пионер</th>
+              <th>Подсобный</th>
               <th>Неактивный</th>
             </tr>
           </thead>
