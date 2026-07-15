@@ -107,7 +107,11 @@ export default function S21Card({ publisher, serviceRecords, serviceYear }: S21C
         </div>
         <div style={{ display: 'flex', alignItems: 'baseline', flex: 1 }}>
           <span style={{ display: 'flex', alignItems: 'baseline', gap: '5px', flex: '0 0 130px', fontWeight: 700, fontSize: '13.5px' }}>
-            <span style={{ display: 'inline-block', width: '12px', height: '12px', border: '1.4px solid #000', flex: '0 0 12px', position: 'relative', top: '1px' }}></span>
+            <span style={{ display: 'inline-block', width: '12px', height: '12px', border: '1.4px solid #000', flex: '0 0 12px', position: 'relative', top: '1px' }}>
+              {!isFemale && (
+                <span style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', fontSize: '12px', lineHeight: 1, fontWeight: 700 }}>✓</span>
+              )}
+            </span>
             Мужчина
           </span>
           <span style={{ display: 'flex', alignItems: 'baseline', gap: '5px', flex: '0 0 130px', fontWeight: 700, fontSize: '13.5px' }}>

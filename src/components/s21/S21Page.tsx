@@ -30,7 +30,7 @@ export default function S21Page({ data, onUpdate }: S21PageProps) {
       return data.publishers.filter(isPioneer);
     }
     return data.publishers.filter(
-      p => p.vpsGroup === activeTab.groupNumber
+      p => p.vpsGroup === activeTab.groupNumber && !isPioneer(p)
     );
   }, [data.publishers, activeTab]);
 
