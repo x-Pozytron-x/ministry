@@ -36,6 +36,7 @@ export default function ServiceRecords({ data, onUpdate }: ServiceRecordsProps) 
         onUpdate(updated);
         setEditingId(null);
       } else {
+        const publisher = data.publishers.find(p => p.id === formData.publisherId);
         const newRecord: ServiceRecord = {
           id: generateId(),
           publisherId: formData.publisherId!,
@@ -45,7 +46,11 @@ export default function ServiceRecords({ data, onUpdate }: ServiceRecordsProps) 
           hours: formData.hours ?? 0,
           returnVisits: formData.returnVisits ?? 0,
           bibleStudies: formData.bibleStudies ?? 0,
-          remarks: formData.remarks
+          remarks: formData.remarks,
+          publisherSnapshot: publisher ? {
+            firstName: publisher.firstName,
+            lastName: publisher.lastName
+          } : { firstName: '', lastName: '' }
         };
         const updated = ServiceRecordService.addServiceRecord(data, newRecord);
         onUpdate(updated);
@@ -86,7 +91,7 @@ export default function ServiceRecords({ data, onUpdate }: ServiceRecordsProps) 
     setError('');
   };
 
-  const getPublisherName = (publisherId: string) => {
+  const getPublisherName = (publisherId: string | undefined) => {
     const publisher = data.publishers.find(p => p.id === publisherId);
     return publisher ? `${publisher.firstName} ${publisher.lastName}` : 'Неизвестный';
   };

@@ -5,7 +5,6 @@ import type { CongregationData } from '../domain';
 import type { ApplicationService } from '../application';
 import { useAutoSave } from '../hooks';
 import Publishers from './Publishers';
-import ServiceRecords from './ServiceRecords';
 import Attendance from './Attendance';
 import CongregationProfile from './CongregationProfile';
 import Dashboard from './Dashboard';

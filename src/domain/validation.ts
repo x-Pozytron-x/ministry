@@ -276,7 +276,7 @@ const validateMonthlyServiceData = (data: Partial<MonthlyServiceData>): void => 
     throw new ValidationError('Video showings cannot be negative');
   }
 
-  if (data.hours !== undefined && data.hours < 0) {
+  if (data.hours != null && data.hours < 0) {
     throw new ValidationError('Hours cannot be negative');
   }
 

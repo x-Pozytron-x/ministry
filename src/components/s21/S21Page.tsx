@@ -19,7 +19,7 @@ type Tab = { type: 'pioneers' } | { type: 'group'; groupNumber: number };
 const isPioneer = (p: Publisher): boolean =>
   p.assignments.pioneer || p.assignments.specialPioneer;
 
-export default function S21Page({ data, onUpdate }: S21PageProps) {
+export default function S21Page({ data }: S21PageProps) {
   const serviceYear = useMemo(() => getCurrentServiceYear(), []);
   const groupCount = data.settings.vpsGroupsCount;
 

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { CongregationData, MonthlyServiceData, ServiceRecord } from '../domain';
+import type { CongregationData, MonthlyServiceData, ServiceRecord, ServiceYear } from '../domain';
 import { generateId, touchCongregationData } from '../domain';
 import CSVImport, { type ImportRecord } from './CSVImport';
 
@@ -47,7 +47,7 @@ const getMonthYearFormat = (serviceYear: string, monthValue: string): string => 
 
 export default function ServiceReports({ data, onUpdate }: ServiceReportsProps) {
   const currentServiceYear = getCurrentServiceYear();
-  const [selectedServiceYear, setSelectedServiceYear] = useState(currentServiceYear);
+  const [selectedServiceYear] = useState<ServiceYear>(currentServiceYear as ServiceYear);
   const [selectedMonth, setSelectedMonth] = useState('09');
   const [showImport, setShowImport] = useState(false);
   const [showReplaceWarning, setShowReplaceWarning] = useState(false);
@@ -126,7 +126,7 @@ export default function ServiceReports({ data, onUpdate }: ServiceReportsProps) 
   };
 
   const applyImport = (records: ImportRecord[]) => {
-    const newServiceRecords = data.serviceRecords.map(sr => ({
+    const newServiceRecords: ServiceRecord[] = data.serviceRecords.map(sr => ({
       ...sr,
       monthlyData: sr.monthlyData ? [...sr.monthlyData] : undefined
     }));
@@ -166,11 +166,13 @@ export default function ServiceReports({ data, onUpdate }: ServiceReportsProps) 
         newServiceRecords.push(serviceRecord);
       }
 
-      if (!serviceRecord.monthlyData) {
-        serviceRecord.monthlyData = [];
+      // serviceRecord is guaranteed defined here (found or just created)
+      const sr = serviceRecord!;
+      if (!sr.monthlyData) {
+        sr.monthlyData = [];
       }
 
-      serviceRecord.monthlyData.push(record.monthlyData);
+      sr.monthlyData.push(record.monthlyData);
     }
 
     // Remove orphan ServiceRecords with empty monthlyData (no useful data)

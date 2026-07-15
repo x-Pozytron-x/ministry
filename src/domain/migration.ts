@@ -1,4 +1,4 @@
-import type { CongregationData, Publisher, MonthlyServiceData, ServiceRecord } from './entities';
+import type { CongregationData, Publisher, MonthlyServiceData, ServiceRecord, ServiceRecordPublisherSnapshot } from './entities';
 import { generateId } from './services';
 
 // Migration helpers to normalize legacy publisher shapes into canonical Publisher

@@ -55,8 +55,6 @@ const getMonthlyDataForYear = (
   return all;
 };
 
-const getMonthKey = (md: MonthlyServiceData): string => md.month.slice(5, 7);
-
 export default function S21Card({ publisher, serviceRecords, serviceYear }: S21CardProps) {
   const data = getMonthlyDataForYear(publisher, serviceRecords, serviceYear);
 
