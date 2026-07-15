@@ -59,11 +59,20 @@ export type ServiceYear = `${number}/${number}`;
 
 export interface MonthlyServiceData {
   month: string; // YYYY-MM format
-  placements: number;
-  videoShowings: number;
-  hours: number;
-  returnVisits: number;
+  participated: boolean;
   bibleStudies: number;
+  hours: number | null; // null for regular publishers who didn't report hours
+  auxiliaryPioneer: boolean;
+  inactive: boolean;
+  note: string;
+
+  /** @deprecated Legacy field retained for stored JSON compatibility. */
+  placements?: number;
+  /** @deprecated Legacy field retained for stored JSON compatibility. */
+  videoShowings?: number;
+  /** @deprecated Legacy field retained for stored JSON compatibility. */
+  returnVisits?: number;
+  /** @deprecated Use note instead. */
   remarks?: string;
 }
 

@@ -1,4 +1,4 @@
-import type { CongregationData, Publisher } from './entities';
+import type { CongregationData, Publisher, MonthlyServiceData, ServiceRecord } from './entities';
 import { generateId } from './services';
 
 // Migration helpers to normalize legacy publisher shapes into canonical Publisher
@@ -117,6 +117,61 @@ const migratePublisher = (raw: any): Publisher => {
   return publisher;
 };
 
+const migrateMonthlyServiceData = (raw: any): MonthlyServiceData => {
+  // New canonical fields
+  const participated = raw.participated !== undefined ? Boolean(raw.participated) : true;
+  const bibleStudies = Number(raw.bibleStudies ?? raw.bible_studies ?? 0);
+  const hours = raw.hours !== undefined && raw.hours !== null ? Number(raw.hours) : null;
+  const auxiliaryPioneer = Boolean(raw.auxiliaryPioneer ?? raw.auxiliary_pioneer ?? raw.auxiliary ?? false);
+  const inactive = Boolean(raw.inactive ?? false);
+  const note = String(raw.note ?? raw.remarks ?? '');
+
+  return {
+    month: raw.month ?? '',
+    participated,
+    bibleStudies,
+    hours,
+    auxiliaryPioneer,
+    inactive,
+    note,
+    // Preserve legacy fields if present
+    placements: raw.placements,
+    videoShowings: raw.videoShowings,
+    returnVisits: raw.returnVisits,
+    remarks: raw.remarks
+  };
+};
+
+const migrateServiceRecord = (raw: any): ServiceRecord => {
+  const id = raw.id || generateId();
+  const publisherId = raw.publisherId ?? raw.publisher_id ?? '';
+  const serviceYear = raw.serviceYear;
+  const publisherSnapshot = raw.publisherSnapshot;
+
+  // Migrate monthlyData array if present
+  let monthlyData: MonthlyServiceData[] | undefined;
+  if (Array.isArray(raw.monthlyData)) {
+    monthlyData = raw.monthlyData.map(migrateMonthlyServiceData);
+  }
+
+  // Build canonical ServiceRecord
+  return {
+    id,
+    publisherId,
+    serviceYear,
+    monthlyData,
+    publisherSnapshot,
+    // Legacy flat fields
+    month: raw.month,
+    placements: raw.placements,
+    videoShowings: raw.videoShowings,
+    hours: raw.hours,
+    returnVisits: raw.returnVisits,
+    bibleStudies: raw.bibleStudies,
+    remarks: raw.remarks
+  };
+};
+
 export const migrateCongregationData = (rawData: any): CongregationData => {
   // Minimal defensive checks
   const data = { ...rawData };
@@ -126,11 +181,14 @@ export const migrateCongregationData = (rawData: any): CongregationData => {
   const publishersRaw = Array.isArray(data.publishers) ? data.publishers : [];
   const publishers = publishersRaw.map((p: any) => migratePublisher(p));
 
+  const serviceRecordsRaw = Array.isArray(data.serviceRecords) ? data.serviceRecords : [];
+  const serviceRecords = serviceRecordsRaw.map((sr: any) => migrateServiceRecord(sr));
+
   return {
     version: data.version ?? 1,
     settings,
     publishers,
-    serviceRecords: Array.isArray(data.serviceRecords) ? data.serviceRecords : [],
+    serviceRecords,
     attendanceReports: Array.isArray(data.attendanceReports) ? data.attendanceReports : [],
     metadata: data.metadata ?? { createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
   };

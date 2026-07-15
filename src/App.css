@@ -500,6 +500,220 @@ input:checked + .slider:before {
   color: var(--primary-color);
 }
 
+/* Month tabs */
+.month-tabs {
+  display: flex;
+  gap: 0.5em;
+  margin-bottom: 1.5em;
+  overflow-x: auto;
+  padding: 0.5em 0;
+}
+
+.month-tabs button {
+  padding: 0.6em 1.2em;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.9em;
+  white-space: nowrap;
+  transition: all 0.25s;
+}
+
+.month-tabs button:hover {
+  border-color: var(--primary-color);
+  background-color: var(--secondary-bg);
+}
+
+.month-tabs button.active {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+/* Reports table */
+.reports-table-container {
+  overflow-x: auto;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+}
+
+.reports-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9em;
+}
+
+.reports-table th {
+  background-color: var(--secondary-bg);
+  padding: 1em;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.reports-table td {
+  padding: 0.8em 1em;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.reports-table tbody tr:hover {
+  background-color: var(--secondary-bg);
+}
+
+.reports-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.note-cell {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Badges */
+.badge-yes {
+  display: inline-block;
+  padding: 0.3em 0.8em;
+  background-color: var(--success-color);
+  color: white;
+  border-radius: 12px;
+  font-size: 0.85em;
+  font-weight: 500;
+}
+
+.badge-no {
+  display: inline-block;
+  padding: 0.3em 0.8em;
+  background-color: var(--border-color);
+  color: var(--text-secondary);
+  border-radius: 12px;
+  font-size: 0.85em;
+  font-weight: 500;
+}
+
+.badge-warning {
+  display: inline-block;
+  padding: 0.3em 0.8em;
+  background-color: var(--warning-color);
+  color: white;
+  border-radius: 12px;
+  font-size: 0.85em;
+  font-weight: 500;
+}
+
+.badge-empty {
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5em;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h3 {
+  margin: 0;
+}
+
+.close-button {
+  background: transparent;
+  border: none;
+  font-size: 2em;
+  line-height: 1;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+}
+
+.close-button:hover {
+  color: var(--primary-color);
+}
+
+.modal-body {
+  padding: 1.5em;
+}
+
+/* Unmatched list */
+.unmatched-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5em;
+  margin: 1.5em 0;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.unmatched-item {
+  background-color: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1em;
+}
+
+.unmatched-name {
+  font-weight: 600;
+  margin-bottom: 0.8em;
+  color: var(--primary-color);
+}
+
+.decision-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8em;
+}
+
+.decision-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  cursor: pointer;
+}
+
+.decision-group input[type="radio"] {
+  width: auto;
+}
+
+.suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  margin-left: 1.5em;
+  padding-left: 1em;
+  border-left: 2px solid var(--border-color);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .app-header {
@@ -547,5 +761,23 @@ input:checked + .slider:before {
 
   .stats-grid {
     grid-template-columns: 1fr;
+  }
+
+  .month-tabs {
+    flex-wrap: nowrap;
+  }
+
+  .reports-table {
+    font-size: 0.8em;
+  }
+
+  .reports-table th,
+  .reports-table td {
+    padding: 0.6em;
+  }
+
+  .modal-content {
+    width: 95%;
+    max-height: 90vh;
   }
 }
