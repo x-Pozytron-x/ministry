@@ -17,17 +17,54 @@ export class CongregationService {
 
 export class PublisherService {
   static addPublisher(data: CongregationData, publisher: Publisher): CongregationData {
-    return touchCongregationData({
+    const trimmed: Publisher = {
+      ...publisher,
+      firstName: publisher.firstName.trim(),
+      lastName: publisher.lastName.trim()
+    };
+    // Add publisher first
+    const withPublisher = touchCongregationData({
       ...data,
-      publishers: [...data.publishers, publisher]
+      publishers: [...data.publishers, trimmed]
     });
+    // Then link any historical ServiceRecords matching this publisher's name
+    return this.linkHistoricalRecords(withPublisher, trimmed);
+  }
+
+  /** Link historical ServiceRecords (without publisherId) whose publisherSnapshot
+   *  exactly matches the given publisher's name. Preserves all existing monthly data. */
+  static linkHistoricalRecords(data: CongregationData, publisher: Publisher): CongregationData {
+    const updatedRecords = data.serviceRecords.map(sr => {
+      // Only touch records without publisherId
+      if (sr.publisherId != null) return sr;
+      // Exact match on firstName AND lastName
+      if (sr.publisherSnapshot?.firstName === publisher.firstName &&
+          sr.publisherSnapshot?.lastName === publisher.lastName) {
+        return { ...sr, publisherId: publisher.id };
+      }
+      return sr;
+    });
+
+    // Only touch data if at least one record was updated
+    if (updatedRecords.some((sr, i) => sr !== data.serviceRecords[i])) {
+      return touchCongregationData({
+        ...data,
+        serviceRecords: updatedRecords
+      });
+    }
+    return data;
   }
 
   static updatePublisher(data: CongregationData, publisherId: string, publisher: Publisher): CongregationData {
+    const trimmed: Publisher = {
+      ...publisher,
+      firstName: publisher.firstName.trim(),
+      lastName: publisher.lastName.trim()
+    };
     return touchCongregationData({
       ...data,
       publishers: data.publishers.map(p =>
-        p.id === publisherId ? publisher : p
+        p.id === publisherId ? trimmed : p
       )
     });
   }

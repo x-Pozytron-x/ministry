@@ -71,25 +71,16 @@ export default function ServiceReports({ data, onUpdate }: ServiceReportsProps) 
       const monthlyData = sr.monthlyData?.find(md => md.month === monthYearFormat);
       if (!monthlyData) continue;
 
-      // Start with publisherSnapshot for historical name preservation
-      let lastName = sr.publisherSnapshot?.lastName ?? '';
-      let firstName = sr.publisherSnapshot?.firstName ?? '';
-
-      // Determine pioneer status from linked publisher if available
-      let isRegularPioneer = false;
-      if (sr.publisherId) {
-        const currentPublisher = data.publishers.find(p => p.id === sr.publisherId);
-        if (currentPublisher) {
-          isRegularPioneer = currentPublisher.assignments.pioneer;
-        }
-      }
+      // Use publisherSnapshot for historical name preservation
+      const lastName = sr.publisherSnapshot?.lastName ?? '';
+      const firstName = sr.publisherSnapshot?.firstName ?? '';
 
       rows.push({
         id: sr.id,
         displayLastName: lastName,
         displayFirstName: firstName,
         report: monthlyData,
-        isRegularPioneer
+        isRegularPioneer: monthlyData.pioneer ?? false
       });
     }
 

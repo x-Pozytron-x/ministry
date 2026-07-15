@@ -113,8 +113,8 @@ export default function CSVImport({ data, selectedMonth, onImport, onClose }: CS
         // Publisher matched - link to existing publisher
         publisherId = publisher.id;
         publisherSnapshot = {
-          firstName: publisher.firstName,
-          lastName: publisher.lastName
+          firstName: publisher.firstName.trim(),
+          lastName: publisher.lastName.trim()
         };
       } else {
         // Unmatched publisher - import as historical record
@@ -129,6 +129,7 @@ export default function CSVImport({ data, selectedMonth, onImport, onClose }: CS
         hours: parseHoursValue(record.hours),
         auxiliaryPioneer: parseBooleanValue(record.auxiliary),
         inactive: parseBooleanValue(record.inactive),
+        pioneer: parseBooleanValue(record.pioneer),
         note: record.notes
       };
 

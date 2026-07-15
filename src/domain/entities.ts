@@ -67,6 +67,8 @@ export interface MonthlyServiceData {
   auxiliaryPioneer: boolean;
   inactive: boolean;
   note: string;
+  /** Whether the publisher was a regular pioneer at the time of this report. */
+  pioneer?: boolean;
 
   /** @deprecated Legacy field retained for stored JSON compatibility. */
   placements?: number;

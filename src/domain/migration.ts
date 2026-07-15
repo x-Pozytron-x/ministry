@@ -75,8 +75,8 @@ const migrateEmergencyContact = (src: any) => {
 const migratePublisher = (raw: any): Publisher => {
   // Keep deprecated/legacy fields in 'raw' but build canonical shape below
   const id = raw?.id || generateId();
-  const lastName = toString(raw.lastName ?? raw.last_name ?? raw.surname ?? '');
-  const firstName = toString(raw.firstName ?? raw.first_name ?? raw.givenName ?? raw.first ?? '');
+  const lastName = toString(raw.lastName ?? raw.last_name ?? raw.surname ?? '').trim();
+  const firstName = toString(raw.firstName ?? raw.first_name ?? raw.givenName ?? raw.first ?? '').trim();
   const phonePrimary = toString(raw.phonePrimary ?? raw.phone_primary ?? raw.phone ?? raw.phonePrimaryContact ?? '');
   const address = raw.address ?? raw.addr ?? raw.addressLine ?? undefined;
 
