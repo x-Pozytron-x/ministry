@@ -70,56 +70,242 @@ export default function S21Card({ publisher, serviceRecords, serviceYear }: S21C
   const isAnointed = publisher.hope === 'anointed';
 
   return (
-    <div style={{
-      width: '780px',
-      minWidth: '780px',
-      background: '#fff',
-      color: '#000',
-      border: '2px solid #000',
-      padding: '16px 18px 10px',
-      marginBottom: '16px'
-    }}>
+    <div className="s21-card">
+      <style>{`
+        .s21-card {
+          width: 780px;
+          min-width: 780px;
+          background: #fff;
+          color: #000;
+          border: 2px solid #000;
+          padding: 16px 18px 10px;
+          margin-bottom: 16px;
+        }
+
+        .s21-title {
+          text-align: center;
+          font-weight: 800;
+          font-size: 19px;
+          letter-spacing: 0.3px;
+          text-transform: uppercase;
+          margin: 2px 0 14px;
+        }
+
+        .s21-row {
+          display: flex;
+          align-items: baseline;
+          font-size: 13.5px;
+          padding: 3px 0;
+          white-space: nowrap;
+        }
+
+        .s21-row-full {
+          display: flex;
+          align-items: baseline;
+          width: 100%;
+          font-size: 13.5px;
+          padding: 3px 0;
+          white-space: nowrap;
+        }
+
+        .s21-label {
+          font-weight: 700;
+          margin-right: 6px;
+        }
+
+        .s21-value {
+          font-weight: 400;
+        }
+
+        .s21-col-left {
+          flex: 0 0 470px;
+        }
+
+        .s21-col-right {
+          display: flex;
+          align-items: baseline;
+          flex: 1;
+        }
+
+        .s21-checkbox-label {
+          display: flex;
+          align-items: baseline;
+          gap: 5px;
+          flex: 0 0 130px;
+          font-weight: 700;
+          font-size: 13.5px;
+        }
+
+        .s21-checkbox-box {
+          display: inline-block;
+          width: 12px;
+          height: 12px;
+          border: 1.4px solid #000;
+          flex: 0 0 12px;
+          position: relative;
+          top: 1px;
+        }
+
+        .s21-checkmark {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          font-size: 0.7em;
+          line-height: 0.7em;
+          font-weight: 700;
+          padding: 0.1em;
+        }
+
+        .s21-assignments {
+          display: flex;
+          align-items: baseline;
+          flex-wrap: wrap;
+          row-gap: 4px;
+          padding: 6px 0 10px;
+          font-weight: 700;
+          font-size: 13.5px;
+          border-bottom: 2px solid #000;
+          margin-bottom: 12px;
+        }
+
+        .s21-role {
+          display: flex;
+          align-items: baseline;
+          gap: 4px;
+          margin-right: 20px;
+          max-width: 170px;
+        }
+
+        .s21-table {
+          width: 100%;
+          border-collapse: collapse;
+          border: 2px solid #000;
+          table-layout: fixed;
+        }
+
+        .s21-col-1 { width: 15%; }
+        .s21-col-2 { width: 12%; }
+        .s21-col-3 { width: 10%; }
+        .s21-col-4 { width: 12%; }
+        .s21-col-5 { width: 16%; }
+        .s21-col-6 { width: 35%; }
+
+        .s21-th {
+          border: 1px solid #000;
+          padding: 6px;
+          font-size: 12.5px;
+          font-weight: 700;
+          background: #fff;
+        }
+
+        .s21-th-year {
+          display: block;
+          font-weight: 700;
+          font-size: 15px;
+          margin-top: 3px;
+        }
+
+        .s21-td {
+          border: 1px solid #000;
+          padding: 4px 8px;
+          font-size: 13px;
+          height: 24px;
+        }
+
+        .s21-td-center {
+          border: 1px solid #000;
+          padding: 4px 8px;
+          font-size: 13px;
+          height: 24px;
+          text-align: center;
+        }
+
+        .s21-td-checkbox {
+          display: inline-block;
+          width: 12px;
+          height: 12px;
+          border: 1.4px solid #000;
+          position: relative;
+          top: 1px;
+        }
+
+        .s21-td-hours {
+          border: 1px solid #000;
+          padding: 4px 8px;
+          font-size: 15px;
+          height: 24px;
+          text-align: center;
+        }
+
+        .s21-td-notes {
+          border: 1px solid #000;
+          padding: 4px 8px;
+          font-size: 12.5px;
+          height: 24px;
+        }
+
+        .s21-total-label {
+          border: 1px solid #000;
+          border-top: 2px solid #000;
+          padding: 4px 8px;
+          font-size: 13px;
+          font-weight: 700;
+          text-align: right;
+        }
+
+        .s21-total-val {
+          border: 1px solid #000;
+          border-top: 2px solid #000;
+          padding: 4px 8px;
+          font-size: 16px;
+          font-weight: 700;
+          text-align: center;
+        }
+
+        .s21-total-empty {
+          border: 1px solid #000;
+          border-top: 2px solid #000;
+          padding: 4px 8px;
+        }
+
+        .s21-footer {
+          font-size: 10px;
+          color: #444;
+          margin-top: 10px;
+        }
+      `}</style>
+
       {/* Title */}
-      <div style={{
-        textAlign: 'center',
-        fontWeight: 800,
-        fontSize: '19px',
-        letterSpacing: '0.3px',
-        textTransform: 'uppercase',
-        margin: '2px 0 14px'
-      }}>
+      <div className="s21-title">
         Записи собрания о служении возвещателя
       </div>
 
       {/* ФИО */}
-      <div style={{ display: 'flex', alignItems: 'baseline', fontSize: '13.5px', padding: '3px 0', whiteSpace: 'nowrap' }}>
-        <span style={{ fontWeight: 700, marginRight: '6px' }}>ФИО:</span>
-        <span style={{ fontWeight: 400 }}>{publisher.lastName} {publisher.firstName}</span>
+      <div className="s21-row">
+        <span className="s21-label">ФИО:</span>
+        <span className="s21-value">{publisher.lastName} {publisher.firstName}</span>
       </div>
 
       {/* Дата рождения + пол */}
-      <div style={{ display: 'flex', alignItems: 'baseline', width: '100%', fontSize: '13.5px', padding: '3px 0', whiteSpace: 'nowrap' }}>
-        <div style={{ flex: '0 0 470px' }}>
-          <span style={{ fontWeight: 700, marginRight: '6px' }}>Дата рождения:</span>
-          <span style={{ fontWeight: 400 }}>{publisher.birthDate ?? ''}</span>
+      <div className="s21-row-full">
+        <div className="s21-col-left">
+          <span className="s21-label">Дата рождения:</span>
+          <span className="s21-value">{publisher.birthDate ?? ''}</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'baseline', flex: 1 }}>
-          <span style={{ display: 'flex', alignItems: 'baseline', gap: '5px', flex: '0 0 130px', fontWeight: 700, fontSize: '13.5px' }}>
-            <span style={{ display: 'inline-block', width: '12px', height: '12px', border: '1.4px solid #000', flex: '0 0 12px', position: 'relative', top: '1px' }}>
+        <div className="s21-col-right">
+          <span className="s21-checkbox-label">
+            <span className="s21-checkbox-box">
               {!isFemale && (
-                <span style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', fontSize: '12px', lineHeight: 1, fontWeight: 700 }}>✓</span>
+                <span className="s21-checkmark">✓</span>
               )}
             </span>
             Мужчина
           </span>
-          <span style={{ display: 'flex', alignItems: 'baseline', gap: '5px', flex: '0 0 130px', fontWeight: 700, fontSize: '13.5px' }}>
-            <span style={{
-              display: 'inline-block', width: '12px', height: '12px', border: '1.4px solid #000',
-              flex: '0 0 12px', position: 'relative', top: '1px',
-              ...(isFemale ? {} : {})
-            }}>
+          <span className="s21-checkbox-label">
+            <span className="s21-checkbox-box">
               {isFemale && (
-                <span style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', fontSize: '12px', lineHeight: 1, fontWeight: 700 }}>✓</span>
+                <span className="s21-checkmark">✓</span>
               )}
             </span>
             Женщина
@@ -128,30 +314,24 @@ export default function S21Card({ publisher, serviceRecords, serviceYear }: S21C
       </div>
 
       {/* Дата крещения + надежда */}
-      <div style={{ display: 'flex', alignItems: 'baseline', width: '100%', fontSize: '13.5px', padding: '3px 0', whiteSpace: 'nowrap' }}>
-        <div style={{ flex: '0 0 470px' }}>
-          <span style={{ fontWeight: 700, marginRight: '6px' }}>Дата крещения:</span>
-          <span style={{ fontWeight: 400 }}>{publisher.baptismDate ?? ''}</span>
+      <div className="s21-row-full">
+        <div className="s21-col-left">
+          <span className="s21-label">Дата крещения:</span>
+          <span className="s21-value">{publisher.baptismDate ?? ''}</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'baseline', flex: 1 }}>
-          <span style={{ display: 'flex', alignItems: 'baseline', gap: '5px', flex: '0 0 130px', fontWeight: 700, fontSize: '13.5px' }}>
-            <span style={{
-              display: 'inline-block', width: '12px', height: '12px', border: '1.4px solid #000',
-              flex: '0 0 12px', position: 'relative', top: '1px'
-            }}>
+        <div className="s21-col-right">
+          <span className="s21-checkbox-label">
+            <span className="s21-checkbox-box">
               {!isAnointed && (
-                <span style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', fontSize: '12px', lineHeight: 1, fontWeight: 700 }}>✓</span>
+                <span className="s21-checkmark">✓</span>
               )}
             </span>
             Другая овца
           </span>
-          <span style={{ display: 'flex', alignItems: 'baseline', gap: '5px', flex: '0 0 130px', fontWeight: 700, fontSize: '13.5px' }}>
-            <span style={{
-              display: 'inline-block', width: '12px', height: '12px', border: '1.4px solid #000',
-              flex: '0 0 12px', position: 'relative', top: '1px'
-            }}>
+          <span className="s21-checkbox-label">
+            <span className="s21-checkbox-box">
               {isAnointed && (
-                <span style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', fontSize: '12px', lineHeight: 1, fontWeight: 700 }}>✓</span>
+                <span className="s21-checkmark">✓</span>
               )}
             </span>
             Помазанный
@@ -160,11 +340,7 @@ export default function S21Card({ publisher, serviceRecords, serviceYear }: S21C
       </div>
 
       {/* Роли / назначения */}
-      <div style={{
-        display: 'flex', alignItems: 'baseline', flexWrap: 'wrap', rowGap: '4px',
-        padding: '6px 0 10px', fontWeight: 700, fontSize: '13.5px',
-        borderBottom: '2px solid #000', marginBottom: '12px'
-      }}>
+      <div className="s21-assignments">
         {[
           { key: 'elder', label: 'Старейшина' },
           { key: 'assistantServant', label: 'Помощник собрания' },
@@ -174,13 +350,10 @@ export default function S21Card({ publisher, serviceRecords, serviceYear }: S21C
         ].map(role => {
           const checked = (publisher.assignments as any)[role.key] === true;
           return (
-            <span key={role.key} style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginRight: '20px', maxWidth: '170px' }}>
-              <span style={{
-                display: 'inline-block', width: '12px', height: '12px', border: '1.4px solid #000',
-                flex: '0 0 12px', position: 'relative', top: '1px'
-              }}>
+            <span key={role.key} className="s21-role">
+              <span className="s21-checkbox-box">
                 {checked && (
-                  <span style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', fontSize: '12px', lineHeight: 1, fontWeight: 700 }}>✓</span>
+                  <span className="s21-checkmark">✓</span>
                 )}
               </span>
               {role.label}
@@ -190,29 +363,26 @@ export default function S21Card({ publisher, serviceRecords, serviceYear }: S21C
       </div>
 
       {/* Таблица служения */}
-      <table style={{
-        width: '100%', borderCollapse: 'collapse', border: '2px solid #000',
-        tableLayout: 'fixed'
-      }}>
+      <table className="s21-table">
         <colgroup>
-          <col style={{ width: '15%' }} />
-          <col style={{ width: '12%' }} />
-          <col style={{ width: '10%' }} />
-          <col style={{ width: '12%' }} />
-          <col style={{ width: '16%' }} />
-          <col style={{ width: '35%' }} />
+          <col className="s21-col-1" />
+          <col className="s21-col-2" />
+          <col className="s21-col-3" />
+          <col className="s21-col-4" />
+          <col className="s21-col-5" />
+          <col className="s21-col-6" />
         </colgroup>
         <thead>
           <tr>
-            <th style={{ border: '1px solid #000', padding: '6px', fontSize: '12.5px', fontWeight: 700, background: '#fff' }}>
+            <th className="s21-th">
               Служебный год
-              <span style={{ display: 'block', fontWeight: 700, fontSize: '15px', marginTop: '3px' }}>{serviceYear}</span>
+              <span className="s21-th-year">{serviceYear}</span>
             </th>
-            <th style={{ border: '1px solid #000', padding: '6px', fontSize: '12.5px', fontWeight: 700, background: '#fff' }}>Участвовал<br />в служении</th>
-            <th style={{ border: '1px solid #000', padding: '6px', fontSize: '12.5px', fontWeight: 700, background: '#fff' }}>Изучения<br />Библии</th>
-            <th style={{ border: '1px solid #000', padding: '6px', fontSize: '12.5px', fontWeight: 700, background: '#fff' }}>Подсобный<br />пионер</th>
-            <th style={{ border: '1px solid #000', padding: '6px', fontSize: '12.5px', fontWeight: 700, background: '#fff' }}>Часы<br />(если пионер<br />или миссионер)</th>
-            <th style={{ border: '1px solid #000', padding: '6px', fontSize: '12.5px', fontWeight: 700, background: '#fff' }}>Примечания</th>
+            <th className="s21-th">Участвовал<br />в служении</th>
+            <th className="s21-th">Изучения<br />Библии</th>
+            <th className="s21-th">Подсобный<br />пионер</th>
+            <th className="s21-th">Часы<br />(если пионер<br />или миссионер)</th>
+            <th className="s21-th">Примечания</th>
           </tr>
         </thead>
         <tbody>
@@ -220,40 +390,34 @@ export default function S21Card({ publisher, serviceRecords, serviceYear }: S21C
             const md = dataByMonth.get(monthNum);
             return (
               <tr key={monthNum}>
-                <td style={{ border: '1px solid #000', padding: '4px 8px', fontSize: '13px', height: '24px' }}>
+                <td className="s21-td">
                   {MONTH_NAMES[monthNum]}
                 </td>
-                <td style={{ border: '1px solid #000', padding: '4px 8px', fontSize: '13px', height: '24px', textAlign: 'center' }}>
+                <td className="s21-td-center">
                   {md && (
-                    <span style={{
-                      display: 'inline-block', width: '12px', height: '12px', border: '1.4px solid #000',
-                      position: 'relative', top: '1px'
-                    }}>
+                    <span className="s21-td-checkbox">
                       {md.participated && (
-                        <span style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', fontSize: '12px', lineHeight: 1, fontWeight: 700 }}>✓</span>
+                        <span className="s21-checkmark">✓</span>
                       )}
                     </span>
                   )}
                 </td>
-                <td style={{ border: '1px solid #000', padding: '4px 8px', fontSize: '13px', height: '24px', textAlign: 'center' }}>
+                <td className="s21-td-center">
                   {md?.bibleStudies ?? ''}
                 </td>
-                <td style={{ border: '1px solid #000', padding: '4px 8px', fontSize: '13px', height: '24px', textAlign: 'center' }}>
+                <td className="s21-td-center">
                   {md && (
-                    <span style={{
-                      display: 'inline-block', width: '12px', height: '12px', border: '1.4px solid #000',
-                      position: 'relative', top: '1px'
-                    }}>
+                    <span className="s21-td-checkbox">
                       {md.auxiliaryPioneer && (
-                        <span style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', fontSize: '12px', lineHeight: 1, fontWeight: 700 }}>✓</span>
+                        <span className="s21-checkmark">✓</span>
                       )}
                     </span>
                   )}
                 </td>
-                <td style={{ border: '1px solid #000', padding: '4px 8px', fontSize: '15px', height: '24px', textAlign: 'center' }}>
+                <td className="s21-td-hours">
                   {md?.hours ?? ''}
                 </td>
-                <td style={{ border: '1px solid #000', padding: '4px 8px', fontSize: '12.5px', height: '24px' }}>
+                <td className="s21-td-notes">
                   {md?.note ?? ''}
                 </td>
               </tr>
@@ -261,27 +425,18 @@ export default function S21Card({ publisher, serviceRecords, serviceYear }: S21C
           })}
           {/* Итого */}
           <tr>
-            <td colSpan={4} style={{
-              border: '1px solid #000', borderTop: '2px solid #000',
-              padding: '4px 8px', fontSize: '13px', fontWeight: 700, textAlign: 'right'
-            }}>
+            <td colSpan={4} className="s21-total-label">
               Итого
             </td>
-            <td style={{
-              border: '1px solid #000', borderTop: '2px solid #000',
-              padding: '4px 8px', fontSize: '16px', fontWeight: 700, textAlign: 'center'
-            }}>
+            <td className="s21-total-val">
               {totalHours || ''}
             </td>
-            <td style={{
-              border: '1px solid #000', borderTop: '2px solid #000',
-              padding: '4px 8px'
-            }}></td>
+            <td className="s21-total-empty"></td>
           </tr>
         </tbody>
       </table>
 
-      <div style={{ fontSize: '10px', color: '#444', marginTop: '10px' }}>S-21-U&nbsp;&nbsp;&nbsp;11/23</div>
+      <div className="s21-footer">S-21-U&nbsp;&nbsp;&nbsp;11/23</div>
     </div>
   );
 }
