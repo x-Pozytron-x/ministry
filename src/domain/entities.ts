@@ -135,6 +135,14 @@ export interface ServiceRecord {
   remarks?: string;
 }
 
+export interface VpsGroup {
+  id: string;
+  leaderPublisherId?: string;
+  assistantPublisherId?: string;
+  meetingPlace: string;
+  meetingTime: string;
+}
+
 export interface AttendanceReport {
   id: string;
   month: string; // YYYY-MM format
@@ -150,6 +158,7 @@ export interface CongregationData {
   publishers: Publisher[];
   serviceRecords: ServiceRecord[];
   attendanceReports: AttendanceReport[];
+  vpsGroups: VpsGroup[];
   metadata: {
     createdAt: string;
     updatedAt: string;
@@ -220,6 +229,7 @@ export const createEmptyCongregationData = (): CongregationData => ({
   publishers: [],
   serviceRecords: [],
   attendanceReports: [],
+  vpsGroups: [],
   metadata: {
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()

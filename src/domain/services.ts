@@ -1,6 +1,6 @@
 // Domain services - business logic for congregation management
 
-import type { Publisher, ServiceRecord, AttendanceReport, CongregationData, CongregationSettings } from './entities';
+import type { Publisher, ServiceRecord, AttendanceReport, CongregationData, CongregationSettings, VpsGroup } from './entities';
 import { touchCongregationData } from './entities';
 
 export class CongregationService {
@@ -283,6 +283,91 @@ export class AttendanceService {
   }
 }
 
+
+export class VpsGroupService {
+  /** Ensure vpsGroups array length matches settings.vpsGroupsCount.
+   *  Returns { data, error } — when error is set, the change is blocked. */
+  static syncVpsGroups(data: CongregationData, newCount: number): { data: CongregationData; error?: string } {
+    const currentGroups = data.vpsGroups || [];
+    const currentCount = currentGroups.length;
+
+    if (newCount === currentCount) return { data };
+
+    if (newCount > currentCount) {
+      const newGroups: VpsGroup[] = [];
+      for (let i = currentCount; i < newCount; i++) {
+        newGroups.push({
+          id: generateId(),
+          meetingPlace: '',
+          meetingTime: '',
+        });
+      }
+      return {
+        data: touchCongregationData({
+          ...data,
+          vpsGroups: [...currentGroups, ...newGroups]
+        })
+      };
+    }
+
+    // newCount < currentCount — validate groups being removed
+    for (let i = newCount; i < currentCount; i++) {
+      const group = currentGroups[i];
+      const groupNumber = i + 1;
+      const hasPublishers = data.publishers.some(p => p.vpsGroup === groupNumber);
+      if (hasPublishers || group.leaderPublisherId || group.assistantPublisherId || group.meetingPlace || group.meetingTime) {
+        return {
+          data,
+          error: `Невозможно уменьшить количество групп: группа ${groupNumber} не пуста. Уберите всех возвещателей из группы и очистите данные группы.`
+        };
+      }
+    }
+
+    return {
+      data: touchCongregationData({
+        ...data,
+        vpsGroups: currentGroups.slice(0, newCount)
+      })
+    };
+  }
+
+  static updateGroup(data: CongregationData, groupIndex: number, group: VpsGroup): CongregationData {
+    const groups = [...(data.vpsGroups || [])];
+    groups[groupIndex] = group;
+    return touchCongregationData({
+      ...data,
+      vpsGroups: groups
+    });
+  }
+
+  static getGroupPublishers(data: CongregationData, groupNumber: number): Publisher[] {
+    return data.publishers.filter(p => p.vpsGroup === groupNumber);
+  }
+
+  /** Leaders: elders and ministerial servants (male) in this group */
+  static getEligibleLeaders(data: CongregationData, groupNumber: number): Publisher[] {
+    return data.publishers.filter(p =>
+      p.vpsGroup === groupNumber &&
+      p.gender === 'male' &&
+      (p.assignments.elder || p.assignments.assistantServant)
+    );
+  }
+
+  /** Assistants: all male publishers in this group (elders, ministerial servants, other brothers) */
+  static getEligibleAssistants(data: CongregationData, groupNumber: number): Publisher[] {
+    return data.publishers.filter(p =>
+      p.vpsGroup === groupNumber &&
+      p.gender === 'male'
+    );
+  }
+
+  /** Get publisher name for display */
+  static getPublisherName(data: CongregationData, publisherId: string | undefined): string {
+    if (!publisherId) return '—';
+    const p = data.publishers.find(pub => pub.id === publisherId);
+    return p ? `${p.lastName} ${p.firstName}` : '—';
+  }
+}
 
 // ID generation helper
 export const generateId = (): string => {

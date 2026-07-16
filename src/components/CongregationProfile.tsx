@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import type { CongregationData, CongregationSettings } from '../domain';
-import { CongregationService, validateCongregationSettings, getServiceYearLabel, getCurrentServiceYearStart, touchCongregationData } from '../domain';
+import { CongregationService, VpsGroupService, validateCongregationSettings, getServiceYearLabel, getCurrentServiceYearStart, touchCongregationData } from '../domain';
 
 const WEEK_DAYS = [
   'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
@@ -43,8 +43,25 @@ export default function CongregationProfile({
 
     try {
       validateCongregationSettings(formData);
-      const updated = CongregationService.updateSettings(data, formData);
-      onUpdate(updated);
+
+      const newCount = formData.vpsGroupsCount;
+      const oldCount = data.settings.vpsGroupsCount;
+
+      // Sync vpsGroups if group count changed
+      if (newCount !== oldCount) {
+        const syncResult = VpsGroupService.syncVpsGroups(data, newCount);
+        if (syncResult.error) {
+          setError(syncResult.error);
+          return;
+        }
+        // Apply settings on the synced data
+        const updated = CongregationService.updateSettings(syncResult.data, formData);
+        onUpdate(updated);
+      } else {
+        const updated = CongregationService.updateSettings(data, formData);
+        onUpdate(updated);
+      }
+
       setIsEditing(false);
       setSuccess('Настройки собрания сохранены');
       setTimeout(() => setSuccess(''), 3000);

@@ -143,6 +143,7 @@ export class ApplicationService {
       publishers: [],
       serviceRecords: [],
       attendanceReports: [],
+      vpsGroups: [],
       metadata: {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()

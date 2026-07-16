@@ -204,6 +204,13 @@ export const migrateCongregationData = (rawData: any): CongregationData => {
     publishers,
     serviceRecords,
     attendanceReports: Array.isArray(data.attendanceReports) ? data.attendanceReports : [],
+    vpsGroups: Array.isArray(data.vpsGroups) ? data.vpsGroups.map((g: any) => ({
+      id: g.id || generateId(),
+      leaderPublisherId: g.leaderPublisherId || undefined,
+      assistantPublisherId: g.assistantPublisherId || undefined,
+      meetingPlace: String(g.meetingPlace || ''),
+      meetingTime: String(g.meetingTime || '')
+    })) : [],
     metadata: data.metadata ?? { createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
   };
 };
