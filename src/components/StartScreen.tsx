@@ -3,6 +3,12 @@
 import { useState, useRef } from 'react';
 import type { CongregationData } from '../domain';
 import type { ApplicationService } from '../application';
+import {
+  APP_VERSION,
+  APP_STATUS,
+  APP_AUTHOR_TELEGRAM,
+  APP_AUTHOR_TELEGRAM_URL
+} from '../config';
 
 interface StartScreenProps {
   applicationService: ApplicationService;
@@ -135,7 +141,7 @@ export default function StartScreen({ applicationService, onUnlock }: StartScree
       <div className="start-screen">
         <div className="logo">
           <h1>CongrArk</h1>
-          <p>Безопасное локальное хранение данных</p>
+          <p>Безопасное локальное хранение данных собрания</p>
         </div>
         <div className="button-group">
           <button onClick={() => setMode('create')} className="primary">
@@ -144,6 +150,36 @@ export default function StartScreen({ applicationService, onUnlock }: StartScree
           <button onClick={() => setMode('open')} className="secondary">
             Открыть существующий файл
           </button>
+        </div>
+
+        <div className="start-about">
+          <div className="about-card">
+            <h3>О приложении</h3>
+            <p>CongrArk — приложение для управления данными собрания. Все сведения о возвещателях, отчёты служения и посещаемость хранятся локально на вашем устройстве в зашифрованном виде.</p>
+            <p>Приложение работает полностью офлайн и не требует подключения к интернету для повседневного использования.</p>
+          </div>
+
+          <div className="about-card about-card-compact">
+            <div className="about-row">
+              <span className="about-label">Версия:</span>
+              <span>{APP_VERSION}</span>
+            </div>
+            <div className="about-row">
+              <span className="about-label">Статус:</span>
+              <span>{APP_STATUS}</span>
+            </div>
+            <div className="about-row">
+              <span className="about-label">Автор:</span>
+              <a
+                href={APP_AUTHOR_TELEGRAM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="about-link"
+              >
+                {APP_AUTHOR_TELEGRAM}
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     );
