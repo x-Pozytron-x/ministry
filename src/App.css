@@ -225,6 +225,7 @@
   top: 113px;
   padding: 5px 0;
   width: 98%;
+  max-width: 1180px;
   background: #1a1a1a;
   z-index: 20;
 }
@@ -519,13 +520,16 @@ input:checked + .slider:before {
   margin-left: auto;
   margin-right: auto; 
   margin-bottom: 1.5em;
-  margin-top: 29px; 
+  margin-top: 28px; 
   display: flex;
   width: 98%;
   justify-content: center;
   gap: 3px;
   background-color: var(--card-bg);
   padding: 0.5em 0;
+  max-width: 1180px;
+  border: 1px solid var(--border-color);
+  z-index: 20;  
 }
 
 .month-tabs button {
@@ -769,7 +773,7 @@ input:checked + .slider:before {
   .section-header {
     flex-direction: column;
     align-items: stretch;
-    gap: 1em;
+    gap: 1em; 
   }
 
   .list-item {

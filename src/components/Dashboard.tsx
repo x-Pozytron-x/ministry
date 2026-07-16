@@ -40,6 +40,10 @@ export default function Dashboard({ data }: DashboardProps) {
 
   const totalPublishers = data.publishers.length;
 
+  const elders = data.publishers.filter(p => p.assignments.elder).length;
+  const ministerialServants = data.publishers.filter(p => p.assignments.assistantServant).length;
+  const regularPioneers = data.publishers.filter(p => p.assignments.pioneer).length;
+
   const vpsGroups = data.settings.vpsGroupsCount || 0;
 
   return (
@@ -53,6 +57,18 @@ export default function Dashboard({ data }: DashboardProps) {
         <StatCard
           title="Всего возвещателей"
           value={totalPublishers}
+        />
+        <StatCard
+          title="Старейшины"
+          value={elders}
+        />
+        <StatCard
+          title="Помощники собрания"
+          value={ministerialServants}
+        />
+        <StatCard
+          title="Пионеры"
+          value={regularPioneers}
         />
         <StatCard
           title="Количество групп ВПС"

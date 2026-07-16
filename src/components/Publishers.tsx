@@ -230,224 +230,237 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
           <h3>{editingId ? 'Редактировать возвещателя' : 'Новый возвещатель'}</h3>
           <div className="form">
             {/* Basic Info */}
-            <div className="form-group">
-              <label>Фамилия *</label>
-              <input
-                type="text"
-                value={formData.lastName}
-                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                placeholder="Иванов"
-              />
+            <div className="form-row">
+              <div className="form-group">
+                <label>Фамилия *</label>
+                <input
+                  type="text"
+                  value={formData.lastName}
+                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  placeholder="Иванов"
+                />
+              </div>
+              <div className="form-group">
+                <label>Имя *</label>
+                <input
+                  type="text"
+                  value={formData.firstName}
+                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  placeholder="Иван"
+                />
+              </div>
             </div>
-            <div className="form-group">
-              <label>Имя *</label>
-              <input
-                type="text"
-                value={formData.firstName}
-                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                placeholder="Иван"
-              />
-            </div>
-            <div className="form-group">
-              <label>Основной телефон *</label>
-              <input
-                type="tel"
-                value={formData.phonePrimary}
-                onChange={(e) => setFormData({ ...formData, phonePrimary: e.target.value })}
-                placeholder="+7 (999) 123-45-67"
-              />
-            </div>
-            <div className="form-group">
-              <label>Адрес</label>
-              <input
-                type="text"
-                value={formData.address}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                placeholder="Город, улица, дом, квартира"
-              />
+            
+            <div className="form-row">
+              <div className="form-group">
+                <label>Основной телефон *</label>
+                <input
+                  type="tel"
+                  value={formData.phonePrimary}
+                  onChange={(e) => setFormData({ ...formData, phonePrimary: e.target.value })}
+                  placeholder="+7 (999) 123-45-67"
+                />
+              </div>
+              <div className="form-group">
+                <label>Адрес</label>
+                <input
+                  type="text"
+                  value={formData.address}
+                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                  placeholder="Город, улица, дом, квартира"
+                />
+              </div>
             </div>
 
             {/* Emergency Contact */}
-            <h4 style={{ marginTop: '1.5em', marginBottom: '0.5em' }}>Контакт для экстренной связи *</h4>
-            <div className="form-group">
-              <label>Имя</label>
-              <input
-                type="text"
-                value={formData.emergencyContact?.firstName}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    emergencyContact: { ...formData.emergencyContact!, firstName: e.target.value }
-                  })
-                }
-                placeholder="Имя"
-              />
-            </div>
-            <div className="form-group">
-              <label>Фамилия</label>
-              <input
-                type="text"
-                value={formData.emergencyContact?.lastName}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    emergencyContact: { ...formData.emergencyContact!, lastName: e.target.value }
-                  })
-                }
-                placeholder="Фамилия"
-              />
-            </div>
-            <div className="form-group">
-              <label>Телефон</label>
-              <input
-                type="tel"
-                value={formData.emergencyContact?.phone}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    emergencyContact: { ...formData.emergencyContact!, phone: e.target.value }
-                  })
-                }
-                placeholder="+7 (999) 123-45-67"
-              />
+            <h4>Контакт для экстренной связи *</h4>
+            <div className="form-row">
+              <div className="form-group">
+                <label>Имя</label>
+                <input
+                  type="text"
+                  value={formData.emergencyContact?.firstName}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      emergencyContact: { ...formData.emergencyContact!, firstName: e.target.value }
+                    })
+                  }
+                  placeholder="Имя"
+                />
+              </div>
+              <div className="form-group">
+                <label>Фамилия</label>
+                <input
+                  type="text"
+                  value={formData.emergencyContact?.lastName}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      emergencyContact: { ...formData.emergencyContact!, lastName: e.target.value }
+                    })
+                  }
+                  placeholder="Фамилия"
+                />
+              </div>
+              <div className="form-group">
+                <label>Телефон</label>
+                <input
+                  type="tel"
+                  value={formData.emergencyContact?.phone}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      emergencyContact: { ...formData.emergencyContact!, phone: e.target.value }
+                    })
+                  }
+                  placeholder="+7 (999) 123-45-67"
+                />
+              </div>
             </div>
 
             {/* Additional Info */}
-            <div className="form-group">
-              <label>Группа</label>
-              <select
-                value={formData.vpsGroup || ''}
-                onChange={(e) =>
-                  setFormData({ ...formData, vpsGroup: e.target.value ? Number(e.target.value) : undefined })
-                }
-              >
-                <option value="">Не выбрано</option>
-                {groupOptions.map((num) => (
-                  <option key={num} value={num}>
-                    Группа {num}
-                  </option>
-                ))}
-              </select>
+            <div className="form-row">
+              <div className="form-group">
+                <label>Группа</label>
+                <select
+                  value={formData.vpsGroup || ''}
+                  onChange={(e) =>
+                    setFormData({ ...formData, vpsGroup: e.target.value ? Number(e.target.value) : undefined })
+                  }
+                >
+                  <option value="">Не выбрано</option>
+                  {groupOptions.map((num) => (
+                    <option key={num} value={num}>
+                      Группа {num}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Дата рождения</label>
+                <input
+                  type="text"
+                  value={formData.birthDate}
+                  onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Дата крещения</label>
+                <input
+                  type="text"
+                  value={formData.baptismDate}
+                  onChange={(e) => setFormData({ ...formData, baptismDate: e.target.value })}
+                />
+              </div>
             </div>
 
-            <div className="form-group">
-              <label>Дата рождения</label>
-              <input
-                type="text"
-                value={formData.birthDate}
-                onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
-              />
-            </div>
+            <div className="form-row">
+              <div className="form-group">
+                <label>Пол *</label>
+                <select
+                  value={formData.gender}
+                  onChange={(e) => setFormData({ ...formData, gender: e.target.value as 'male' | 'female' })}
+                >
+                  <option value="male">Мужской</option>
+                  <option value="female">Женский</option>
+                </select>
+              </div>
 
-            <div className="form-group">
-              <label>Дата крещения</label>
-              <input
-                type="text"
-                value={formData.baptismDate}
-                onChange={(e) => setFormData({ ...formData, baptismDate: e.target.value })}
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Пол *</label>
-              <select
-                value={formData.gender}
-                onChange={(e) => setFormData({ ...formData, gender: e.target.value as 'male' | 'female' })}
-              >
-                <option value="male">Мужской</option>
-                <option value="female">Женский</option>
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label>Надежда *</label>
-              <select
-                value={formData.hope}
-                onChange={(e) =>
-                  setFormData({ ...formData, hope: e.target.value as 'other_sheep' | 'anointed' })
-                }
-              >
-                <option value="other_sheep">Другие овцы</option>
-                <option value="anointed">Помазанник</option>
-              </select>
+              <div className="form-group">
+                <label>Надежда *</label>
+                <select
+                  value={formData.hope}
+                  onChange={(e) =>
+                    setFormData({ ...formData, hope: e.target.value as 'other_sheep' | 'anointed' })
+                  }
+                >
+                  <option value="other_sheep">Другие овцы</option>
+                  <option value="anointed">Помазанник</option>
+                </select>
+              </div>
             </div>
 
             {/* Assignments */}
-            <h4 style={{ marginTop: '1.5em', marginBottom: '0.5em' }}>Назначения</h4>
-            <div className="form-group checkbox">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={formData.assignments?.elder}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      assignments: { ...formData.assignments!, elder: e.target.checked }
-                    })
-                  }
-                />
-                Старейшина
-              </label>
-            </div>
-            <div className="form-group checkbox">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={formData.assignments?.assistantServant}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      assignments: { ...formData.assignments!, assistantServant: e.target.checked }
-                    })
-                  }
-                />
-                Помощник служителя
-              </label>
-            </div>
-            <div className="form-group checkbox">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={formData.assignments?.pioneer}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      assignments: { ...formData.assignments!, pioneer: e.target.checked }
-                    })
-                  }
-                />
-                Пионер
-              </label>
-            </div>
-            <div className="form-group checkbox">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={formData.assignments?.specialPioneer}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      assignments: { ...formData.assignments!, specialPioneer: e.target.checked }
-                    })
-                  }
-                />
-                Специальный пионер
-              </label>
-            </div>
-            <div className="form-group checkbox">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={formData.assignments?.missionary}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      assignments: { ...formData.assignments!, missionary: e.target.checked }
-                    })
-                  }
-                />
-                Миссионер
-              </label>
+            <h4>Назначения</h4>
+            <div className="form-row-checkboxes">
+              <div className="form-group checkbox">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={formData.assignments?.elder}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        assignments: { ...formData.assignments!, elder: e.target.checked }
+                      })
+                    }
+                  />
+                  Старейшина
+                </label>
+              </div>
+              <div className="form-group checkbox">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={formData.assignments?.assistantServant}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        assignments: { ...formData.assignments!, assistantServant: e.target.checked }
+                      })
+                    }
+                  />
+                  Помощник служителя
+                </label>
+              </div>
+              <div className="form-group checkbox">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={formData.assignments?.pioneer}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        assignments: { ...formData.assignments!, pioneer: e.target.checked }
+                      })
+                    }
+                  />
+                  Пионер
+                </label>
+              </div>
+              <div className="form-group checkbox">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={formData.assignments?.specialPioneer}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        assignments: { ...formData.assignments!, specialPioneer: e.target.checked }
+                      })
+                    }
+                  />
+                  Специальный пионер
+                </label>
+              </div>
+              <div className="form-group checkbox">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={formData.assignments?.missionary}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        assignments: { ...formData.assignments!, missionary: e.target.checked }
+                      })
+                    }
+                  />
+                  Миссионер
+                </label>
+              </div>
             </div>
 
             {error && <div className="error">{error}</div>}
@@ -461,7 +474,7 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
             </div>
 
             {editingId && (
-              <div style={{ marginTop: '0.75em', textAlign: 'right' }}>
+              <div style={{ marginTop: '0.5em', textAlign: 'right' }}>
                 <button
                   onClick={() => {
                     if (confirm('Удалить возвещателя? Это действие нельзя отменить')) {
@@ -470,7 +483,7 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
                     }
                   }}
                   className="danger"
-                  style={{ background: 'var(--danger, #d9534f)', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: 4 }}
+                  style={{ background: 'var(--danger, #d9534f)', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 4, fontSize: '0.9em' }}
                 >
                   Удалить возвещателя
                 </button>
@@ -481,6 +494,50 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
       )}
 
       <style>{`
+        .form-card {
+          margin-top: 35px;
+          padding: 12px 16px;
+        }
+        .form-card h3 {
+          margin-top: 0;
+          margin-bottom: 10px;
+        }
+        .form-row {
+          display: flex;
+          gap: 16px;
+          margin-bottom: 6px;
+          width: 100%;
+        }
+        .form-row .form-group {
+          flex: 1;
+          margin-bottom: 0;
+        }
+        .form-group label {
+          margin-bottom: 2px;
+          display: block;
+          font-size: 0.85em;
+        }
+        .form-group input, .form-group select {
+          padding: 5px 8px;
+        }
+        .form-row-checkboxes {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 16px;
+          align-items: center;
+          margin-bottom: 4px;
+        }
+        .form-row-checkboxes .form-group.checkbox {
+          margin-bottom: 0;
+          margin-top: 0;
+        }
+        .form-card h4 {
+          margin-top: 0.6em;
+          margin-bottom: 0.2em;
+        }
+        .button-group {
+          margin-top: 10px;
+        }
         .publishers-grid-container {
           overflow-x: auto;
           margin-top: 45px;
@@ -492,7 +549,7 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
         .excel-table {
           width: 100%;
           border-collapse: collapse;
-          font-size: 0.85em;
+          font-size: 0.75em;
           background-color: var(--card-bg, #fff);
           color: var(--text-primary, #000);
           text-align: left;
