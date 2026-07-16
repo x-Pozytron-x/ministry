@@ -79,7 +79,7 @@ export default function S21Page({ data }: S21PageProps) {
       </div>
 
       {/* Карточки */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div style={{ position: 'relative', top: '85px',  display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {sorted.length === 0 ? (
           <div className="empty">Нет возвещателей в этой категории</div>
         ) : (

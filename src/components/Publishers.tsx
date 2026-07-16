@@ -483,7 +483,7 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
       <style>{`
         .publishers-grid-container {
           overflow-x: auto;
-          margin-top: 1em;
+          margin-top: 45px;
           border: 1px solid var(--border-color, #ccc);
           border-radius: 4px;
           

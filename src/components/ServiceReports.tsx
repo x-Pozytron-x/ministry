@@ -196,7 +196,7 @@ export default function ServiceReports({ data, onUpdate }: ServiceReportsProps) 
   return (
     <div className="section">
       <div className="section-header">
-        <h2>Service Reports</h2>
+        <h2>Reports</h2>
         <button onClick={handleImportClick} className="primary">
           📥 Импорт CSV
         </button>

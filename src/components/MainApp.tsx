@@ -193,7 +193,7 @@ export default function MainApp({ initialData, currentPassword, applicationServi
           className={activeTab === 'service-reports' ? 'active' : ''}
           onClick={() => setActiveTab('service-reports')}
         >
-          📋 Service Reports
+          📋 Reports
         </button>
         <button
           className={activeTab === 'meeting-attendance' ? 'active' : ''}

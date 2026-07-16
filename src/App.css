@@ -213,6 +213,7 @@
 /* Section */
 .section {
   margin-bottom: 2em;
+  position: relative;
 }
 
 .section-header {
@@ -220,6 +221,12 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5em;
+  position: fixed;
+  top: 113px;
+  padding: 5px 0;
+  width: 98%;
+  background: #1a1a1a;
+  z-index: 20;
 }
 
 .section-header h2 {
@@ -508,10 +515,16 @@ input:checked + .slider:before {
 
 /* Month tabs */
 .month-tabs {
-  display: flex;
-  gap: 0.5em;
+  position: fixed;
+  margin-left: auto;
+  margin-right: auto; 
   margin-bottom: 1.5em;
-  overflow-x: auto;
+  margin-top: 29px; 
+  display: flex;
+  width: 98%;
+  justify-content: center;
+  gap: 3px;
+  background-color: var(--card-bg);
   padding: 0.5em 0;
 }
 
@@ -545,6 +558,7 @@ input:checked + .slider:before {
 }
 
 .reports-table {
+  margin-top: 75px;
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9em;
@@ -560,8 +574,14 @@ input:checked + .slider:before {
 }
 
 .reports-table td {
-  padding: 0.8em 1em;
+  padding: 0.5em 1em;
   border-bottom: 1px solid var(--border-color);
+  font-size: 0.7em;
+  text-align: center;
+}
+.reports-table td:nth-child(2),
+.reports-table td:nth-child(6) {
+  text-align: left;
 }
 
 .reports-table tbody tr:hover {
