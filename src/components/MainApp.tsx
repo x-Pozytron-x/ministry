@@ -3,6 +3,18 @@
 import { useState } from 'react';
 import type { CongregationData } from '../domain';
 import type { ApplicationService } from '../application';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  ICON_DASHBOARD,
+  ICON_PUBLISHERS,
+  ICON_VPS,
+  ICON_REPORTS,
+  ICON_SETTINGS,
+  ICON_SAVE,
+  ICON_LOGOUT,
+  ICON_CHECK,
+  ICON_WARNING,
+} from '../config/icons';
 import { useAutoSave } from '../hooks';
 import Publishers from './Publishers';
 import Attendance from './Attendance';
@@ -147,20 +159,12 @@ export default function MainApp({ initialData, currentPassword, applicationServi
         <div className="header-left">
           <h1>{data.settings.name || 'CongrArk'}</h1>
           <div className="save-status">
-            {isSaving && <span className="saving">💾 Сохранение...</span>}
+            {isSaving && <span className="saving"><FontAwesomeIcon icon={ICON_SAVE} spin /> Сохранение...</span>}
             {!isSaving && lastSaved && (
-              <span className="saved">✓ Сохранено: {formatLastSaved(lastSaved)}</span>
+              <span className="saved"><FontAwesomeIcon icon={ICON_CHECK} /> Сохранено: {formatLastSaved(lastSaved)}</span>
             )}
-            {autoSaveError && <span className="error-indicator">⚠️ Ошибка автосохранения</span>}
+            {autoSaveError && <span className="error-indicator"><FontAwesomeIcon icon={ICON_WARNING} /> Ошибка автосохранения</span>}
           </div>
-        </div>
-        <div className="header-right">
-          <button onClick={handleManualSave} className="secondary" disabled={isSaving}>
-            💾 Скачать файл
-          </button>
-          <button onClick={handleLogout} className="secondary">
-            🚪 Выход
-          </button>
         </div>
       </header>
 
@@ -176,19 +180,19 @@ export default function MainApp({ initialData, currentPassword, applicationServi
           className={activeTab === 'dashboard' ? 'active' : ''}
           onClick={() => setActiveTab('dashboard')}
         >
-          📊 Dashboard
+          <FontAwesomeIcon icon={ICON_DASHBOARD} /> Dashboard
         </button>
         <button
           className={activeTab === 'publishers' ? 'active' : ''}
           onClick={() => setActiveTab('publishers')}
         >
-          👥 Proclaimers
+          <FontAwesomeIcon icon={ICON_PUBLISHERS} /> Proclaimers
         </button>
         <button
           className={activeTab === 'vps' ? 'active' : ''}
           onClick={() => setActiveTab('vps')}
         >
-          🏠 ВПС
+          <FontAwesomeIcon icon={ICON_VPS} /> ВПС
         </button>
         <button
           className={activeTab === 'service-records' ? 'active' : ''}
@@ -200,7 +204,7 @@ export default function MainApp({ initialData, currentPassword, applicationServi
           className={activeTab === 'service-reports' ? 'active' : ''}
           onClick={() => setActiveTab('service-reports')}
         >
-          📋 Reports
+          <FontAwesomeIcon icon={ICON_REPORTS} /> Reports
         </button>
         <button
           className={activeTab === 'meeting-attendance' ? 'active' : ''}
@@ -212,8 +216,17 @@ export default function MainApp({ initialData, currentPassword, applicationServi
           className={activeTab === 'profile' ? 'active' : ''}
           onClick={() => setActiveTab('profile')}
         >
-          ⚙️
+          <FontAwesomeIcon icon={ICON_SETTINGS} />
         </button>
+        
+        <div className="header-right">
+          <button onClick={handleManualSave} className="secondary" disabled={isSaving}>
+            <FontAwesomeIcon icon={ICON_SAVE} />
+          </button>
+          <button onClick={handleLogout} className="secondary">
+            <FontAwesomeIcon icon={ICON_LOGOUT} />
+          </button>
+        </div>
       </nav>
 
       <main className="app-content">

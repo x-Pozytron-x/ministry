@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import type { CongregationData, VpsGroup } from '../domain';
 import { VpsGroupService } from '../domain';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ICON_EDIT } from '../config/icons';
 
 interface VpsPageProps {
   data: CongregationData;
@@ -109,7 +111,7 @@ export default function VpsPage({ data, onUpdate }: VpsPageProps) {
               <div key={i} className="vps-group-column">
                 <div className="vps-group-header" onClick={() => openEditModal(i)} title="Редактировать группу">
                   <span>Группа {i + 1}</span>
-                  <span className="vps-edit-icon">✎</span>
+                  <span className="vps-edit-icon"><FontAwesomeIcon icon={ICON_EDIT} /></span>
                 </div>
 
                 <div className="vps-cell vps-cell-leader">

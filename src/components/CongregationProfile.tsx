@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import type { CongregationData, CongregationSettings } from '../domain';
 import { CongregationService, VpsGroupService, validateCongregationSettings, getServiceYearLabel, getCurrentServiceYearStart, touchCongregationData } from '../domain';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ICON_EDIT, ICON_BROOM } from '../config/icons';
 
 const WEEK_DAYS = [
   'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
@@ -124,7 +126,7 @@ export default function CongregationProfile({
           <h3>Информация о собрании</h3>
           {!isEditing && (
             <button onClick={() => setIsEditing(true)} className="secondary">
-              ✏️ Редактировать
+              <FontAwesomeIcon icon={ICON_EDIT} /> Редактировать
             </button>
           )}
         </div>
@@ -275,7 +277,7 @@ export default function CongregationProfile({
         <p>Обновлено: {new Date(data.metadata.updatedAt).toLocaleString()}</p>
         {emptyRecords > 0 && (
           <button onClick={handleCleanEmptyRecords} className="secondary" style={{ marginTop: '8px' }}>
-            🧹 Clean empty service records ({emptyRecords})
+            <FontAwesomeIcon icon={ICON_BROOM} /> Clean empty service records ({emptyRecords})
           </button>
         )}
       </div>

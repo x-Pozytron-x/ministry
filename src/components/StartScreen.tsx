@@ -3,6 +3,8 @@
 import { useState, useRef } from 'react';
 import type { CongregationData } from '../domain';
 import type { ApplicationService } from '../application';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ICON_FILE, ICON_FOLDER } from '../config/icons';
 import {
   APP_VERSION,
   APP_STATUS,
@@ -256,13 +258,13 @@ export default function StartScreen({ applicationService, onUnlock }: StartScree
           />
           {selectedFile ? (
             <div className="file-info">
-              <span className="file-icon">📄</span>
+              <span className="file-icon"><FontAwesomeIcon icon={ICON_FILE} /></span>
               <span className="file-name">{selectedFile.name}</span>
               <span className="file-size">({(selectedFile.size / 1024).toFixed(2)} KB)</span>
             </div>
           ) : (
             <div className="drop-zone-content">
-              <span className="upload-icon">📁</span>
+              <span className="upload-icon"><FontAwesomeIcon icon={ICON_FOLDER} /></span>
               <p>Перетащите файл сюда или нажмите для выбора</p>
               <small>.json файлы</small>
             </div>

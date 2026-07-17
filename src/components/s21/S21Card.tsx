@@ -1,4 +1,6 @@
 import type { Publisher, ServiceRecord, MonthlyServiceData } from '../../domain';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ICON_CHECK } from '../../config/icons';
 
 interface S21CardProps {
   publisher: Publisher;
@@ -297,7 +299,7 @@ export default function S21Card({ publisher, serviceRecords, serviceYear }: S21C
           <span className="s21-checkbox-label">
             <span className="s21-checkbox-box">
               {!isFemale && (
-                <span className="s21-checkmark">✓</span>
+                <span className="s21-checkmark"><FontAwesomeIcon icon={ICON_CHECK} /></span>
               )}
             </span>
             Мужчина
@@ -305,7 +307,7 @@ export default function S21Card({ publisher, serviceRecords, serviceYear }: S21C
           <span className="s21-checkbox-label">
             <span className="s21-checkbox-box">
               {isFemale && (
-                <span className="s21-checkmark">✓</span>
+                <span className="s21-checkmark"><FontAwesomeIcon icon={ICON_CHECK} /></span>
               )}
             </span>
             Женщина
@@ -323,7 +325,7 @@ export default function S21Card({ publisher, serviceRecords, serviceYear }: S21C
           <span className="s21-checkbox-label">
             <span className="s21-checkbox-box">
               {!isAnointed && (
-                <span className="s21-checkmark">✓</span>
+                <span className="s21-checkmark"><FontAwesomeIcon icon={ICON_CHECK} /></span>
               )}
             </span>
             Другая овца
@@ -331,7 +333,7 @@ export default function S21Card({ publisher, serviceRecords, serviceYear }: S21C
           <span className="s21-checkbox-label">
             <span className="s21-checkbox-box">
               {isAnointed && (
-                <span className="s21-checkmark">✓</span>
+                <span className="s21-checkmark"><FontAwesomeIcon icon={ICON_CHECK} /></span>
               )}
             </span>
             Помазанный
@@ -353,7 +355,7 @@ export default function S21Card({ publisher, serviceRecords, serviceYear }: S21C
             <span key={role.key} className="s21-role">
               <span className="s21-checkbox-box">
                 {checked && (
-                  <span className="s21-checkmark">✓</span>
+                  <span className="s21-checkmark"><FontAwesomeIcon icon={ICON_CHECK} /></span>
                 )}
               </span>
               {role.label}
@@ -397,7 +399,7 @@ export default function S21Card({ publisher, serviceRecords, serviceYear }: S21C
                   {md && (
                     <span className="s21-td-checkbox">
                       {md.participated && (
-                        <span className="s21-checkmark">✓</span>
+                        <span className="s21-checkmark"><FontAwesomeIcon icon={ICON_CHECK} /></span>
                       )}
                     </span>
                   )}
@@ -409,7 +411,7 @@ export default function S21Card({ publisher, serviceRecords, serviceYear }: S21C
                   {md && (
                     <span className="s21-td-checkbox">
                       {md.auxiliaryPioneer && (
-                        <span className="s21-checkmark">✓</span>
+                        <span className="s21-checkmark"><FontAwesomeIcon icon={ICON_CHECK} /></span>
                       )}
                     </span>
                   )}

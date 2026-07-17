@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { CongregationData } from '../domain';
 import { AttendanceReportService, generateId } from '../domain';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ICON_ATTENDANCE } from '../config/icons';
 
 interface AttendanceProps {
   data: CongregationData;
@@ -136,7 +138,7 @@ export default function Attendance({ data, onUpdate }: AttendanceProps) {
     <div className="s88">
 
       <div className="header">
-        <h2>📊 S-88 Attendance</h2>
+        <h2><FontAwesomeIcon icon={ICON_ATTENDANCE} /> S-88 Attendance</h2>
         <div>{baseYear}/{baseYear + 1}</div>
       </div>
 

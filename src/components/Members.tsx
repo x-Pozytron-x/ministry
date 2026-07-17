@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import type { Member, AppData } from '../domain';
 import { MemberService, generateId, validateMember } from '../domain';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ICON_EDIT, ICON_DELETE } from '../config/icons';
 
 interface MembersProps {
   data: AppData;
@@ -166,10 +168,10 @@ export default function Members({ data, onUpdate }: MembersProps) {
               </div>
               <div className="item-actions">
                 <button onClick={() => handleEdit(member)} className="icon-button">
-                  ✏️
+                  <FontAwesomeIcon icon={ICON_EDIT} />
                 </button>
                 <button onClick={() => handleDelete(member.id)} className="icon-button">
-                  🗑️
+                  <FontAwesomeIcon icon={ICON_DELETE} />
                 </button>
               </div>
             </div>

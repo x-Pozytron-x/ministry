@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import type { Report, AppData } from '../domain';
 import { ReportService, generateId, validateReport } from '../domain';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ICON_USER, ICON_CALENDAR, ICON_EDIT, ICON_DELETE } from '../config/icons';
 
 interface ReportsProps {
   data: AppData;
@@ -189,8 +191,8 @@ export default function Reports({ data, onUpdate }: ReportsProps) {
               <div className="item-content">
                 <div className="item-title">{report.title}</div>
                 <div className="item-meta">
-                  <span>👤 {getAuthorName(report.authorId)}</span>
-                  <span>📅 {new Date(report.createdAt).toLocaleDateString()}</span>
+                  <span><FontAwesomeIcon icon={ICON_USER} /> {getAuthorName(report.authorId)}</span>
+                  <span><FontAwesomeIcon icon={ICON_CALENDAR} /> {new Date(report.createdAt).toLocaleDateString()}</span>
                   {report.tags && report.tags.length > 0 && (
                     <span className="tags-inline">
                       {report.tags.map((tag) => (
@@ -205,10 +207,10 @@ export default function Reports({ data, onUpdate }: ReportsProps) {
               </div>
               <div className="item-actions">
                 <button onClick={() => handleEdit(report)} className="icon-button">
-                  ✏️
+                  <FontAwesomeIcon icon={ICON_EDIT} />
                 </button>
                 <button onClick={() => handleDelete(report.id)} className="icon-button">
-                  🗑️
+                  <FontAwesomeIcon icon={ICON_DELETE} />
                 </button>
               </div>
             </div>

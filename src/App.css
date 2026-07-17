@@ -213,7 +213,9 @@
   font-size: 1.5em;
   margin: 0;
 }
-
+.header-right {
+  margin-left: auto;
+}
 .save-status {
   font-size: 0.9em;
   color: var(--text-secondary);
@@ -238,7 +240,7 @@
 
 .tabs {
   position: fixed;
-  top: 71px;
+  top: 68px;
   display: flex;
   background-color: var(--card-bg);
   border-bottom: 1px solid var(--border-color);
@@ -289,7 +291,7 @@
   align-items: center;
   margin-bottom: 1.5em;
   position: fixed;
-  top: 113px;
+  top: 110px;
   padding: 5px 0;
   width: 98%;
   max-width: 1180px;
@@ -587,7 +589,7 @@ input:checked + .slider:before {
   margin-left: auto;
   margin-right: auto; 
   margin-bottom: 1.5em;
-  margin-top: 28px; 
+  margin-top: 26px; 
   display: flex;
   width: 98%;
   justify-content: center;

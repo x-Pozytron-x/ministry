@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 import type { ServiceRecord, CongregationData } from '../domain';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ServiceRecordService, generateId, validateServiceRecord } from '../domain';
+import { ICON_CLOCK, ICON_BOOK, ICON_VIDEO, ICON_RETURN, ICON_BIBLE, ICON_EDIT, ICON_DELETE } from '../config/icons';
 
 interface ServiceRecordsProps {
   data: CongregationData;
@@ -226,20 +228,20 @@ export default function ServiceRecords({ data, onUpdate }: ServiceRecordsProps) 
               <div className="item-content">
                 <div className="item-title">{getPublisherName(record.publisherId)}</div>
                 <div className="item-meta">
-                  <span>⏱️ {record.hours} ч</span>
-                  <span>📖 Публ: {record.placements}</span>
-                  <span>🎥 Видео: {record.videoShowings}</span>
-                  <span>🔄 ПП: {record.returnVisits}</span>
-                  <span>📚 Изуч: {record.bibleStudies}</span>
+                  <span><FontAwesomeIcon icon={ICON_CLOCK} /> {record.hours} ч</span>
+                  <span><FontAwesomeIcon icon={ICON_BOOK} /> Публ: {record.placements}</span>
+                  <span><FontAwesomeIcon icon={ICON_VIDEO} /> Видео: {record.videoShowings}</span>
+                  <span><FontAwesomeIcon icon={ICON_RETURN} /> ПП: {record.returnVisits}</span>
+                  <span><FontAwesomeIcon icon={ICON_BIBLE} /> Изуч: {record.bibleStudies}</span>
                 </div>
                 {record.remarks && <div className="item-notes">{record.remarks}</div>}
               </div>
               <div className="item-actions">
                 <button onClick={() => handleEdit(record)} className="icon-button">
-                  ✏️
+                  <FontAwesomeIcon icon={ICON_EDIT} />
                 </button>
                 <button onClick={() => handleDelete(record.id)} className="icon-button">
-                  🗑️
+                  <FontAwesomeIcon icon={ICON_DELETE} />
                 </button>
               </div>
             </div>
