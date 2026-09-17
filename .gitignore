@@ -44,3 +44,7 @@ Thumbs.db
 # IDE
 .vscode
 .idea
+
+.claude
+.continue
+opencode.json
