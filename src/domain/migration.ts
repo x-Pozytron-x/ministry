@@ -124,6 +124,7 @@ const migrateMonthlyServiceData = (raw: any): MonthlyServiceData => {
   const hours = raw.hours !== undefined && raw.hours !== null ? Number(raw.hours) : null;
   const auxiliaryPioneer = Boolean(raw.auxiliaryPioneer ?? raw.auxiliary_pioneer ?? raw.auxiliary ?? false);
   const inactive = Boolean(raw.inactive ?? false);
+  const pioneer = raw.pioneer !== undefined ? Boolean(raw.pioneer) : undefined;
   const note = String(raw.note ?? raw.remarks ?? '');
 
   return {
@@ -133,6 +134,7 @@ const migrateMonthlyServiceData = (raw: any): MonthlyServiceData => {
     hours,
     auxiliaryPioneer,
     inactive,
+    pioneer,
     note,
     // Preserve legacy fields if present
     placements: raw.placements,
@@ -199,6 +201,9 @@ export const migrateCongregationData = (rawData: any): CongregationData => {
   const serviceRecords = serviceRecordsRaw.map((sr: any) => migrateServiceRecord(sr));
 
   return {
+    // Spread raw data first so extension fields (s88Records, versionHistory, …) survive.
+    // Known fields are explicitly overridden below with their migrated versions.
+    ...data,
     version: data.version ?? 1,
     settings,
     publishers,

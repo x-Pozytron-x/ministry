@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { CongregationData, MonthlyServiceData, ServiceRecord, ServiceYear } from '../domain';
-import { generateId, touchCongregationData } from '../domain';
+import { generateId, touchCongregationData, getServiceYear } from '../domain';
 import CSVImport, { type ImportRecord } from './CSVImport';
 
 interface ServiceReportsProps {
@@ -23,19 +23,6 @@ const SERVICE_MONTHS = [
   { value: '08', label: 'Август' }
 ];
 
-const getCurrentServiceYear = (): string => {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth() + 1; // 1-12
-
-  // Service year starts in September (month 9)
-  if (month >= 9) {
-    return `${year}/${year + 1}`;
-  } else {
-    return `${year - 1}/${year}`;
-  }
-};
-
 const getMonthYearFormat = (serviceYear: string, monthValue: string): string => {
   const [startYear, endYear] = serviceYear.split('/').map(Number);
   const monthNum = parseInt(monthValue, 10);
@@ -46,8 +33,16 @@ const getMonthYearFormat = (serviceYear: string, monthValue: string): string => 
 };
 
 export default function ServiceReports({ data, onUpdate }: ServiceReportsProps) {
-  const currentServiceYear = getCurrentServiceYear();
-  const [selectedServiceYear] = useState<ServiceYear>(currentServiceYear as ServiceYear);
+  const currentServiceYear: ServiceYear = data.settings.serviceYearStart
+    ? getServiceYear(data.settings.serviceYearStart)
+    : ((): ServiceYear => {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth() + 1;
+        const start = month >= 9 ? year : year - 1;
+        return `${start}/${start + 1}`;
+      })();
+  const [selectedServiceYear] = useState<ServiceYear>(currentServiceYear);
   const [selectedMonth, setSelectedMonth] = useState('09');
   const [showImport, setShowImport] = useState(false);
   const [showReplaceWarning, setShowReplaceWarning] = useState(false);

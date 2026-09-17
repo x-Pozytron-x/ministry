@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
-import type { CongregationData, Publisher } from '../../domain';
+import type { CongregationData, Publisher, ServiceYear } from '../../domain';
+import { getServiceYear } from '../../domain';
 import S21Card from './S21Card';
 
 interface S21PageProps {
@@ -7,20 +8,20 @@ interface S21PageProps {
   onUpdate: (data: CongregationData) => void;
 }
 
-const getCurrentServiceYear = (): string => {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth() + 1;
-  return month >= 9 ? `${year}/${year + 1}` : `${year - 1}/${year}`;
-};
-
 type Tab = { type: 'pioneers' } | { type: 'group'; groupNumber: number };
 
 const isPioneer = (p: Publisher): boolean =>
   p.assignments.pioneer || p.assignments.specialPioneer;
 
 export default function S21Page({ data }: S21PageProps) {
-  const serviceYear = useMemo(() => getCurrentServiceYear(), []);
+  const serviceYear: ServiceYear = data.settings.serviceYearStart
+    ? getServiceYear(data.settings.serviceYearStart)
+    : ((): ServiceYear => {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth() + 1;
+        return month >= 9 ? `${year}/${year + 1}` : `${year - 1}/${year}`;
+      })();
   const groupCount = data.settings.vpsGroupsCount;
 
   const [activeTab, setActiveTab] = useState<Tab>({ type: 'pioneers' });

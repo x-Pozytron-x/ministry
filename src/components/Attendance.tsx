@@ -37,9 +37,12 @@ const isValid = (v: number | null): v is number =>
 
 export default function Attendance({ data, onUpdate }: AttendanceProps) {
 
-  const now = new Date();
-  const baseYear =
-    now.getMonth() >= 8 ? now.getFullYear() : now.getFullYear() - 1;
+  const baseYear = data.settings.serviceYearStart
+    ? data.settings.serviceYearStart
+    : (() => {
+        const now = new Date();
+        return now.getMonth() >= 8 ? now.getFullYear() : now.getFullYear() - 1;
+      })();
 
   const [edit, setEdit] = useState<null | {
     date: string;

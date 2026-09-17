@@ -255,3 +255,7 @@ export const getCurrentServiceYearStart = (): number => {
   const now = new Date();
   return now.getMonth() >= 8 ? now.getFullYear() : now.getFullYear() - 1;
 };
+
+/** Derive service year string from a start year number. */
+export const getServiceYear = (serviceYearStart: number): ServiceYear =>
+  `${serviceYearStart}/${serviceYearStart + 1}`;

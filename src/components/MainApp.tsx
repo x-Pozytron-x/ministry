@@ -23,6 +23,7 @@ import Dashboard from './Dashboard';
 import ServiceReports from './ServiceReports';
 import S21Page from './s21/S21Page';
 import VpsPage from './VpsPage';
+import S1Page from './s1/S1Page';
 
 interface MainAppProps {
   initialData: CongregationData;
@@ -31,7 +32,7 @@ interface MainAppProps {
   onLogout: () => void;
 }
 
-type Tab = 'dashboard' | 'publishers' | 'vps' | 'service-records' | 'service-reports' | 'meeting-attendance' | 'profile';
+type Tab = 'dashboard' | 'publishers' | 'vps' | 'service-records' | 'service-reports' | 'meeting-attendance' | 's1' | 'profile';
 
 export default function MainApp({ initialData, currentPassword, applicationService, onLogout }: MainAppProps) {
   const [data, setData] = useState<CongregationData>(initialData);
@@ -213,6 +214,12 @@ export default function MainApp({ initialData, currentPassword, applicationServi
           S-88
         </button>
         <button
+          className={activeTab === 's1' ? 'active' : ''}
+          onClick={() => setActiveTab('s1')}
+        >
+          S-1
+        </button>
+        <button
           className={activeTab === 'profile' ? 'active' : ''}
           onClick={() => setActiveTab('profile')}
         >
@@ -236,6 +243,7 @@ export default function MainApp({ initialData, currentPassword, applicationServi
         {activeTab === 'service-records' && <S21Page data={data} onUpdate={handleDataUpdate} />}
         {activeTab === 'service-reports' && <ServiceReports data={data} onUpdate={handleDataUpdate} />}
         {activeTab === 'meeting-attendance' && <Attendance data={data} onUpdate={handleDataUpdate} />}
+        {activeTab === 's1' && <S1Page data={data} />}
         {activeTab === 'profile' && (
           <>
             {showChangePassword ? (
