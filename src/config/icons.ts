@@ -28,6 +28,8 @@ import {
   faPlus,
   faLock,
   faFileLines,
+  faChevronLeft,
+  faChevronRight,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Navigation
@@ -61,3 +63,7 @@ export const ICON_BROOM = faBroom;
 export const ICON_CHECK = faCheck;
 export const ICON_WARNING = faTriangleExclamation;
 export const ICON_LOCK = faLock;
+
+// Navigation
+export const ICON_ARROW_LEFT = faChevronLeft;
+export const ICON_ARROW_RIGHT = faChevronRight;

@@ -2,6 +2,7 @@ import type { CongregationData } from '../domain';
 
 interface DashboardProps {
   data: CongregationData;
+  selectedServiceYearStart?: number;
 }
 
 interface StatCardProps {

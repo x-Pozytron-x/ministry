@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import type { CongregationData } from '../domain';
 import type { ApplicationService } from '../application';
+import { getServiceYear, getServiceYearLabel } from '../domain';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   ICON_DASHBOARD,
@@ -14,6 +15,8 @@ import {
   ICON_LOGOUT,
   ICON_CHECK,
   ICON_WARNING,
+  ICON_ARROW_LEFT,
+  ICON_ARROW_RIGHT,
 } from '../config/icons';
 import { useAutoSave } from '../hooks';
 import Publishers from './Publishers';
@@ -45,6 +48,64 @@ export default function MainApp({ initialData, currentPassword, applicationServi
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(false);
+
+  const workingServiceYearStart: number = data.settings.serviceYearStart
+    ?? (() => {
+        const now = new Date();
+        return now.getMonth() >= 8 ? now.getFullYear() : now.getFullYear() - 1;
+      })();
+
+  const [selectedServiceYearStart, setSelectedServiceYearStart] = useState<number>(
+    workingServiceYearStart
+  );
+
+  const cycleAvailableYears = (): number[] => {
+    const years = new Set<number>();
+    years.add(workingServiceYearStart);
+    for (const sr of data.serviceRecords) {
+      if (sr.serviceYear) {
+        const [start] = sr.serviceYear.split('/').map(Number);
+        years.add(start);
+      }
+    }
+    for (const ar of data.attendanceReports) {
+      if (ar.month) {
+        const yr = parseInt(ar.month, 10);
+        const mo = parseInt(ar.month.slice(5, 7), 10);
+        if (mo >= 9) {
+          years.add(yr);
+        } else {
+          years.add(yr - 1);
+        }
+      }
+    }
+    for (const p of data.publishers) {
+      if (p.birthDate) {
+        const yr = parseInt(p.birthDate, 10);
+        if (!isNaN(yr) && yr > 1900 && yr < 2100) {
+          years.add(yr);
+          years.add(yr - 1);
+          years.add(yr + 1);
+        }
+      }
+    }
+    return Array.from(years).sort((a, b) => b - a);
+  };
+
+  const availableYears = cycleAvailableYears();
+  const currentIdx = availableYears.indexOf(selectedServiceYearStart);
+
+  const handlePrevYear = () => {
+    if (currentIdx < availableYears.length - 1) {
+      setSelectedServiceYearStart(availableYears[currentIdx + 1]);
+    }
+  };
+
+  const handleNextYear = () => {
+    if (currentIdx > 0) {
+      setSelectedServiceYearStart(availableYears[currentIdx - 1]);
+    }
+  };
 
   // Single save pipeline - all saves go through this
   const handleSave = async (dataToSave: CongregationData) => {
@@ -158,7 +219,8 @@ export default function MainApp({ initialData, currentPassword, applicationServi
     <div className="main-app">
       <header className="app-header">
         <div className="header-left">
-          <h1>{data.settings.name || 'CongrArk'}</h1>
+          <img src="/logo.png" alt="KeepCong" className="app-logo" />
+          <h1>{data.settings.name || 'KeepCong'}</h1>
           <div className="save-status">
             {isSaving && <span className="saving"><FontAwesomeIcon icon={ICON_SAVE} spin /> Сохранение...</span>}
             {!isSaving && lastSaved && (
@@ -225,7 +287,31 @@ export default function MainApp({ initialData, currentPassword, applicationServi
         >
           <FontAwesomeIcon icon={ICON_SETTINGS} />
         </button>
-        
+
+        <div className="year-switcher">
+          <button
+            className="year-btn"
+            onClick={handlePrevYear}
+            disabled={currentIdx >= availableYears.length - 1}
+            title="Previous year"
+          >
+            <FontAwesomeIcon icon={ICON_ARROW_LEFT} />
+          </button>
+          <span className="year-display">
+            {availableYears.length > 1
+              ? getServiceYearLabel(selectedServiceYearStart)
+              : getServiceYear(workingServiceYearStart)}
+          </span>
+          <button
+            className="year-btn"
+            onClick={handleNextYear}
+            disabled={currentIdx <= 0}
+            title="Next year"
+          >
+            <FontAwesomeIcon icon={ICON_ARROW_RIGHT} />
+          </button>
+        </div>
+
         <div className="header-right">
           <button onClick={handleManualSave} className="secondary" disabled={isSaving}>
             <FontAwesomeIcon icon={ICON_SAVE} />
@@ -237,13 +323,13 @@ export default function MainApp({ initialData, currentPassword, applicationServi
       </nav>
 
       <main className="app-content">
-        {activeTab === 'dashboard' && <Dashboard data={data} />}
+        {activeTab === 'dashboard' && <Dashboard data={data} selectedServiceYearStart={selectedServiceYearStart} />}
         {activeTab === 'publishers' && <Publishers data={data} onUpdate={handleDataUpdate} />}
         {activeTab === 'vps' && <VpsPage data={data} onUpdate={handleDataUpdate} />}
-        {activeTab === 'service-records' && <S21Page data={data} onUpdate={handleDataUpdate} />}
-        {activeTab === 'service-reports' && <ServiceReports data={data} onUpdate={handleDataUpdate} />}
-        {activeTab === 'meeting-attendance' && <Attendance data={data} onUpdate={handleDataUpdate} />}
-        {activeTab === 's1' && <S1Page data={data} />}
+        {activeTab === 'service-records' && <S21Page data={data} onUpdate={handleDataUpdate} selectedServiceYearStart={selectedServiceYearStart} workingServiceYearStart={workingServiceYearStart} />}
+        {activeTab === 'service-reports' && <ServiceReports data={data} onUpdate={handleDataUpdate} selectedServiceYearStart={selectedServiceYearStart} workingServiceYearStart={workingServiceYearStart} />}
+        {activeTab === 'meeting-attendance' && <Attendance data={data} onUpdate={handleDataUpdate} selectedServiceYearStart={selectedServiceYearStart} workingServiceYearStart={workingServiceYearStart} />}
+        {activeTab === 's1' && <S1Page data={data} selectedServiceYearStart={selectedServiceYearStart} workingServiceYearStart={workingServiceYearStart} />}
         {activeTab === 'profile' && (
           <>
             {showChangePassword ? (

@@ -6,6 +6,8 @@ import S21Card from './S21Card';
 interface S21PageProps {
   data: CongregationData;
   onUpdate: (data: CongregationData) => void;
+  selectedServiceYearStart: number;
+  workingServiceYearStart: number;
 }
 
 type Tab = { type: 'pioneers' } | { type: 'group'; groupNumber: number };
@@ -13,15 +15,9 @@ type Tab = { type: 'pioneers' } | { type: 'group'; groupNumber: number };
 const isPioneer = (p: Publisher): boolean =>
   p.assignments.pioneer || p.assignments.specialPioneer;
 
-export default function S21Page({ data }: S21PageProps) {
-  const serviceYear: ServiceYear = data.settings.serviceYearStart
-    ? getServiceYear(data.settings.serviceYearStart)
-    : ((): ServiceYear => {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = now.getMonth() + 1;
-        return month >= 9 ? `${year}/${year + 1}` : `${year - 1}/${year}`;
-      })();
+export default function S21Page({ data, selectedServiceYearStart, workingServiceYearStart }: S21PageProps) {
+  const viewingServiceYear: ServiceYear = getServiceYear(selectedServiceYearStart);
+  const writingServiceYear: ServiceYear = getServiceYear(workingServiceYearStart);
   const groupCount = data.settings.vpsGroupsCount;
 
   const [activeTab, setActiveTab] = useState<Tab>({ type: 'pioneers' });
@@ -89,7 +85,8 @@ export default function S21Page({ data }: S21PageProps) {
               key={p.id}
               publisher={p}
               serviceRecords={data.serviceRecords}
-              serviceYear={serviceYear}
+              serviceYear={viewingServiceYear}
+              writingServiceYear={writingServiceYear}
             />
           ))
         )}

@@ -9,6 +9,8 @@ import { ICON_ATTENDANCE } from '../config/icons';
 interface AttendanceProps {
   data: CongregationData;
   onUpdate: (data: CongregationData) => void;
+  selectedServiceYearStart: number;
+  workingServiceYearStart: number;
 }
 
 type MeetingType = 'weekday' | 'weekend';
@@ -35,14 +37,9 @@ const weekIndex = (day: number, firstDow: number) =>
 const isValid = (v: number | null): v is number =>
   typeof v === 'number' && !isNaN(v) && v > 0;
 
-export default function Attendance({ data, onUpdate }: AttendanceProps) {
+export default function Attendance({ data, onUpdate, selectedServiceYearStart }: AttendanceProps) {
 
-  const baseYear = data.settings.serviceYearStart
-    ? data.settings.serviceYearStart
-    : (() => {
-        const now = new Date();
-        return now.getMonth() >= 8 ? now.getFullYear() : now.getFullYear() - 1;
-      })();
+  const baseYear = selectedServiceYearStart;
 
   const [edit, setEdit] = useState<null | {
     date: string;

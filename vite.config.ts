@@ -9,8 +9,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico'],
       manifest: {
-        name: 'CongrArk',
-        short_name: 'CongrArk',
+        name: 'KeepCong',
+        short_name: 'KeepCong',
         description: 'Secure local data encryption app',
         theme_color: '#1a1a1a',
         background_color: '#ffffff',

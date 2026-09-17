@@ -14,6 +14,12 @@
   text-align: center;
 }
 
+.start-logo {
+  display: block;
+  height: 200px;
+  margin: 0 auto 1.5em;
+}
+
 .logo h1 {
   font-size: 2.5em;
   margin-bottom: 0.3em;
@@ -195,18 +201,23 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1em 2em;
+  padding: 5px 10px;
   background-color: var(--card-bg);
   border-bottom: 1px solid var(--border-color);
   flex-wrap: wrap;
-  gap: 1em;
+  gap: 5px;
   z-index: 20;
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 2em;
+  gap: 1em;
+}
+
+.app-logo {
+  display: block;
+  height: 45px;
 }
 
 .header-left h1 {
@@ -240,7 +251,7 @@
 
 .tabs {
   position: fixed;
-  top: 68px;
+  top: 55px;
   display: flex;
   background-color: var(--card-bg);
   border-bottom: 1px solid var(--border-color);
@@ -268,6 +279,42 @@
 .tabs button.active {
   border-bottom-color: var(--primary-color);
   color: var(--primary-color);
+}
+
+.year-switcher {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-left: 1em;
+  padding: 4px 8px;
+}
+
+.year-btn {
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  padding: 4px;
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: all 0.2s;
+}
+
+.year-btn:hover {
+  color: var(--primary-color);
+  background-color: var(--secondary-bg);
+}
+
+.year-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.year-display {
+  font-size: 0.9em;
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 80px;
+  text-align: center;
 }
 
 .app-content {
@@ -587,9 +634,9 @@ input:checked + .slider:before {
 .month-tabs {
   position: fixed;
   margin-left: auto;
-  margin-right: auto; 
+  margin-right: auto;
   margin-bottom: 1.5em;
-  margin-top: 26px; 
+  margin-top: 26px;
   display: flex;
   width: 98%;
   justify-content: center;
@@ -598,7 +645,7 @@ input:checked + .slider:before {
   padding: 0.5em 0;
   max-width: 1180px;
   border: 1px solid var(--border-color);
-  z-index: 20;  
+  z-index: 20;
 }
 
 .month-tabs button {
@@ -842,7 +889,7 @@ input:checked + .slider:before {
   .section-header {
     flex-direction: column;
     align-items: stretch;
-    gap: 1em; 
+    gap: 1em;
   }
 
   .list-item {

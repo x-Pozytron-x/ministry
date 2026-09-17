@@ -6,6 +6,8 @@ import CSVImport, { type ImportRecord } from './CSVImport';
 interface ServiceReportsProps {
   data: CongregationData;
   onUpdate: (data: CongregationData) => void;
+  selectedServiceYearStart: number;
+  workingServiceYearStart: number;
 }
 
 const SERVICE_MONTHS = [
@@ -32,23 +34,15 @@ const getMonthYearFormat = (serviceYear: string, monthValue: string): string => 
   return `${year}-${monthValue}`;
 };
 
-export default function ServiceReports({ data, onUpdate }: ServiceReportsProps) {
-  const currentServiceYear: ServiceYear = data.settings.serviceYearStart
-    ? getServiceYear(data.settings.serviceYearStart)
-    : ((): ServiceYear => {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = now.getMonth() + 1;
-        const start = month >= 9 ? year : year - 1;
-        return `${start}/${start + 1}`;
-      })();
-  const [selectedServiceYear] = useState<ServiceYear>(currentServiceYear);
+export default function ServiceReports({ data, onUpdate, selectedServiceYearStart }: ServiceReportsProps) {
   const [selectedMonth, setSelectedMonth] = useState('09');
+
+  const currentServiceYear: ServiceYear = getServiceYear(selectedServiceYearStart);
   const [showImport, setShowImport] = useState(false);
   const [showReplaceWarning, setShowReplaceWarning] = useState(false);
   const [pendingImportData, setPendingImportData] = useState<ImportRecord[] | null>(null);
 
-  const monthYearFormat = getMonthYearFormat(selectedServiceYear, selectedMonth);
+  const monthYearFormat = getMonthYearFormat(currentServiceYear, selectedMonth);
 
   // Get monthly reports for selected month
   // Rows come from ServiceRecords with monthlyData for the selected month,
@@ -154,7 +148,7 @@ export default function ServiceReports({ data, onUpdate }: ServiceReportsProps) 
         serviceRecord = {
           id: generateId(),
           publisherId,
-          serviceYear: selectedServiceYear,
+          serviceYear: currentServiceYear,
           monthlyData: [],
           publisherSnapshot: record.publisherSnapshot
         };

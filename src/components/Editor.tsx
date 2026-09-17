@@ -78,7 +78,8 @@ export default function Editor({ initialData, currentPassword }: EditorProps) {
   return (
     <div className="editor">
       <div className="header">
-        <h1>CongrArk</h1>
+        <img src="/logo.png" alt="KeepCong" className="app-logo" />
+        <h1>KeepCong</h1>
         <div className="button-group">
           <button onClick={handleDownload} disabled={loading}>
             Скачать зашифрованный файл

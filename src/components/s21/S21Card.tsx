@@ -6,6 +6,7 @@ interface S21CardProps {
   publisher: Publisher;
   serviceRecords: ServiceRecord[];
   serviceYear: string;
+  writingServiceYear?: string;
 }
 
 const MONTH_ORDER = ['09','10','11','12','01','02','03','04','05','06','07','08'];

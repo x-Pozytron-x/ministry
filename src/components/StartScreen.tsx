@@ -142,7 +142,8 @@ export default function StartScreen({ applicationService, onUnlock }: StartScree
     return (
       <div className="start-screen">
         <div className="logo">
-          <h1>CongrArk</h1>
+          <img src="/logo.png" alt="KeepCong" className="start-logo" />
+          <h1>KeepCong</h1>
           <p>Безопасное локальное хранение данных собрания</p>
         </div>
         <div className="button-group">
@@ -157,7 +158,7 @@ export default function StartScreen({ applicationService, onUnlock }: StartScree
         <div className="start-about">
           <div className="about-card">
             <h3>О приложении</h3>
-            <p>CongrArk — приложение для управления данными собрания. Все сведения о возвещателях, отчёты служения и посещаемость хранятся локально на вашем устройстве в зашифрованном виде.</p>
+            <p>KeepCong — приложение для управления данных собрания. Все сведения о возвещателях, отчётах служения и посещаемость хранятся локально на вашем устройстве в зашифрованном виде.</p>
             <p>Приложение работает полностью офлайн и не требует подключения к интернету для повседневного использования.</p>
           </div>
 

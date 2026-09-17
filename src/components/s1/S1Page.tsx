@@ -5,6 +5,8 @@ import { getServiceYear } from '../../domain';
 
 interface S1PageProps {
   data: CongregationData;
+  selectedServiceYearStart: number;
+  workingServiceYearStart: number;
 }
 
 const MONTH_LABELS: Record<string, string> = {
@@ -24,20 +26,12 @@ const MONTH_LABELS: Record<string, string> = {
 
 const MONTH_KEYS = ['09','10','11','12','01','02','03','04','05','06','07','08'];
 
-export default function S1Page({ data }: S1PageProps) {
-  const currentServiceYear: ServiceYear = data.settings.serviceYearStart
-    ? getServiceYear(data.settings.serviceYearStart)
-    : ((): ServiceYear => {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = now.getMonth() + 1;
-        const start = month >= 9 ? year : year - 1;
-        return `${start}/${start + 1}`;
-      })();
+export default function S1Page({ data, selectedServiceYearStart }: S1PageProps) {
+  const currentServiceYear: ServiceYear = getServiceYear(selectedServiceYearStart);
 
   const rows = useMemo(
     () => S1Service.generate(data, currentServiceYear),
-    [data]
+    [data, currentServiceYear]
   );
 
   // Build a lookup map for O(1) access by monthKey
