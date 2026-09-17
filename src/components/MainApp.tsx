@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import type { CongregationData } from '../domain';
 import type { ApplicationService } from '../application';
-import { getServiceYear, getServiceYearLabel } from '../domain';
+import { getServiceYearLabel } from '../domain';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   ICON_DASHBOARD,
@@ -59,52 +59,12 @@ export default function MainApp({ initialData, currentPassword, applicationServi
     workingServiceYearStart
   );
 
-  const cycleAvailableYears = (): number[] => {
-    const years = new Set<number>();
-    years.add(workingServiceYearStart);
-    for (const sr of data.serviceRecords) {
-      if (sr.serviceYear) {
-        const [start] = sr.serviceYear.split('/').map(Number);
-        years.add(start);
-      }
-    }
-    for (const ar of data.attendanceReports) {
-      if (ar.month) {
-        const yr = parseInt(ar.month, 10);
-        const mo = parseInt(ar.month.slice(5, 7), 10);
-        if (mo >= 9) {
-          years.add(yr);
-        } else {
-          years.add(yr - 1);
-        }
-      }
-    }
-    for (const p of data.publishers) {
-      if (p.birthDate) {
-        const yr = parseInt(p.birthDate, 10);
-        if (!isNaN(yr) && yr > 1900 && yr < 2100) {
-          years.add(yr);
-          years.add(yr - 1);
-          years.add(yr + 1);
-        }
-      }
-    }
-    return Array.from(years).sort((a, b) => b - a);
-  };
-
-  const availableYears = cycleAvailableYears();
-  const currentIdx = availableYears.indexOf(selectedServiceYearStart);
-
   const handlePrevYear = () => {
-    if (currentIdx < availableYears.length - 1) {
-      setSelectedServiceYearStart(availableYears[currentIdx + 1]);
-    }
+    setSelectedServiceYearStart(selectedServiceYearStart - 1);
   };
 
   const handleNextYear = () => {
-    if (currentIdx > 0) {
-      setSelectedServiceYearStart(availableYears[currentIdx - 1]);
-    }
+    setSelectedServiceYearStart(selectedServiceYearStart + 1);
   };
 
   // Single save pipeline - all saves go through this
@@ -292,20 +252,14 @@ export default function MainApp({ initialData, currentPassword, applicationServi
           <button
             className="year-btn"
             onClick={handlePrevYear}
-            disabled={currentIdx >= availableYears.length - 1}
             title="Previous year"
           >
             <FontAwesomeIcon icon={ICON_ARROW_LEFT} />
           </button>
-          <span className="year-display">
-            {availableYears.length > 1
-              ? getServiceYearLabel(selectedServiceYearStart)
-              : getServiceYear(workingServiceYearStart)}
-          </span>
+          <span className="year-display">{getServiceYearLabel(selectedServiceYearStart)}</span>
           <button
             className="year-btn"
             onClick={handleNextYear}
-            disabled={currentIdx <= 0}
             title="Next year"
           >
             <FontAwesomeIcon icon={ICON_ARROW_RIGHT} />

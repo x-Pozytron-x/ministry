@@ -338,7 +338,7 @@
   align-items: center;
   margin-bottom: 1.5em;
   position: fixed;
-  top: 110px;
+  top: 105px;
   padding: 5px 0;
   width: 98%;
   max-width: 1180px;
@@ -636,7 +636,7 @@ input:checked + .slider:before {
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 1.5em;
-  margin-top: 26px;
+  margin-top: 40px;
   display: flex;
   width: 98%;
   justify-content: center;
@@ -678,7 +678,7 @@ input:checked + .slider:before {
 }
 
 .reports-table {
-  margin-top: 75px;
+  margin-top: 100px;
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9em;

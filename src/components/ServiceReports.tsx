@@ -2,6 +2,8 @@ import { useState } from 'react';
 import type { CongregationData, MonthlyServiceData, ServiceRecord, ServiceYear } from '../domain';
 import { generateId, touchCongregationData, getServiceYear } from '../domain';
 import CSVImport, { type ImportRecord } from './CSVImport';
+import ManualReportEntry from './ManualReportEntry';
+import { type ManualEntryRecord } from './ManualReportEntry';
 
 interface ServiceReportsProps {
   data: CongregationData;
@@ -41,6 +43,13 @@ export default function ServiceReports({ data, onUpdate, selectedServiceYearStar
   const [showImport, setShowImport] = useState(false);
   const [showReplaceWarning, setShowReplaceWarning] = useState(false);
   const [pendingImportData, setPendingImportData] = useState<ImportRecord[] | null>(null);
+  const [showManualEntry, setShowManualEntry] = useState(false);
+  const [editingReport, setEditingReport] = useState<{
+    serviceRecordId: string;
+    monthlyData: MonthlyServiceData;
+    publisherId?: string;
+    publisherSnapshot: { firstName: string; lastName: string };
+  } | undefined>(undefined);
 
   const monthYearFormat = getMonthYearFormat(currentServiceYear, selectedMonth);
 
@@ -180,15 +189,116 @@ export default function ServiceReports({ data, onUpdate, selectedServiceYearStar
     setPendingImportData(null);
   };
 
+  const handleManualEntrySave = (records: ManualEntryRecord[]) => {
+    const newServiceRecords: ServiceRecord[] = data.serviceRecords.map(sr => ({
+      ...sr,
+      monthlyData: sr.monthlyData ? [...sr.monthlyData] : undefined
+    }));
+
+    if (editingReport) {
+      // Edit mode: update existing record
+      const recordIdx = newServiceRecords.findIndex(sr => sr.id === editingReport.serviceRecordId);
+      if (recordIdx !== -1) {
+        const sr = newServiceRecords[recordIdx];
+        if (sr.monthlyData) {
+          sr.monthlyData = sr.monthlyData.filter(md => md.month !== monthYearFormat);
+        }
+        if (!sr.monthlyData) {
+          sr.monthlyData = [];
+        }
+        sr.monthlyData.push(records[0].monthlyData);
+      }
+    } else {
+      // Add mode: add new report
+      const record = records[0];
+      const publisherId = record.publisherId;
+
+      let serviceRecord: ServiceRecord | undefined;
+      if (publisherId != null) {
+        serviceRecord = newServiceRecords.find(sr => sr.publisherId === publisherId);
+      } else {
+        serviceRecord = newServiceRecords.find(sr =>
+          sr.publisherId == null &&
+          sr.publisherSnapshot?.firstName === record.publisherSnapshot.firstName &&
+          sr.publisherSnapshot?.lastName === record.publisherSnapshot.lastName
+        );
+      }
+
+      if (!serviceRecord) {
+        serviceRecord = {
+          id: generateId(),
+          publisherId,
+          serviceYear: currentServiceYear,
+          monthlyData: [],
+          publisherSnapshot: record.publisherSnapshot
+        };
+        newServiceRecords.push(serviceRecord);
+      }
+
+      const sr = serviceRecord!;
+      if (!sr.monthlyData) {
+        sr.monthlyData = [];
+      }
+      sr.monthlyData.push(records[0].monthlyData);
+    }
+
+    const cleaned = newServiceRecords.filter(sr =>
+      !(sr.monthlyData && sr.monthlyData.length === 0)
+    );
+
+    const updatedData = touchCongregationData({
+      ...data,
+      serviceRecords: cleaned
+    });
+
+    onUpdate(updatedData);
+    setShowManualEntry(false);
+    setEditingReport(undefined);
+  };
+
+  const handleRowClick = (item: ReturnType<typeof getMonthlyReports>[number]) => {
+    const existingRecord = data.serviceRecords.find(sr => sr.id === item.id);
+    setEditingReport({
+      serviceRecordId: item.id,
+      monthlyData: item.report,
+      publisherId: existingRecord?.publisherId,
+      publisherSnapshot: {
+        firstName: item.displayFirstName,
+        lastName: item.displayLastName
+      }
+    });
+    setShowManualEntry(true);
+  };
+
+  const handleDownloadTemplate = () => {
+    const template = `Номер,Имя,Участие,Изучения,Часы,Примечание,Пионер,Подсобный,Неактивный
+1,Иванов Иван,да,0,0,Прimer note,да,нет,нет`;
+    const blob = new Blob([template], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'service-report-template.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const monthlyReports = getMonthlyReports();
 
   return (
     <div className="section">
       <div className="section-header">
         <h2>Reports</h2>
-        <button onClick={handleImportClick} className="primary">
-          📥 Импорт CSV
-        </button>
+        <div className="button-group">
+          <button onClick={handleDownloadTemplate} className="secondary">
+            📥 Скачать шаблон
+          </button>
+          <button onClick={() => setShowManualEntry(true)} className="secondary">
+            ➕ Внести отчет
+          </button>
+          <button onClick={handleImportClick} className="primary">
+            📥 Импорт CSV
+          </button>
+        </div>
       </div>
 
       {/* Month tabs */}
@@ -225,7 +335,7 @@ export default function ServiceReports({ data, onUpdate, selectedServiceYearStar
               const report = item.report;
 
               return (
-                <tr key={item.id}>
+                <tr key={item.id} onClick={() => handleRowClick(item)}>
                   <td>{index + 1}</td>
                   <td>{item.displayLastName} {item.displayFirstName}</td>
                   <td>
@@ -306,6 +416,20 @@ export default function ServiceReports({ data, onUpdate, selectedServiceYearStar
             </div>
           </div>
         </div>
+      )}
+
+      {/* Manual Entry Modal */}
+      {showManualEntry && (
+        <ManualReportEntry
+          data={data}
+          selectedMonth={monthYearFormat}
+          editingRecord={editingReport}
+          onClose={() => {
+            setShowManualEntry(false);
+            setEditingReport(undefined);
+          }}
+          onSave={handleManualEntrySave}
+        />
       )}
     </div>
   );
