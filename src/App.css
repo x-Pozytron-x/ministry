@@ -225,6 +225,7 @@
   margin: 0;
 }
 .header-right {
+  display: flex;
   margin-left: auto;
 }
 .save-status {

@@ -51,9 +51,9 @@ export default function MainApp({ initialData, currentPassword, applicationServi
 
   const workingServiceYearStart: number = data.settings.serviceYearStart
     ?? (() => {
-        const now = new Date();
-        return now.getMonth() >= 8 ? now.getFullYear() : now.getFullYear() - 1;
-      })();
+      const now = new Date();
+      return now.getMonth() >= 8 ? now.getFullYear() : now.getFullYear() - 1;
+    })();
 
   const [selectedServiceYearStart, setSelectedServiceYearStart] = useState<number>(
     workingServiceYearStart
@@ -189,6 +189,35 @@ export default function MainApp({ initialData, currentPassword, applicationServi
             {autoSaveError && <span className="error-indicator"><FontAwesomeIcon icon={ICON_WARNING} /> Ошибка автосохранения</span>}
           </div>
         </div>
+
+
+        <div className="header-right">
+
+
+
+          <div className="year-switcher">
+            <button className="year-btn" onClick={handlePrevYear} title="Previous year">
+              <FontAwesomeIcon icon={ICON_ARROW_LEFT} />
+            </button>
+            <span className="year-display">{getServiceYearLabel(selectedServiceYearStart)}</span>
+            <button
+              className="year-btn"
+              onClick={handleNextYear}
+              title="Next year"
+            >
+              <FontAwesomeIcon icon={ICON_ARROW_RIGHT} />
+            </button>
+          </div>
+
+
+          <button onClick={handleManualSave} className="secondary" disabled={isSaving}>
+            <FontAwesomeIcon icon={ICON_SAVE} />
+          </button>
+          <button onClick={handleLogout} className="secondary">
+            <FontAwesomeIcon icon={ICON_LOGOUT} />
+          </button>
+        </div>
+
       </header>
 
       {(error || success) && (
@@ -247,33 +276,6 @@ export default function MainApp({ initialData, currentPassword, applicationServi
         >
           <FontAwesomeIcon icon={ICON_SETTINGS} />
         </button>
-
-        <div className="year-switcher">
-          <button
-            className="year-btn"
-            onClick={handlePrevYear}
-            title="Previous year"
-          >
-            <FontAwesomeIcon icon={ICON_ARROW_LEFT} />
-          </button>
-          <span className="year-display">{getServiceYearLabel(selectedServiceYearStart)}</span>
-          <button
-            className="year-btn"
-            onClick={handleNextYear}
-            title="Next year"
-          >
-            <FontAwesomeIcon icon={ICON_ARROW_RIGHT} />
-          </button>
-        </div>
-
-        <div className="header-right">
-          <button onClick={handleManualSave} className="secondary" disabled={isSaving}>
-            <FontAwesomeIcon icon={ICON_SAVE} />
-          </button>
-          <button onClick={handleLogout} className="secondary">
-            <FontAwesomeIcon icon={ICON_LOGOUT} />
-          </button>
-        </div>
       </nav>
 
       <main className="app-content">
