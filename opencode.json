@@ -8,13 +8,13 @@
         "baseURL": "http://172.31.112.1:8080/v1"
       },
       "models": {
-        "Qwen3.6-27B-A3B-CoderX-Q4_K_M": {
-          "name": "Qwen3.6-27B-A3B",
+        "omnicoder-9b-q4_k_m.gguf": {
+          "name": "OmniCoder9b",
           "capabilities": {
             "tools": true
           },
           "limit": {
-            "context": 49152,
+            "context": 64768,
             "output": 8192
           }
         }
