@@ -1,15 +1,26 @@
 // Publishers management component
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { Publisher, CongregationData } from '../domain';
 import { PublisherService, generateId, validatePublisher } from '../domain';
+
 
 interface PublishersProps {
   data: CongregationData;
   onUpdate: (data: CongregationData) => void;
 }
 
-const createEmptyPublisherForm = (): Partial<Publisher> => ({
+interface PublishersState {
+  showForm: boolean;
+  editingId: string | null;
+  formData: Partial<Publisher> & { emergencyContact: { firstName: string; lastName: string; phone: string }; assignments: { elder: boolean; assistantServant: boolean; pioneer: boolean; specialPioneer: boolean; missionary: boolean } };
+  error: string;
+  sortKey: string | null;
+  sortDirection: 'asc' | 'desc' | null;
+  selectedPublisher: Publisher | null;
+}
+
+const createEmptyPublisherForm = (): Partial<Publisher> & { emergencyContact: { firstName: string; lastName: string; phone: string }; assignments: { elder: boolean; assistantServant: boolean; pioneer: boolean; specialPioneer: boolean; missionary: boolean } } => ({
   lastName: '',
   firstName: '',
   phonePrimary: '',
@@ -33,7 +44,7 @@ const createEmptyPublisherForm = (): Partial<Publisher> => ({
   }
 });
 
-const publisherToFormData = (publisher: Publisher): Partial<Publisher> => ({
+const publisherToFormData = (publisher: Publisher): Partial<Publisher> & { emergencyContact: { firstName: string; lastName: string; phone: string }; assignments: { elder: boolean; assistantServant: boolean; pioneer: boolean; specialPioneer: boolean; missionary: boolean } } => ({
   lastName: publisher.lastName,
   firstName: publisher.firstName,
   phonePrimary: publisher.phonePrimary,
@@ -88,24 +99,31 @@ const buildPublisher = (id: string, formData: Partial<Publisher>): Publisher => 
 };
 
 export default function Publishers({ data, onUpdate }: PublishersProps) {
+  const [state, setState] = useState<PublishersState>({
+    showForm: false,
+    editingId: null,
+    formData: createEmptyPublisherForm(),
+    error: '',
+    sortKey: 'fullName',
+    sortDirection: 'asc',
+    selectedPublisher: null
+  });
+  const [error, setError] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState<Partial<Publisher>>(createEmptyPublisherForm);
-  const [error, setError] = useState('');
-  const [sortKey, setSortKey] = useState<string | null>('fullName');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>('asc');
 
   const handleSubmit = () => {
     setError('');
 
     try {
-      const publisher = buildPublisher(editingId ?? generateId(), formData);
+      const publisher = buildPublisher(editingId ?? generateId(), state.formData);
       validatePublisher(publisher);
 
       if (editingId) {
         const updated = PublisherService.updatePublisher(data, editingId, publisher);
         onUpdate(updated);
         setEditingId(null);
+        return;
       } else {
         const updated = PublisherService.addPublisher(data, publisher);
         onUpdate(updated);
@@ -118,8 +136,15 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
   };
 
   const handleEdit = (publisher: Publisher) => {
-    setFormData(publisherToFormData(publisher));
-    setEditingId(publisher.id);
+    setState(prev => ({
+      ...prev,
+      formData: {
+        ...publisherToFormData(publisher),
+        emergencyContact: publisher.emergencyContact
+      },
+      editingId: publisher.id,
+      selectedPublisher: null
+    }));
     setShowForm(true);
   };
 
@@ -129,13 +154,25 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
   };
 
   const resetForm = () => {
-    setFormData(createEmptyPublisherForm());
-    setShowForm(false);
-    setEditingId(null);
-    setError('');
+    setState(prev => ({
+      ...prev,
+      formData: createEmptyPublisherForm(),
+      showForm: false,
+      editingId: null,
+      error: ''
+    }));
   };
 
   const groupOptions = Array.from({ length: data.settings.vpsGroupsCount }, (_, i) => i + 1);
+
+  useEffect(() => {
+    if (state.selectedPublisher) {
+      setState(prev => ({
+        ...prev,
+        formData: publisherToFormData(state.selectedPublisher!)
+      }));
+    }
+  }, [state.selectedPublisher]);
 
   /*
   const getAssignmentLabels = (assignments: Publisher['assignments']): string[] => {
@@ -150,28 +187,26 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
   */
 
   const handleHeaderClick = (key: string) => {
-    if (sortKey !== key) {
-      setSortKey(key);
-      setSortDirection('asc');
+    if (state.sortKey !== key) {
+      setState(prev => ({ ...prev, sortKey: key, sortDirection: 'asc' }));
     } else {
-      if (sortDirection === 'asc') {
-        setSortDirection('desc');
-      } else if (sortDirection === 'desc') {
-        setSortDirection(null);
-        setSortKey(null);
+      if (state.sortDirection === 'asc') {
+        setState(prev => ({ ...prev, sortDirection: 'desc' }));
+      } else if (state.sortDirection === 'desc') {
+        setState(prev => ({ ...prev, sortDirection: null, sortKey: null }));
       } else {
-        setSortDirection('asc');
+        setState(prev => ({ ...prev, sortDirection: 'asc' }));
       }
     }
   };
 
   const sortedPublishers = [...data.publishers].sort((a, b) => {
-    if (!sortKey || !sortDirection) return 0;
+    if (!state.sortKey || !state.sortDirection) return 0;
 
     let valA: any = '';
     let valB: any = '';
 
-    switch (sortKey) {
+    switch (state.sortKey) {
       case 'fullName':
         valA = `${a.lastName} ${a.firstName}`.toLowerCase();
         valB = `${b.lastName} ${b.firstName}`.toLowerCase();
@@ -206,14 +241,14 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
         return 0;
     }
 
-    if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
-    if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
+    if (valA < valB) return state.sortDirection === 'asc' ? -1 : 1;
+    if (valA > valB) return state.sortDirection === 'asc' ? 1 : -1;
     return 0;
   });
 
   const renderSortIndicator = (key: string) => {
-    if (sortKey !== key) return ' ↕';
-    return sortDirection === 'asc' ? ' ▲' : ' ▼';
+    if (state.sortKey !== key) return ' ↕';
+    return state.sortDirection === 'asc' ? ' ▲' : ' ▼';
   };
 
   return (
@@ -235,8 +270,8 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
                 <label>Фамилия *</label>
                 <input
                   type="text"
-                  value={formData.lastName}
-                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  value={state.formData.lastName}
+                  onChange={(e) => setState(prev => ({ ...prev, formData: { ...prev.formData, lastName: e.target.value } }))}
                   placeholder="Иванов"
                 />
               </div>
@@ -244,8 +279,8 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
                 <label>Имя *</label>
                 <input
                   type="text"
-                  value={formData.firstName}
-                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  value={state.formData.firstName}
+                  onChange={(e) => setState(prev => ({ ...prev, formData: { ...prev.formData, firstName: e.target.value } }))}
                   placeholder="Иван"
                 />
               </div>
@@ -256,8 +291,8 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
                 <label>Основной телефон *</label>
                 <input
                   type="tel"
-                  value={formData.phonePrimary}
-                  onChange={(e) => setFormData({ ...formData, phonePrimary: e.target.value })}
+                  value={state.formData.phonePrimary}
+                  onChange={(e) => setState(prev => ({ ...prev, formData: { ...prev.formData, phonePrimary: e.target.value } }))}
                   placeholder="+7 (999) 123-45-67"
                 />
               </div>
@@ -265,8 +300,8 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
                 <label>Адрес</label>
                 <input
                   type="text"
-                  value={formData.address}
-                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                  value={state.formData.address}
+                  onChange={(e) => setState(prev => ({ ...prev, formData: { ...prev.formData, address: e.target.value } }))}
                   placeholder="Город, улица, дом, квартира"
                 />
               </div>
@@ -279,12 +314,15 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
                 <label>Имя</label>
                 <input
                   type="text"
-                  value={formData.emergencyContact?.firstName}
+                  value={state.formData.emergencyContact?.firstName}
                   onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      emergencyContact: { ...formData.emergencyContact!, firstName: e.target.value }
-                    })
+                    setState(prev => ({
+                      ...prev,
+                      formData: {
+                        ...prev.formData,
+                        emergencyContact: { ...prev.formData.emergencyContact, firstName: e.target.value || '' }
+                      }
+                    }))
                   }
                   placeholder="Имя"
                 />
@@ -293,12 +331,15 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
                 <label>Фамилия</label>
                 <input
                   type="text"
-                  value={formData.emergencyContact?.lastName}
+                  value={state.formData.emergencyContact?.lastName}
                   onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      emergencyContact: { ...formData.emergencyContact!, lastName: e.target.value }
-                    })
+                    setState(prev => ({
+                      ...prev,
+                      formData: {
+                        ...prev.formData,
+                        emergencyContact: { ...prev.formData.emergencyContact, lastName: e.target.value || '' }
+                      }
+                    }))
                   }
                   placeholder="Фамилия"
                 />
@@ -307,12 +348,15 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
                 <label>Телефон</label>
                 <input
                   type="tel"
-                  value={formData.emergencyContact?.phone}
+                  value={state.formData.emergencyContact?.phone}
                   onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      emergencyContact: { ...formData.emergencyContact!, phone: e.target.value }
-                    })
+                    setState(prev => ({
+                      ...prev,
+                      formData: {
+                        ...prev.formData,
+                        emergencyContact: { ...prev.formData.emergencyContact, phone: e.target.value || '' }
+                      }
+                    }))
                   }
                   placeholder="+7 (999) 123-45-67"
                 />
@@ -324,9 +368,15 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
               <div className="form-group">
                 <label>Группа</label>
                 <select
-                  value={formData.vpsGroup || ''}
+                  value={state.formData.vpsGroup || ''}
                   onChange={(e) =>
-                    setFormData({ ...formData, vpsGroup: e.target.value ? Number(e.target.value) : undefined })
+                    setState(prev => ({
+                      ...prev,
+                      formData: {
+                        ...prev.formData,
+                        vpsGroup: e.target.value ? Number(e.target.value) : undefined
+                      }
+                    }))
                   }
                 >
                   <option value="">Не выбрано</option>
@@ -342,8 +392,8 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
                 <label>Дата рождения</label>
                 <input
                   type="text"
-                  value={formData.birthDate}
-                  onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
+                  value={state.formData.birthDate}
+                  onChange={(e) => setState(prev => ({ ...prev, formData: { ...prev.formData, birthDate: e.target.value } }))}
                 />
               </div>
 
@@ -351,8 +401,8 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
                 <label>Дата крещения</label>
                 <input
                   type="text"
-                  value={formData.baptismDate}
-                  onChange={(e) => setFormData({ ...formData, baptismDate: e.target.value })}
+                  value={state.formData.baptismDate}
+                  onChange={(e) => setState(prev => ({ ...prev, formData: { ...prev.formData, baptismDate: e.target.value } }))}
                 />
               </div>
             </div>
@@ -361,8 +411,8 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
               <div className="form-group">
                 <label>Пол *</label>
                 <select
-                  value={formData.gender}
-                  onChange={(e) => setFormData({ ...formData, gender: e.target.value as 'male' | 'female' })}
+                  value={state.formData.gender}
+                  onChange={(e) => setState(prev => ({ ...prev, formData: { ...prev.formData, gender: e.target.value as 'male' | 'female' } }))}
                 >
                   <option value="male">Мужской</option>
                   <option value="female">Женский</option>
@@ -372,9 +422,15 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
               <div className="form-group">
                 <label>Надежда *</label>
                 <select
-                  value={formData.hope}
+                  value={state.formData.hope}
                   onChange={(e) =>
-                    setFormData({ ...formData, hope: e.target.value as 'other_sheep' | 'anointed' })
+                    setState(prev => ({
+                      ...prev,
+                      formData: {
+                        ...prev.formData,
+                        hope: e.target.value as 'other_sheep' | 'anointed'
+                      }
+                    }))
                   }
                 >
                   <option value="other_sheep">Другие овцы</option>
@@ -390,12 +446,18 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
                 <label>
                   <input
                     type="checkbox"
-                    checked={formData.assignments?.elder}
+                    checked={state.formData.assignments?.elder ?? false}
                     onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        assignments: { ...formData.assignments!, elder: e.target.checked }
-                      })
+                      setState(prev => ({
+                        ...prev,
+                        formData: {
+                          ...prev.formData,
+                          assignments: {
+                            ...prev.formData.assignments,
+                            elder: e.target.checked
+                          }
+                        }
+                      }))
                     }
                   />
                   Старейшина
@@ -405,12 +467,18 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
                 <label>
                   <input
                     type="checkbox"
-                    checked={formData.assignments?.assistantServant}
+                    checked={state.formData.assignments?.assistantServant ?? false}
                     onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        assignments: { ...formData.assignments!, assistantServant: e.target.checked }
-                      })
+                      setState(prev => ({
+                        ...prev,
+                        formData: {
+                          ...prev.formData,
+                          assignments: {
+                            ...prev.formData.assignments,
+                            assistantServant: e.target.checked
+                          }
+                        }
+                      }))
                     }
                   />
                   Помощник служителя
@@ -420,12 +488,18 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
                 <label>
                   <input
                     type="checkbox"
-                    checked={formData.assignments?.pioneer}
+                    checked={state.formData.assignments?.pioneer ?? false}
                     onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        assignments: { ...formData.assignments!, pioneer: e.target.checked }
-                      })
+                      setState(prev => ({
+                        ...prev,
+                        formData: {
+                          ...prev.formData,
+                          assignments: {
+                            ...prev.formData.assignments,
+                            pioneer: e.target.checked
+                          }
+                        }
+                      }))
                     }
                   />
                   Пионер
@@ -435,12 +509,18 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
                 <label>
                   <input
                     type="checkbox"
-                    checked={formData.assignments?.specialPioneer}
+                    checked={state.formData.assignments?.specialPioneer ?? false}
                     onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        assignments: { ...formData.assignments!, specialPioneer: e.target.checked }
-                      })
+                      setState(prev => ({
+                        ...prev,
+                        formData: {
+                          ...prev.formData,
+                          assignments: {
+                            ...prev.formData.assignments,
+                            specialPioneer: e.target.checked
+                          }
+                        }
+                      }))
                     }
                   />
                   Специальный пионер
@@ -450,12 +530,18 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
                 <label>
                   <input
                     type="checkbox"
-                    checked={formData.assignments?.missionary}
+                    checked={state.formData.assignments?.missionary ?? false}
                     onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        assignments: { ...formData.assignments!, missionary: e.target.checked }
-                      })
+                      setState(prev => ({
+                        ...prev,
+                        formData: {
+                          ...prev.formData,
+                          assignments: {
+                            ...prev.formData.assignments,
+                            missionary: e.target.checked
+                          }
+                        }
+                      }))
                     }
                   />
                   Миссионер

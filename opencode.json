@@ -14,8 +14,8 @@
             "tools": true
           },
           "limit": {
-            "context": 64768,
-            "output": 8192
+            "context": 32768,
+            "output": 12288
           }
         }
       }
