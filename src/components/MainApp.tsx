@@ -17,7 +17,9 @@ import {
   ICON_WARNING,
   ICON_ARROW_LEFT,
   ICON_ARROW_RIGHT,
+  ICON_CARD
 } from '../config/icons';
+import { ICON_ATTENDANCE } from '../config/icons';
 import { useAutoSave } from '../hooks';
 import Publishers from './Publishers';
 import Attendance from './Attendance';
@@ -209,11 +211,17 @@ export default function MainApp({ initialData, currentPassword, applicationServi
             </button>
           </div>
 
+          <button
+            className={activeTab === 'profile' ? 'active' : ''}
+            onClick={() => setActiveTab('profile')}
+          >
+            <FontAwesomeIcon icon={ICON_SETTINGS} />
+          </button>
 
-          <button onClick={handleManualSave} className="secondary" disabled={isSaving}>
+          <button onClick={handleManualSave} className="secondary save" disabled={isSaving}>
             <FontAwesomeIcon icon={ICON_SAVE} />
           </button>
-          <button onClick={handleLogout} className="secondary">
+          <button onClick={handleLogout} className="secondary exit">
             <FontAwesomeIcon icon={ICON_LOGOUT} />
           </button>
         </div>
@@ -250,7 +258,7 @@ export default function MainApp({ initialData, currentPassword, applicationServi
           className={activeTab === 'service-records' ? 'active' : ''}
           onClick={() => setActiveTab('service-records')}
         >
-          S-21
+          <FontAwesomeIcon icon={ICON_CARD} />    S-21
         </button>
         <button
           className={activeTab === 'service-reports' ? 'active' : ''}
@@ -262,19 +270,13 @@ export default function MainApp({ initialData, currentPassword, applicationServi
           className={activeTab === 'meeting-attendance' ? 'active' : ''}
           onClick={() => setActiveTab('meeting-attendance')}
         >
-          S-88
+          <FontAwesomeIcon icon={ICON_ATTENDANCE} /> S-88
         </button>
         <button
           className={activeTab === 's1' ? 'active' : ''}
           onClick={() => setActiveTab('s1')}
         >
           S-1
-        </button>
-        <button
-          className={activeTab === 'profile' ? 'active' : ''}
-          onClick={() => setActiveTab('profile')}
-        >
-          <FontAwesomeIcon icon={ICON_SETTINGS} />
         </button>
       </nav>
 

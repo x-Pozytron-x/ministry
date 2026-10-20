@@ -1,9 +1,7 @@
-// Publishers management component
-
-import { useState, useEffect } from 'react';
+import { useCallback, useState } from 'react';
 import type { Publisher, CongregationData } from '../domain';
-import { PublisherService, generateId, validatePublisher } from '../domain';
-
+import { PublisherService } from '../domain';
+import PublisherModal from './PublisherModal';
 
 interface PublishersProps {
   data: CongregationData;
@@ -11,200 +9,75 @@ interface PublishersProps {
 }
 
 interface PublishersState {
-  showForm: boolean;
-  editingId: string | null;
-  formData: Partial<Publisher> & { emergencyContact: { firstName: string; lastName: string; phone: string }; assignments: { elder: boolean; assistantServant: boolean; pioneer: boolean; specialPioneer: boolean; missionary: boolean } };
-  error: string;
   sortKey: string | null;
   sortDirection: 'asc' | 'desc' | null;
-  selectedPublisher: Publisher | null;
+  isModalOpen: boolean;
+  editingPublisher: Publisher | null;
 }
 
-const createEmptyPublisherForm = (): Partial<Publisher> & { emergencyContact: { firstName: string; lastName: string; phone: string }; assignments: { elder: boolean; assistantServant: boolean; pioneer: boolean; specialPioneer: boolean; missionary: boolean } } => ({
-  lastName: '',
-  firstName: '',
-  phonePrimary: '',
-  address: '',
-  emergencyContact: {
-    firstName: '-',
-    lastName: '-',
-    phone: '-'
-  },
-  vpsGroup: undefined,
-  birthDate: '',
-  baptismDate: '',
-  gender: 'male',
-  hope: 'other_sheep',
-  assignments: {
-    elder: false,
-    assistantServant: false,
-    pioneer: false,
-    specialPioneer: false,
-    missionary: false
-  }
-});
-
-const publisherToFormData = (publisher: Publisher): Partial<Publisher> & { emergencyContact: { firstName: string; lastName: string; phone: string }; assignments: { elder: boolean; assistantServant: boolean; pioneer: boolean; specialPioneer: boolean; missionary: boolean } } => ({
-  lastName: publisher.lastName,
-  firstName: publisher.firstName,
-  phonePrimary: publisher.phonePrimary,
-  address: publisher.address ?? '',
-  emergencyContact: {
-    firstName: publisher.emergencyContact.firstName,
-    lastName: publisher.emergencyContact.lastName,
-    phone: publisher.emergencyContact.phone
-  },
-  vpsGroup: publisher.vpsGroup,
-  birthDate: publisher.birthDate ?? '',
-  baptismDate: publisher.baptismDate ?? '',
-  gender: publisher.gender,
-  hope: publisher.hope,
-  assignments: {
-    elder: publisher.assignments.elder,
-    assistantServant: publisher.assignments.assistantServant,
-    pioneer: publisher.assignments.pioneer,
-    specialPioneer: publisher.assignments.specialPioneer,
-    missionary: publisher.assignments.missionary
-  }
-});
-
-const buildPublisher = (id: string, formData: Partial<Publisher>): Publisher => {
-  const publisher: Publisher = {
-    id,
-    lastName: formData.lastName!,
-    firstName: formData.firstName!,
-    phonePrimary: formData.phonePrimary!,
-    emergencyContact: {
-      firstName: formData.emergencyContact!.firstName,
-      lastName: formData.emergencyContact!.lastName,
-      phone: formData.emergencyContact!.phone
-    },
-    gender: formData.gender!,
-    hope: formData.hope!,
-    assignments: {
-      elder: formData.assignments!.elder,
-      assistantServant: formData.assignments!.assistantServant,
-      pioneer: formData.assignments!.pioneer,
-      specialPioneer: formData.assignments!.specialPioneer,
-      missionary: formData.assignments!.missionary
-    }
-  };
-
-  if (formData.address) publisher.address = formData.address;
-  if (formData.vpsGroup !== undefined) publisher.vpsGroup = formData.vpsGroup;
-  if (formData.birthDate) publisher.birthDate = formData.birthDate;
-  if (formData.baptismDate) publisher.baptismDate = formData.baptismDate;
-
-  return publisher;
-};
+type SortValue = string | number;
 
 export default function Publishers({ data, onUpdate }: PublishersProps) {
   const [state, setState] = useState<PublishersState>({
-    showForm: false,
-    editingId: null,
-    formData: createEmptyPublisherForm(),
-    error: '',
     sortKey: 'fullName',
     sortDirection: 'asc',
-    selectedPublisher: null
+    isModalOpen: false,
+    editingPublisher: null
   });
-  const [error, setError] = useState('');
-  const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
 
-  const handleSubmit = () => {
-    setError('');
-
-    try {
-      const publisher = buildPublisher(editingId ?? generateId(), state.formData);
-      validatePublisher(publisher);
-
-      if (editingId) {
-        const updated = PublisherService.updatePublisher(data, editingId, publisher);
-        onUpdate(updated);
-        setEditingId(null);
-        return;
-      } else {
-        const updated = PublisherService.addPublisher(data, publisher);
-        onUpdate(updated);
-      }
-
-      resetForm();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ошибка валидации');
-    }
-  };
-
-  const handleEdit = (publisher: Publisher) => {
+  const openCreateModal = () => {
     setState(prev => ({
       ...prev,
-      formData: {
-        ...publisherToFormData(publisher),
-        emergencyContact: publisher.emergencyContact
-      },
-      editingId: publisher.id,
-      selectedPublisher: null
+      isModalOpen: true,
+      editingPublisher: null
     }));
-    setShowForm(true);
   };
 
-  const handleDelete = (publisherId: string) => {
-    const updated = PublisherService.removePublisher(data, publisherId);
+  const openEditModal = (publisher: Publisher) => {
+    setState(prev => ({
+      ...prev,
+      isModalOpen: true,
+      editingPublisher: publisher
+    }));
+  };
+
+  const closeModal = useCallback(() => {
+    setState(prev => ({
+      ...prev,
+      isModalOpen: false,
+      editingPublisher: null
+    }));
+  }, []);
+
+  const handleSubmit = (publisher: Publisher) => {
+    const exists = data.publishers.some(item => item.id === publisher.id);
+    const updated = exists
+      ? PublisherService.updatePublisher(data, publisher.id, publisher)
+      : PublisherService.addPublisher(data, publisher);
     onUpdate(updated);
   };
 
-  const resetForm = () => {
-    setState(prev => ({
-      ...prev,
-      formData: createEmptyPublisherForm(),
-      showForm: false,
-      editingId: null,
-      error: ''
-    }));
+  const handleDelete = (publisherId: string) => {
+    onUpdate(PublisherService.removePublisher(data, publisherId));
   };
-
-  const groupOptions = Array.from({ length: data.settings.vpsGroupsCount }, (_, i) => i + 1);
-
-  useEffect(() => {
-    if (state.selectedPublisher) {
-      setState(prev => ({
-        ...prev,
-        formData: publisherToFormData(state.selectedPublisher!)
-      }));
-    }
-  }, [state.selectedPublisher]);
-
-  /*
-  const getAssignmentLabels = (assignments: Publisher['assignments']): string[] => {
-    const labels: string[] = [];
-    if (assignments.elder) labels.push('Старейшина');
-    if (assignments.assistantServant) labels.push('Помощник собрания');
-    if (assignments.pioneer) labels.push('Пионер');
-    if (assignments.specialPioneer) labels.push('Специальный пионер');
-    if (assignments.missionary) labels.push('Миссионер');
-    return labels;
-  };
-  */
 
   const handleHeaderClick = (key: string) => {
     if (state.sortKey !== key) {
       setState(prev => ({ ...prev, sortKey: key, sortDirection: 'asc' }));
+    } else if (state.sortDirection === 'asc') {
+      setState(prev => ({ ...prev, sortDirection: 'desc' }));
+    } else if (state.sortDirection === 'desc') {
+      setState(prev => ({ ...prev, sortDirection: null, sortKey: null }));
     } else {
-      if (state.sortDirection === 'asc') {
-        setState(prev => ({ ...prev, sortDirection: 'desc' }));
-      } else if (state.sortDirection === 'desc') {
-        setState(prev => ({ ...prev, sortDirection: null, sortKey: null }));
-      } else {
-        setState(prev => ({ ...prev, sortDirection: 'asc' }));
-      }
+      setState(prev => ({ ...prev, sortDirection: 'asc' }));
     }
   };
 
   const sortedPublishers = [...data.publishers].sort((a, b) => {
     if (!state.sortKey || !state.sortDirection) return 0;
 
-    let valA: any = '';
-    let valB: any = '';
+    let valA: SortValue = '';
+    let valB: SortValue = '';
 
     switch (state.sortKey) {
       case 'fullName':
@@ -232,10 +105,8 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
         valB = b.baptismDate || '9999-99-99';
         break;
       case 'emergencyContact':
-        const nameA = `${a.emergencyContact?.firstName || ''} ${a.emergencyContact?.lastName || ''}`.trim();
-        const nameB = `${b.emergencyContact?.firstName || ''} ${b.emergencyContact?.lastName || ''}`.trim();
-        valA = nameA.toLowerCase();
-        valB = nameB.toLowerCase();
+        valA = `${a.emergencyContact?.firstName || ''} ${a.emergencyContact?.lastName || ''}`.trim().toLowerCase();
+        valB = `${b.emergencyContact?.firstName || ''} ${b.emergencyContact?.lastName || ''}`.trim().toLowerCase();
         break;
       default:
         return 0;
@@ -255,381 +126,17 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
     <div className="section">
       <div className="section-header">
         <h2>Возвещатели ({data.publishers.length})</h2>
-        <button onClick={() => setShowForm(!showForm)} className="primary">
-          {showForm ? 'Отмена' : '+ Добавить'}
+        <button type="button" onClick={openCreateModal} className="primary">
+          + Добавить
         </button>
       </div>
 
-      {showForm && (
-        <div className="form-card">
-          <h3>{editingId ? 'Редактировать возвещателя' : 'Новый возвещатель'}</h3>
-          <div className="form">
-            {/* Basic Info */}
-            <div className="form-row">
-              <div className="form-group">
-                <label>Фамилия *</label>
-                <input
-                  type="text"
-                  value={state.formData.lastName}
-                  onChange={(e) => setState(prev => ({ ...prev, formData: { ...prev.formData, lastName: e.target.value } }))}
-                  placeholder="Иванов"
-                />
-              </div>
-              <div className="form-group">
-                <label>Имя *</label>
-                <input
-                  type="text"
-                  value={state.formData.firstName}
-                  onChange={(e) => setState(prev => ({ ...prev, formData: { ...prev.formData, firstName: e.target.value } }))}
-                  placeholder="Иван"
-                />
-              </div>
-            </div>
-            
-            <div className="form-row">
-              <div className="form-group">
-                <label>Основной телефон *</label>
-                <input
-                  type="tel"
-                  value={state.formData.phonePrimary}
-                  onChange={(e) => setState(prev => ({ ...prev, formData: { ...prev.formData, phonePrimary: e.target.value } }))}
-                  placeholder="+7 (999) 123-45-67"
-                />
-              </div>
-              <div className="form-group">
-                <label>Адрес</label>
-                <input
-                  type="text"
-                  value={state.formData.address}
-                  onChange={(e) => setState(prev => ({ ...prev, formData: { ...prev.formData, address: e.target.value } }))}
-                  placeholder="Город, улица, дом, квартира"
-                />
-              </div>
-            </div>
-
-            {/* Emergency Contact */}
-            <h4>Контакт для экстренной связи *</h4>
-            <div className="form-row">
-              <div className="form-group">
-                <label>Имя</label>
-                <input
-                  type="text"
-                  value={state.formData.emergencyContact?.firstName}
-                  onChange={(e) =>
-                    setState(prev => ({
-                      ...prev,
-                      formData: {
-                        ...prev.formData,
-                        emergencyContact: { ...prev.formData.emergencyContact, firstName: e.target.value || '' }
-                      }
-                    }))
-                  }
-                  placeholder="Имя"
-                />
-              </div>
-              <div className="form-group">
-                <label>Фамилия</label>
-                <input
-                  type="text"
-                  value={state.formData.emergencyContact?.lastName}
-                  onChange={(e) =>
-                    setState(prev => ({
-                      ...prev,
-                      formData: {
-                        ...prev.formData,
-                        emergencyContact: { ...prev.formData.emergencyContact, lastName: e.target.value || '' }
-                      }
-                    }))
-                  }
-                  placeholder="Фамилия"
-                />
-              </div>
-              <div className="form-group">
-                <label>Телефон</label>
-                <input
-                  type="tel"
-                  value={state.formData.emergencyContact?.phone}
-                  onChange={(e) =>
-                    setState(prev => ({
-                      ...prev,
-                      formData: {
-                        ...prev.formData,
-                        emergencyContact: { ...prev.formData.emergencyContact, phone: e.target.value || '' }
-                      }
-                    }))
-                  }
-                  placeholder="+7 (999) 123-45-67"
-                />
-              </div>
-            </div>
-
-            {/* Additional Info */}
-            <div className="form-row">
-              <div className="form-group">
-                <label>Группа</label>
-                <select
-                  value={state.formData.vpsGroup || ''}
-                  onChange={(e) =>
-                    setState(prev => ({
-                      ...prev,
-                      formData: {
-                        ...prev.formData,
-                        vpsGroup: e.target.value ? Number(e.target.value) : undefined
-                      }
-                    }))
-                  }
-                >
-                  <option value="">Не выбрано</option>
-                  {groupOptions.map((num) => (
-                    <option key={num} value={num}>
-                      Группа {num}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label>Дата рождения</label>
-                <input
-                  type="text"
-                  value={state.formData.birthDate}
-                  onChange={(e) => setState(prev => ({ ...prev, formData: { ...prev.formData, birthDate: e.target.value } }))}
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Дата крещения</label>
-                <input
-                  type="text"
-                  value={state.formData.baptismDate}
-                  onChange={(e) => setState(prev => ({ ...prev, formData: { ...prev.formData, baptismDate: e.target.value } }))}
-                />
-              </div>
-            </div>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label>Пол *</label>
-                <select
-                  value={state.formData.gender}
-                  onChange={(e) => setState(prev => ({ ...prev, formData: { ...prev.formData, gender: e.target.value as 'male' | 'female' } }))}
-                >
-                  <option value="male">Мужской</option>
-                  <option value="female">Женский</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label>Надежда *</label>
-                <select
-                  value={state.formData.hope}
-                  onChange={(e) =>
-                    setState(prev => ({
-                      ...prev,
-                      formData: {
-                        ...prev.formData,
-                        hope: e.target.value as 'other_sheep' | 'anointed'
-                      }
-                    }))
-                  }
-                >
-                  <option value="other_sheep">Другие овцы</option>
-                  <option value="anointed">Помазанник</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Assignments */}
-            <h4>Назначения</h4>
-            <div className="form-row-checkboxes">
-              <div className="form-group checkbox">
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={state.formData.assignments?.elder ?? false}
-                    onChange={(e) =>
-                      setState(prev => ({
-                        ...prev,
-                        formData: {
-                          ...prev.formData,
-                          assignments: {
-                            ...prev.formData.assignments,
-                            elder: e.target.checked
-                          }
-                        }
-                      }))
-                    }
-                  />
-                  Старейшина
-                </label>
-              </div>
-              <div className="form-group checkbox">
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={state.formData.assignments?.assistantServant ?? false}
-                    onChange={(e) =>
-                      setState(prev => ({
-                        ...prev,
-                        formData: {
-                          ...prev.formData,
-                          assignments: {
-                            ...prev.formData.assignments,
-                            assistantServant: e.target.checked
-                          }
-                        }
-                      }))
-                    }
-                  />
-                  Помощник служителя
-                </label>
-              </div>
-              <div className="form-group checkbox">
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={state.formData.assignments?.pioneer ?? false}
-                    onChange={(e) =>
-                      setState(prev => ({
-                        ...prev,
-                        formData: {
-                          ...prev.formData,
-                          assignments: {
-                            ...prev.formData.assignments,
-                            pioneer: e.target.checked
-                          }
-                        }
-                      }))
-                    }
-                  />
-                  Пионер
-                </label>
-              </div>
-              <div className="form-group checkbox">
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={state.formData.assignments?.specialPioneer ?? false}
-                    onChange={(e) =>
-                      setState(prev => ({
-                        ...prev,
-                        formData: {
-                          ...prev.formData,
-                          assignments: {
-                            ...prev.formData.assignments,
-                            specialPioneer: e.target.checked
-                          }
-                        }
-                      }))
-                    }
-                  />
-                  Специальный пионер
-                </label>
-              </div>
-              <div className="form-group checkbox">
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={state.formData.assignments?.missionary ?? false}
-                    onChange={(e) =>
-                      setState(prev => ({
-                        ...prev,
-                        formData: {
-                          ...prev.formData,
-                          assignments: {
-                            ...prev.formData.assignments,
-                            missionary: e.target.checked
-                          }
-                        }
-                      }))
-                    }
-                  />
-                  Миссионер
-                </label>
-              </div>
-            </div>
-
-            {error && <div className="error">{error}</div>}
-            <div className="button-group">
-              <button onClick={handleSubmit} className="primary">
-                {editingId ? 'Сохранить' : 'Добавить'}
-              </button>
-              <button onClick={resetForm} className="secondary">
-                Отмена
-              </button>
-            </div>
-
-            {editingId && (
-              <div style={{ marginTop: '0.5em', textAlign: 'right' }}>
-                <button
-                  onClick={() => {
-                    if (confirm('Удалить возвещателя? Это действие нельзя отменить')) {
-                      handleDelete(editingId!);
-                      resetForm();
-                    }
-                  }}
-                  className="danger"
-                  style={{ background: 'var(--danger, #d9534f)', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 4, fontSize: '0.9em' }}
-                >
-                  Удалить возвещателя
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
       <style>{`
-        .form-card {
-          margin-top: 35px;
-          padding: 12px 16px;
-        }
-        .form-card h3 {
-          margin-top: 0;
-          margin-bottom: 10px;
-        }
-        .form-row {
-          display: flex;
-          gap: 16px;
-          margin-bottom: 6px;
-          width: 100%;
-        }
-        .form-row .form-group {
-          flex: 1;
-          margin-bottom: 0;
-        }
-        .form-group label {
-          margin-bottom: 2px;
-          display: block;
-          font-size: 0.85em;
-        }
-        .form-group input, .form-group select {
-          padding: 5px 8px;
-        }
-        .form-row-checkboxes {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 16px;
-          align-items: center;
-          margin-bottom: 4px;
-        }
-        .form-row-checkboxes .form-group.checkbox {
-          margin-bottom: 0;
-          margin-top: 0;
-        }
-        .form-card h4 {
-          margin-top: 0.6em;
-          margin-bottom: 0.2em;
-        }
-        .button-group {
-          margin-top: 10px;
-        }
         .publishers-grid-container {
           overflow-x: auto;
           margin-top: 45px;
           border: 1px solid var(--border-color, #ccc);
           border-radius: 4px;
-          
           overflow-y: auto;
         }
         .excel-table {
@@ -666,21 +173,6 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
         .excel-table tbody tr:hover {
           background-color: var(--secondary-bg, #fafafa);
         }
-        .excel-table .actions-cell {
-          text-align: center;
-          padding: 4px 8px;
-        }
-        .excel-table .actions-cell button {
-          padding: 4px 8px;
-          font-size: 1.1em;
-          background: transparent;
-          border: none;
-          cursor: pointer;
-          transition: transform 0.1s;
-        }
-        .excel-table .actions-cell button:hover {
-          transform: scale(1.15);
-        }
       `}</style>
 
       <div className="publishers-grid-container">
@@ -712,7 +204,7 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
                 const emPhone = publisher.emergencyContact?.phone || '';
 
                 return (
-                  <tr key={publisher.id} onClick={() => handleEdit(publisher)}>
+                  <tr key={publisher.id} onClick={() => openEditModal(publisher)}>
                     <td style={{ fontWeight: 600 }}>{fullName}</td>
                     <td>{phone}</td>
                     <td style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis' }} title={address}>
@@ -738,6 +230,16 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
           </table>
         )}
       </div>
+
+      {state.isModalOpen && (
+        <PublisherModal
+          publisher={state.editingPublisher}
+          vpsGroupsCount={data.settings.vpsGroupsCount}
+          onClose={closeModal}
+          onSubmit={handleSubmit}
+          onDelete={handleDelete}
+        />
+      )}
     </div>
   );
 }

@@ -3,6 +3,7 @@
 // Only add icons that are actually used in the app.
 
 import {
+  faIdCard,
   faChartBar,
   faChartSimple,
   faUsers,
@@ -30,10 +31,11 @@ import {
   faFileLines,
   faChevronLeft,
   faChevronRight,
+  faThLarge,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Navigation
-export const ICON_DASHBOARD = faChartBar;
+export const ICON_DASHBOARD = faThLarge;
 export const ICON_ATTENDANCE = faChartSimple;
 export const ICON_PUBLISHERS = faUsers;
 export const ICON_VPS = faHouse;
@@ -53,6 +55,7 @@ export const ICON_DELETE = faTrashCan;
 export const ICON_FILE = faFile;
 export const ICON_FOLDER = faFolderOpen;
 export const ICON_USER = faUser;
+export const ICON_CARD = faIdCard;
 export const ICON_CALENDAR = faCalendar;
 export const ICON_CLOCK = faClock;
 export const ICON_BOOK = faBook;
