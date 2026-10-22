@@ -11,6 +11,7 @@ function App() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [currentData, setCurrentData] = useState<CongregationData | null>(null);
   const [currentPassword, setCurrentPassword] = useState('');
+  const [userMode, setUserMode] = useState<'guest' | 'admin'>('guest');
 
   const applicationService = useMemo(() => {
     return new ApplicationService(
@@ -20,9 +21,10 @@ function App() {
     );
   }, []);
 
-  const handleUnlock = (data: CongregationData, password: string) => {
+  const handleUnlock = (data: CongregationData, password: string, mode: 'guest' | 'admin' = 'guest') => {
     setCurrentData(data);
     setCurrentPassword(password);
+    setUserMode(mode);
     setIsUnlocked(true);
   };
 
@@ -30,6 +32,7 @@ function App() {
     // Clear all data from memory
     setCurrentData(null);
     setCurrentPassword('');
+    setUserMode('guest');
     setIsUnlocked(false);
   };
 
@@ -42,6 +45,7 @@ function App() {
           <MainApp
             initialData={currentData}
             currentPassword={currentPassword}
+            userMode={userMode}
             applicationService={applicationService}
             onLogout={handleLogout}
           />

@@ -90,6 +90,19 @@
   text-decoration: underline;
 }
 
+/* Mode badge on start screen */
+.mode-badge {
+  display: inline-block;
+  margin-left: 0.6em;
+  padding: 0.15em 0.6em;
+  border-radius: 12px;
+  font-size: 0.75em;
+  font-weight: 600;
+  background-color: var(--primary-color);
+  color: white;
+  vertical-align: middle;
+}
+
 /* Responsive */
 @media (max-width: 480px) {
   .about-card {

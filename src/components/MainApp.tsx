@@ -1,4 +1,4 @@
-// Main application component with tabs and auto-save
+// Main application component
 
 import { useState } from 'react';
 import type { CongregationData } from '../domain';
@@ -11,16 +11,16 @@ import {
   ICON_VPS,
   ICON_REPORTS,
   ICON_SETTINGS,
-  ICON_SAVE,
   ICON_LOGOUT,
   ICON_CHECK,
   ICON_WARNING,
   ICON_ARROW_LEFT,
   ICON_ARROW_RIGHT,
-  ICON_CARD
+  ICON_CARD,
+  ICON_SAVE
 } from '../config/icons';
 import { ICON_ATTENDANCE } from '../config/icons';
-import { useAutoSave } from '../hooks';
+import { indexedDbService } from '../storage';
 import Publishers from './Publishers';
 import Attendance from './Attendance';
 import CongregationProfile from './CongregationProfile';
@@ -33,13 +33,14 @@ import S1Page from './s1/S1Page';
 interface MainAppProps {
   initialData: CongregationData;
   currentPassword: string;
+  userMode: 'guest' | 'admin';
   applicationService: ApplicationService;
   onLogout: () => void;
 }
 
 type Tab = 'dashboard' | 'publishers' | 'vps' | 'service-records' | 'service-reports' | 'meeting-attendance' | 's1' | 'profile';
 
-export default function MainApp({ initialData, currentPassword, applicationService, onLogout }: MainAppProps) {
+export default function MainApp({ initialData, currentPassword, userMode, applicationService, onLogout }: MainAppProps) {
   const [data, setData] = useState<CongregationData>(initialData);
   const [password, setPassword] = useState(currentPassword);
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
@@ -49,7 +50,9 @@ export default function MainApp({ initialData, currentPassword, applicationServi
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [autoSaveEnabled, setAutoSaveEnabled] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [autoSaveError, setAutoSaveError] = useState<string | null>(null);
 
   const workingServiceYearStart: number = data.settings.serviceYearStart
     ?? (() => {
@@ -69,44 +72,29 @@ export default function MainApp({ initialData, currentPassword, applicationServi
     setSelectedServiceYearStart(selectedServiceYearStart + 1);
   };
 
-  // Single save pipeline - all saves go through this
+  // Save to IndexedDB in Admin mode
   const handleSave = async (dataToSave: CongregationData) => {
-    await applicationService.saveFile({
-      data: dataToSave,
-      password,
-      filename: 'congregation-data.enc.json'
-    });
+    if (userMode === 'admin') {
+      setIsSaving(true);
+      setAutoSaveError(null);
+      try {
+        const dataJson = JSON.stringify(dataToSave);
+        await indexedDbService.set(dataJson, password);
+        setLastSaved(new Date());
+      } catch (err) {
+        setAutoSaveError(err instanceof Error ? err.message : 'Ошибка сохранения');
+      } finally {
+        setIsSaving(false);
+      }
+    }
   };
-
-  const { isSaving, lastSaved, error: autoSaveError, flush, toggleAutoSave } = useAutoSave(
-    data,
-    handleSave,
-    3000,
-    autoSaveEnabled
-  );
 
   const handleDataUpdate = (newData: CongregationData) => {
     setData(newData);
     setSuccess('');
     setError('');
-  };
-
-  const handleManualSave = async () => {
-    setError('');
-    setSuccess('');
-    try {
-      // Flush any pending autosave first, or trigger manual save
-      if (autoSaveEnabled) {
-        await flush();
-      } else {
-        // When autosave disabled, manually trigger save
-        await handleSave(data);
-      }
-      setSuccess('Файл успешно сохранён');
-      setTimeout(() => setSuccess(''), 3000);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ошибка сохранения');
-    }
+    // Trigger save to IndexedDB for Admin
+    handleSave(newData);
   };
 
   const handleChangePassword = async () => {
@@ -140,10 +128,7 @@ export default function MainApp({ initialData, currentPassword, applicationServi
       setNewPassword('');
       setConfirmNewPassword('');
       setShowChangePassword(false);
-      setSuccess('Пароль успешно изменён. Файл будет сохранён с новым паролем.');
-
-      // Force save with new password - goes through single pipeline
-      await handleSave(data);
+      setSuccess('Пароль успешно изменён');
 
       setTimeout(() => setSuccess(''), 5000);
     } catch (err) {
@@ -151,16 +136,26 @@ export default function MainApp({ initialData, currentPassword, applicationServi
     }
   };
 
-  const handleToggleAutoSave = () => {
-    const newState = !autoSaveEnabled;
-    setAutoSaveEnabled(newState);
-    toggleAutoSave(newState);
-  };
-
   const handleLogout = () => {
     if (confirm('Выйти из приложения? Все несохранённые данные будут потеряны.')) {
       // Clear all data from memory
       onLogout();
+    }
+  };
+
+  const handleManualSave = async () => {
+    setError('');
+    setSuccess('');
+    try {
+      await applicationService.saveFile({
+        data,
+        password,
+        filename: 'congregation-data.enc.json'
+      });
+      setSuccess('Файл успешно скачан');
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Ошибка сохранения файла');
     }
   };
 
@@ -184,19 +179,15 @@ export default function MainApp({ initialData, currentPassword, applicationServi
           <img src="/logo.png" alt="KeepCong" className="app-logo" />
           <h1>{data.settings.name || 'KeepCong'}</h1>
           <div className="save-status">
-            {isSaving && <span className="saving"><FontAwesomeIcon icon={ICON_SAVE} spin /> Сохранение...</span>}
+            {isSaving && <span className="saving"><FontAwesomeIcon icon={ICON_CARD} spin /> Сохранение...</span>}
             {!isSaving && lastSaved && (
               <span className="saved"><FontAwesomeIcon icon={ICON_CHECK} /> Сохранено: {formatLastSaved(lastSaved)}</span>
             )}
-            {autoSaveError && <span className="error-indicator"><FontAwesomeIcon icon={ICON_WARNING} /> Ошибка автосохранения</span>}
+            {autoSaveError && <span className="error-indicator"><FontAwesomeIcon icon={ICON_WARNING} /> {autoSaveError}</span>}
           </div>
         </div>
 
-
         <div className="header-right">
-
-
-
           <div className="year-switcher">
             <button className="year-btn" onClick={handlePrevYear} title="Previous year">
               <FontAwesomeIcon icon={ICON_ARROW_LEFT} />
@@ -218,14 +209,14 @@ export default function MainApp({ initialData, currentPassword, applicationServi
             <FontAwesomeIcon icon={ICON_SETTINGS} />
           </button>
 
-          <button onClick={handleManualSave} className="secondary save" disabled={isSaving}>
+          <button onClick={handleManualSave} className="secondary save" title="Скачать JSON файл">
             <FontAwesomeIcon icon={ICON_SAVE} />
           </button>
+
           <button onClick={handleLogout} className="secondary exit">
             <FontAwesomeIcon icon={ICON_LOGOUT} />
           </button>
         </div>
-
       </header>
 
       {(error || success) && (
@@ -336,8 +327,6 @@ export default function MainApp({ initialData, currentPassword, applicationServi
                 data={data}
                 onUpdate={handleDataUpdate}
                 onChangePassword={() => setShowChangePassword(true)}
-                autoSaveEnabled={autoSaveEnabled}
-                onToggleAutoSave={handleToggleAutoSave}
               />
             )}
           </>

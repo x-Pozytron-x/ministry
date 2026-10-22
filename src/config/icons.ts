@@ -4,7 +4,6 @@
 
 import {
   faIdCard,
-  faChartBar,
   faChartSimple,
   faUsers,
   faHouse,

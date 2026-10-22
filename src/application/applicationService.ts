@@ -53,21 +53,7 @@ export class ApplicationService {
       const decryptedJson = await this.cryptoService.decrypt(encryptedData, request.password);
       console.log('✅ Decryption successful');
 
-      console.log('📦 JSON parsing started');
-      const raw = JSON.parse(decryptedJson);
-      console.log('✅ JSON parsed');
-
-      // Migrate legacy shapes (in-memory) to canonical schema before validation.
-      // This preserves backward compatibility with older saved JSON files.
-      const { migrateCongregationData } = await import('../domain');
-      const data = migrateCongregationData(raw);
-
-      console.log('🔍 Validation started');
-      this.validateLoadedData(data);
-      console.log('✅ Validation successful');
-
-      console.log('🎉 File loaded');
-      return data;
+      return await this.parseDecryptedJson(decryptedJson);
     } catch (error) {
       if (error instanceof DecryptionError) {
         console.error('❌ DECRYPTION FAILED', error);
@@ -76,6 +62,24 @@ export class ApplicationService {
       console.error('❌ OPEN FILE FAILED', error);
       throw new StorageError('Не удалось открыть файл');
     }
+  }
+
+  async parseDecryptedJson(decryptedJson: string): Promise<CongregationData> {
+    console.log('📦 JSON parsing started');
+    const raw = JSON.parse(decryptedJson);
+    console.log('✅ JSON parsed');
+
+    // Migrate legacy shapes (in-memory) to canonical schema before validation.
+    // This preserves backward compatibility with older saved JSON files.
+    const { migrateCongregationData } = await import('../domain');
+    const data = migrateCongregationData(raw);
+
+    console.log('🔍 Validation started');
+    this.validateLoadedData(data);
+    console.log('✅ Validation successful');
+
+    console.log('🎉 Data loaded');
+    return data;
   }
 
   private validateLoadedData(data: CongregationData): void {

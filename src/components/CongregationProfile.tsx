@@ -21,16 +21,12 @@ interface CongregationProfileProps {
   data: CongregationData;
   onUpdate: (data: CongregationData) => void;
   onChangePassword: () => void;
-  autoSaveEnabled: boolean;
-  onToggleAutoSave: () => void;
 }
 
 export default function CongregationProfile({
   data,
   onUpdate,
-  onChangePassword,
-  autoSaveEnabled,
-  onToggleAutoSave
+  onChangePassword
 }: CongregationProfileProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<CongregationSettings>(
@@ -236,23 +232,6 @@ export default function CongregationProfile({
             </div>
           </div>
         )}
-      </div>
-
-      <div className="settings-card">
-        <div className="setting-item">
-          <div className="setting-info">
-            <h3>Автосохранение</h3>
-            <p>Автоматически скачивать зашифрованный файл при изменениях (с задержкой 3 сек)</p>
-          </div>
-          <label className="toggle">
-            <input
-              type="checkbox"
-              checked={autoSaveEnabled}
-              onChange={onToggleAutoSave}
-            />
-            <span className="slider"></span>
-          </label>
-        </div>
       </div>
 
       <div className="settings-card">
