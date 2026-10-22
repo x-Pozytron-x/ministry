@@ -13,6 +13,16 @@ class WebCryptoService implements CryptoService {
     return crypto.getRandomValues(new Uint8Array(length));
   }
 
+  private get subtle(): SubtleCrypto {
+    if (!crypto.subtle) {
+      throw new Error(
+        'SubtleCrypto API недоступен: приложение открыто в небезопасном контексте. ' +
+        'Используйте HTTPS или localhost (crypto.subtle отключён на http:// для не-localhost хостов).'
+      );
+    }
+    return crypto.subtle;
+  }
+
   private stringToBuffer(str: string): ArrayBuffer {
     return new TextEncoder().encode(str).buffer;
   }
@@ -42,7 +52,7 @@ class WebCryptoService implements CryptoService {
   private async deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey> {
     const passwordBuffer = this.stringToBuffer(password);
 
-    const baseKey = await crypto.subtle.importKey(
+    const baseKey = await this.subtle.importKey(
       'raw',
       passwordBuffer,
       'PBKDF2',
@@ -50,7 +60,7 @@ class WebCryptoService implements CryptoService {
       ['deriveKey']
     );
 
-    return crypto.subtle.deriveKey(
+    return this.subtle.deriveKey(
       {
         name: 'PBKDF2',
         salt: salt.buffer as ArrayBuffer,
@@ -78,7 +88,7 @@ class WebCryptoService implements CryptoService {
       const dataBuffer = this.stringToBuffer(plainData);
 
       console.log('  🔐 AES encryption started');
-      const encryptedBuffer = await crypto.subtle.encrypt(
+      const encryptedBuffer = await this.subtle.encrypt(
         {
           name: 'AES-GCM',
           iv: iv.buffer as ArrayBuffer
@@ -108,7 +118,7 @@ class WebCryptoService implements CryptoService {
 
       const key = await this.deriveKey(password, salt);
 
-      const decryptedBuffer = await crypto.subtle.decrypt(
+      const decryptedBuffer = await this.subtle.decrypt(
         {
           name: 'AES-GCM',
           iv: iv.buffer
