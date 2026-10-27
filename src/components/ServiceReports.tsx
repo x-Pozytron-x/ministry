@@ -10,6 +10,7 @@ interface ServiceReportsProps {
   onUpdate: (data: CongregationData) => void;
   selectedServiceYearStart: number;
   workingServiceYearStart: number;
+  userMode: 'guest' | 'admin';
 }
 
 const SERVICE_MONTHS = [
@@ -36,7 +37,7 @@ const getMonthYearFormat = (serviceYear: string, monthValue: string): string => 
   return `${year}-${monthValue}`;
 };
 
-export default function ServiceReports({ data, onUpdate, selectedServiceYearStart }: ServiceReportsProps) {
+export default function ServiceReports({ data, onUpdate, selectedServiceYearStart, userMode }: ServiceReportsProps) {
   const [selectedMonth, setSelectedMonth] = useState('09');
 
   const currentServiceYear: ServiceYear = getServiceYear(selectedServiceYearStart);
@@ -288,17 +289,19 @@ export default function ServiceReports({ data, onUpdate, selectedServiceYearStar
     <div className="section">
       <div className="section-header">
         <h2>Reports</h2>
-        <div className="button-group">
-          <button onClick={handleDownloadTemplate} className="secondary">
-            📥 Скачать шаблон
-          </button>
-          <button onClick={() => setShowManualEntry(true)} className="secondary">
-            ➕ Внести отчет
-          </button>
-          <button onClick={handleImportClick} className="primary">
-            📥 Импорт CSV
-          </button>
-        </div>
+        {userMode === 'admin' && (
+          <div className="button-group">
+            <button onClick={handleDownloadTemplate} className="secondary">
+              📥 Скачать шаблон
+            </button>
+            <button onClick={() => setShowManualEntry(true)} className="secondary">
+              ➕ Внести отчет
+            </button>
+            <button onClick={handleImportClick} className="primary">
+              📥 Импорт CSV
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Month tabs */}
@@ -335,7 +338,11 @@ export default function ServiceReports({ data, onUpdate, selectedServiceYearStar
               const report = item.report;
 
               return (
-                <tr key={item.id} onClick={() => handleRowClick(item)}>
+                <tr
+                  key={item.id}
+                  onClick={userMode === 'admin' ? () => handleRowClick(item) : undefined}
+                  style={userMode === 'guest' ? { cursor: 'default' } : undefined}
+                >
                   <td>{index + 1}</td>
                   <td>{item.displayLastName} {item.displayFirstName}</td>
                   <td>

@@ -6,6 +6,7 @@ import PublisherModal from './PublisherModal';
 interface PublishersProps {
   data: CongregationData;
   onUpdate: (data: CongregationData) => void;
+  userMode: 'guest' | 'admin';
 }
 
 interface PublishersState {
@@ -17,7 +18,7 @@ interface PublishersState {
 
 type SortValue = string | number;
 
-export default function Publishers({ data, onUpdate }: PublishersProps) {
+export default function Publishers({ data, onUpdate, userMode }: PublishersProps) {
   const [state, setState] = useState<PublishersState>({
     sortKey: 'fullName',
     sortDirection: 'asc',
@@ -126,9 +127,11 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
     <div className="section">
       <div className="section-header">
         <h2>Возвещатели ({data.publishers.length})</h2>
-        <button type="button" onClick={openCreateModal} className="primary">
-          + Добавить
-        </button>
+        {userMode === 'admin' && (
+          <button type="button" onClick={openCreateModal} className="primary">
+            + Добавить
+          </button>
+        )}
       </div>
 
       <style>{`
@@ -238,6 +241,7 @@ export default function Publishers({ data, onUpdate }: PublishersProps) {
           onClose={closeModal}
           onSubmit={handleSubmit}
           onDelete={handleDelete}
+          userMode={userMode}
         />
       )}
     </div>

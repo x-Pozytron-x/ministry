@@ -3,6 +3,7 @@ import type { CongregationData } from '../domain';
 interface DashboardProps {
   data: CongregationData;
   selectedServiceYearStart?: number;
+  userMode: 'guest' | 'admin';
 }
 
 interface StatCardProps {
@@ -30,7 +31,7 @@ function calculateAge(birthDate: string): number {
   return age;
 }
 
-export default function Dashboard({ data }: DashboardProps) {
+export default function Dashboard({ data, userMode }: DashboardProps) {
   const baptizedAdults = data.publishers.filter(publisher => {
     if (!publisher.baptismDate) return false;
     if (!publisher.birthDate) return false;

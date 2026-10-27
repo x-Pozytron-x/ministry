@@ -49,3 +49,6 @@ Thumbs.db
 .continue
 opencode.json
 opencode.json
+FREE.bat
+opencode.json
+.github/workflows/deploy.yml

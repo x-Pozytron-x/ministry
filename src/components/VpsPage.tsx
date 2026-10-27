@@ -7,9 +7,10 @@ import { ICON_EDIT } from '../config/icons';
 interface VpsPageProps {
   data: CongregationData;
   onUpdate: (data: CongregationData) => void;
+  userMode: 'guest' | 'admin';
 }
 
-export default function VpsPage({ data, onUpdate }: VpsPageProps) {
+export default function VpsPage({ data, onUpdate, userMode }: VpsPageProps) {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<{
     leaderPublisherId: string | undefined;
@@ -109,9 +110,16 @@ export default function VpsPage({ data, onUpdate }: VpsPageProps) {
               .sort((a, b) => a.lastName.localeCompare(b.lastName));
             return (
               <div key={i} className="vps-group-column">
-                <div className="vps-group-header" onClick={() => openEditModal(i)} title="Редактировать группу">
+                <div
+                  className="vps-group-header"
+                  onClick={userMode === 'admin' ? () => openEditModal(i) : undefined}
+                  title={userMode === 'admin' ? "Редактировать группу" : undefined}
+                  style={userMode === 'guest' ? { cursor: 'default' } : undefined}
+                >
                   <span>Группа {i + 1}</span>
-                  <span className="vps-edit-icon"><FontAwesomeIcon icon={ICON_EDIT} /></span>
+                  {userMode === 'admin' && (
+                    <span className="vps-edit-icon"><FontAwesomeIcon icon={ICON_EDIT} /></span>
+                  )}
                 </div>
 
                 <div className="vps-cell vps-cell-leader">
@@ -152,7 +160,7 @@ export default function VpsPage({ data, onUpdate }: VpsPageProps) {
       </div>
 
       {/* Edit Modal */}
-      {editingIndex !== null && (
+      {editingIndex !== null && userMode === 'admin' && (
         <div className="vps-modal-overlay" onClick={() => setEditingIndex(null)}>
           <div className="vps-modal" onClick={e => e.stopPropagation()}>
             <h3>Редактирование — Группа {editingIndex + 1}</h3>

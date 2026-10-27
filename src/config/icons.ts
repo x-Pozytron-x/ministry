@@ -31,6 +31,9 @@ import {
   faChevronLeft,
   faChevronRight,
   faThLarge,
+  faShieldHalved,
+  faClipboardCheck,
+  faFileExport,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Navigation
@@ -69,3 +72,8 @@ export const ICON_LOCK = faLock;
 // Navigation
 export const ICON_ARROW_LEFT = faChevronLeft;
 export const ICON_ARROW_RIGHT = faChevronRight;
+
+// Landing screen features
+export const ICON_FEATURE_SECURITY = faShieldHalved;
+export const ICON_FEATURE_CONVENIENCE = faClipboardCheck;
+export const ICON_FEATURE_EXPORT = faFileExport;

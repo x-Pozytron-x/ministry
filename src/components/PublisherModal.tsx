@@ -8,6 +8,7 @@ interface PublisherModalProps {
   onClose: () => void;
   onSubmit: (publisher: Publisher) => void;
   onDelete: (publisherId: string) => void;
+  userMode: 'guest' | 'admin';
 }
 
 interface PublisherFormData {
@@ -105,7 +106,8 @@ export default function PublisherModal({
   vpsGroupsCount,
   onClose,
   onSubmit,
-  onDelete
+  onDelete,
+  userMode
 }: PublisherModalProps) {
   const [formData, setFormData] = useState<PublisherFormData>(() =>
     publisher ? publisherToFormData(publisher) : createEmptyPublisherForm()
@@ -395,15 +397,17 @@ export default function PublisherModal({
           {error && <div className="publisher-modal-error">{error}</div>}
 
           <div className="publisher-modal-actions">
-            <button
-              type="button"
-              onClick={handleSubmit}
-              className="primary"
-              disabled={!formData.lastName || !formData.firstName || !formData.phonePrimary}
-            >
-              {publisher ? 'Сохранить' : 'Добавить'}
-            </button>
-            {publisher && (
+            {userMode === 'admin' && (
+              <button
+                type="button"
+                onClick={handleSubmit}
+                className="primary"
+                disabled={!formData.lastName || !formData.firstName || !formData.phonePrimary}
+              >
+                {publisher ? 'Сохранить' : 'Добавить'}
+              </button>
+            )}
+            {publisher && userMode === 'admin' && (
               <button type="button" onClick={handleDelete} className="danger">
                 Удалить
               </button>

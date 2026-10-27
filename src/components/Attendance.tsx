@@ -11,6 +11,7 @@ interface AttendanceProps {
   onUpdate: (data: CongregationData) => void;
   selectedServiceYearStart: number;
   workingServiceYearStart: number;
+  userMode: 'guest' | 'admin';
 }
 
 type MeetingType = 'weekday' | 'weekend';
@@ -37,7 +38,7 @@ const weekIndex = (day: number, firstDow: number) =>
 const isValid = (v: number | null): v is number =>
   typeof v === 'number' && !isNaN(v) && v > 0;
 
-export default function Attendance({ data, onUpdate, selectedServiceYearStart }: AttendanceProps) {
+export default function Attendance({ data, onUpdate, selectedServiceYearStart, userMode }: AttendanceProps) {
 
   const baseYear = selectedServiceYearStart;
 
@@ -95,6 +96,7 @@ export default function Attendance({ data, onUpdate, selectedServiceYearStart }:
   };
 
   const save = (date: string, type: MeetingType) => {
+    if (userMode !== 'admin') return;
     const num = Number(value);
     if (isNaN(num)) return;
 
@@ -188,6 +190,7 @@ export default function Attendance({ data, onUpdate, selectedServiceYearStart }:
                           : null;
 
                         const isEditing =
+                          userMode === 'admin' &&
                           !!cell &&
                           edit?.date === cell.date &&
                           edit?.type === type;
@@ -196,7 +199,7 @@ export default function Attendance({ data, onUpdate, selectedServiceYearStart }:
                           <td
                             key={w}
                             onClick={() => {
-                              if (!cell || isEditing) return;
+                              if (userMode !== 'admin' || !cell || isEditing) return;
                               setEdit({ date: cell.date, type });
                               setValue(String(report?.attendanceCount ?? ''));
                             }}

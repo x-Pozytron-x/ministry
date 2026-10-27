@@ -26,6 +26,11 @@ class IndexedDbService {
     });
   }
 
+  async databaseExists(): Promise<boolean> {
+    const databases = await indexedDB.databases();
+    const databaseIsPresent = databases.some((database) => database.name === DB_NAME);
+    return databaseIsPresent && this.hasData();
+  }
   async set(plainData: string, password: string): Promise<void> {
     const encrypted = await cryptoService.encrypt(plainData, password);
     const db = await this.openDb();
@@ -55,6 +60,17 @@ class IndexedDbService {
     return cryptoService.decrypt(encrypted, password);
   }
 
+  async deleteDatabase(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.deleteDatabase(DB_NAME);
+
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(new StorageError('Не удалось удалить базу данных IndexedDB'));
+      request.onblocked = () =>
+        reject(new StorageError('Удаление заблокировано другим подключением к базе данных'));
+    });
+  }
+
   async clear(): Promise<void> {
     const db = await this.openDb();
 
@@ -75,8 +91,25 @@ class IndexedDbService {
   }
 
   async hasData(): Promise<boolean> {
-    const raw = await this.getRaw();
-    return raw !== null;
+    const db = await this.openDb();
+
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, 'readonly');
+      const request = tx.objectStore(STORE_NAME).count();
+
+      request.onsuccess = () => {
+        db.close();
+        resolve(request.result > 0);
+      };
+      request.onerror = () => {
+        db.close();
+        reject(new StorageError('Не удалось проверить данные в IndexedDB'));
+      };
+      tx.onabort = () => {
+        db.close();
+        reject(new StorageError('Не удалось проверить данные в IndexedDB'));
+      };
+    });
   }
 
   private async getRaw(): Promise<EncryptedData | null> {

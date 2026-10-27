@@ -40,9 +40,10 @@ interface MainAppProps {
 
 type Tab = 'dashboard' | 'publishers' | 'vps' | 'service-records' | 'service-reports' | 'meeting-attendance' | 's1' | 'profile';
 
-export default function MainApp({ initialData, currentPassword, userMode, applicationService, onLogout }: MainAppProps) {
+export default function MainApp({ initialData, currentPassword, userMode: initialUserMode, applicationService }: MainAppProps) {
   const [data, setData] = useState<CongregationData>(initialData);
   const [password, setPassword] = useState(currentPassword);
+  const [userMode, setUserMode] = useState<'guest' | 'admin'>(initialUserMode);
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [oldPassword, setOldPassword] = useState('');
@@ -89,6 +90,31 @@ export default function MainApp({ initialData, currentPassword, userMode, applic
     }
   };
 
+  const handleBecomeAdmin = async () => {
+    let adminPassword = password;
+    if (!adminPassword) {
+      const enteredPassword = window.prompt('Задайте пароль для локальной базы данных');
+      if (enteredPassword === null) return;
+      if (!enteredPassword) {
+        setError('Введите пароль для локальной базы данных');
+        return;
+      }
+      adminPassword = enteredPassword;
+    }
+
+    setError('');
+    setIsSaving(true);
+    try {
+      await indexedDbService.set(JSON.stringify(data), adminPassword);
+      setPassword(adminPassword);
+      setUserMode('admin');
+      setLastSaved(new Date());
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Не удалось сохранить базу данных');
+    } finally {
+      setIsSaving(false);
+    }
+  };
   const handleDataUpdate = (newData: CongregationData) => {
     setData(newData);
     setSuccess('');
@@ -136,10 +162,12 @@ export default function MainApp({ initialData, currentPassword, userMode, applic
     }
   };
 
-  const handleLogout = () => {
-    if (confirm('Выйти из приложения? Все несохранённые данные будут потеряны.')) {
-      // Clear all data from memory
-      onLogout();
+  const handleLogout = async () => {
+    try {
+      await indexedDbService.deleteDatabase();
+      window.location.reload();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Ошибка при удалении базы данных');
     }
   };
 
@@ -202,16 +230,26 @@ export default function MainApp({ initialData, currentPassword, userMode, applic
             </button>
           </div>
 
-          <button
-            className={activeTab === 'profile' ? 'active' : ''}
-            onClick={() => setActiveTab('profile')}
-          >
-            <FontAwesomeIcon icon={ICON_SETTINGS} />
-          </button>
+          {userMode === 'guest' && (
+            <button onClick={handleBecomeAdmin} disabled={isSaving} className="secondary">
+              {isSaving ? 'Сохранение...' : 'В режим администратора'}
+            </button>
+          )}
 
-          <button onClick={handleManualSave} className="secondary save" title="Скачать JSON файл">
-            <FontAwesomeIcon icon={ICON_SAVE} />
-          </button>
+          {userMode === 'admin' && (
+            <button
+              className={activeTab === 'profile' ? 'active' : ''}
+              onClick={() => setActiveTab('profile')}
+            >
+              <FontAwesomeIcon icon={ICON_SETTINGS} />
+            </button>
+          )}
+
+          {userMode === 'admin' && (
+            <button onClick={handleManualSave} className="secondary save" title="Скачать JSON файл">
+              <FontAwesomeIcon icon={ICON_SAVE} />
+            </button>
+          )}
 
           <button onClick={handleLogout} className="secondary exit">
             <FontAwesomeIcon icon={ICON_LOGOUT} />
@@ -272,14 +310,14 @@ export default function MainApp({ initialData, currentPassword, userMode, applic
       </nav>
 
       <main className="app-content">
-        {activeTab === 'dashboard' && <Dashboard data={data} selectedServiceYearStart={selectedServiceYearStart} />}
-        {activeTab === 'publishers' && <Publishers data={data} onUpdate={handleDataUpdate} />}
-        {activeTab === 'vps' && <VpsPage data={data} onUpdate={handleDataUpdate} />}
-        {activeTab === 'service-records' && <S21Page data={data} onUpdate={handleDataUpdate} selectedServiceYearStart={selectedServiceYearStart} workingServiceYearStart={workingServiceYearStart} />}
-        {activeTab === 'service-reports' && <ServiceReports data={data} onUpdate={handleDataUpdate} selectedServiceYearStart={selectedServiceYearStart} workingServiceYearStart={workingServiceYearStart} />}
-        {activeTab === 'meeting-attendance' && <Attendance data={data} onUpdate={handleDataUpdate} selectedServiceYearStart={selectedServiceYearStart} workingServiceYearStart={workingServiceYearStart} />}
-        {activeTab === 's1' && <S1Page data={data} selectedServiceYearStart={selectedServiceYearStart} workingServiceYearStart={workingServiceYearStart} />}
-        {activeTab === 'profile' && (
+        {activeTab === 'dashboard' && <Dashboard data={data} selectedServiceYearStart={selectedServiceYearStart} userMode={userMode} />}
+        {activeTab === 'publishers' && <Publishers data={data} onUpdate={handleDataUpdate} userMode={userMode} />}
+        {activeTab === 'vps' && <VpsPage data={data} onUpdate={handleDataUpdate} userMode={userMode} />}
+        {activeTab === 'service-records' && <S21Page data={data} onUpdate={handleDataUpdate} selectedServiceYearStart={selectedServiceYearStart} workingServiceYearStart={workingServiceYearStart} userMode={userMode} />}
+        {activeTab === 'service-reports' && <ServiceReports data={data} onUpdate={handleDataUpdate} selectedServiceYearStart={selectedServiceYearStart} workingServiceYearStart={workingServiceYearStart} userMode={userMode} />}
+        {activeTab === 'meeting-attendance' && <Attendance data={data} onUpdate={handleDataUpdate} selectedServiceYearStart={selectedServiceYearStart} workingServiceYearStart={workingServiceYearStart} userMode={userMode} />}
+        {activeTab === 's1' && <S1Page data={data} selectedServiceYearStart={selectedServiceYearStart} workingServiceYearStart={workingServiceYearStart} userMode={userMode} />}
+        {activeTab === 'profile' && userMode === 'admin' && (
           <>
             {showChangePassword ? (
               <div className="section">
