@@ -267,6 +267,11 @@ export default function StartScreen({ applicationService, onUnlock }: StartScree
             Загрузить файл
           </button>
         </div>
+        <div className="button-group">
+          <button onClick={() => { resetState(); setMode('welcome'); }} className="secondary">
+            Назад
+          </button>
+        </div>
       </div>
     );
   }
@@ -303,6 +308,11 @@ export default function StartScreen({ applicationService, onUnlock }: StartScree
           {error && <div className="error">{error}</div>}
           <div className="button-group">
             <button onClick={handleCreateDb} disabled={loading} className="primary">{loading ? 'Создание...' : 'Создать'}</button>
+          </div>
+          <div className="button-group">
+            <button onClick={() => { resetState(); setMode('choice'); }} disabled={loading} className="secondary">
+              Назад
+            </button>
           </div>
         </div>
       </div>
@@ -355,6 +365,11 @@ export default function StartScreen({ applicationService, onUnlock }: StartScree
         {error && <div className="error">{error}</div>}
         <div className="button-group">
           <button onClick={handleFileOpen} disabled={loading || !selectedFile} className="primary">{loading ? 'Загрузка...' : 'Открыть'}</button>
+        </div>
+        <div className="button-group">
+          <button onClick={() => { resetState(); setMode('choice'); }} disabled={loading} className="secondary">
+            Назад
+          </button>
         </div>
       </div>
     </div>
