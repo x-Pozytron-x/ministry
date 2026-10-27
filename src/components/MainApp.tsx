@@ -310,13 +310,13 @@ export default function MainApp({ initialData, currentPassword, userMode: initia
       </nav>
 
       <main className="app-content">
-        {activeTab === 'dashboard' && <Dashboard data={data} selectedServiceYearStart={selectedServiceYearStart} userMode={userMode} />}
+        {activeTab === 'dashboard' && <Dashboard data={data} selectedServiceYearStart={selectedServiceYearStart} />}
         {activeTab === 'publishers' && <Publishers data={data} onUpdate={handleDataUpdate} userMode={userMode} />}
         {activeTab === 'vps' && <VpsPage data={data} onUpdate={handleDataUpdate} userMode={userMode} />}
-        {activeTab === 'service-records' && <S21Page data={data} onUpdate={handleDataUpdate} selectedServiceYearStart={selectedServiceYearStart} workingServiceYearStart={workingServiceYearStart} userMode={userMode} />}
+        {activeTab === 'service-records' && <S21Page data={data} onUpdate={handleDataUpdate} selectedServiceYearStart={selectedServiceYearStart} workingServiceYearStart={workingServiceYearStart} />}
         {activeTab === 'service-reports' && <ServiceReports data={data} onUpdate={handleDataUpdate} selectedServiceYearStart={selectedServiceYearStart} workingServiceYearStart={workingServiceYearStart} userMode={userMode} />}
         {activeTab === 'meeting-attendance' && <Attendance data={data} onUpdate={handleDataUpdate} selectedServiceYearStart={selectedServiceYearStart} workingServiceYearStart={workingServiceYearStart} userMode={userMode} />}
-        {activeTab === 's1' && <S1Page data={data} selectedServiceYearStart={selectedServiceYearStart} workingServiceYearStart={workingServiceYearStart} userMode={userMode} />}
+        {activeTab === 's1' && <S1Page data={data} selectedServiceYearStart={selectedServiceYearStart} workingServiceYearStart={workingServiceYearStart} />}
         {activeTab === 'profile' && userMode === 'admin' && (
           <>
             {showChangePassword ? (

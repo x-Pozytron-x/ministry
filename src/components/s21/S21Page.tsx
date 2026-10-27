@@ -8,7 +8,6 @@ interface S21PageProps {
   onUpdate: (data: CongregationData) => void;
   selectedServiceYearStart: number;
   workingServiceYearStart: number;
-  userMode: 'guest' | 'admin';
 }
 
 type Tab = { type: 'pioneers' } | { type: 'group'; groupNumber: number };
@@ -16,7 +15,7 @@ type Tab = { type: 'pioneers' } | { type: 'group'; groupNumber: number };
 const isPioneer = (p: Publisher): boolean =>
   p.assignments.pioneer || p.assignments.specialPioneer;
 
-export default function S21Page({ data, selectedServiceYearStart, workingServiceYearStart, userMode }: S21PageProps) {
+export default function S21Page({ data, selectedServiceYearStart, workingServiceYearStart }: S21PageProps) {
   const viewingServiceYear: ServiceYear = getServiceYear(selectedServiceYearStart);
   const writingServiceYear: ServiceYear = getServiceYear(workingServiceYearStart);
   const groupCount = data.settings.vpsGroupsCount;

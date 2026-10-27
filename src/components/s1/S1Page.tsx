@@ -7,7 +7,6 @@ interface S1PageProps {
   data: CongregationData;
   selectedServiceYearStart: number;
   workingServiceYearStart: number;
-  userMode: 'guest' | 'admin';
 }
 
 const MONTH_LABELS: Record<string, string> = {
@@ -27,7 +26,7 @@ const MONTH_LABELS: Record<string, string> = {
 
 const MONTH_KEYS = ['09','10','11','12','01','02','03','04','05','06','07','08'];
 
-export default function S1Page({ data, selectedServiceYearStart, userMode }: S1PageProps) {
+export default function S1Page({ data, selectedServiceYearStart }: S1PageProps) {
   const currentServiceYear: ServiceYear = getServiceYear(selectedServiceYearStart);
 
   const rows = useMemo(
