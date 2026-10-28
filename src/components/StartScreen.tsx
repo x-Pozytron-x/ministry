@@ -12,7 +12,9 @@ import {
   ICON_FOLDER,
   ICON_FEATURE_SECURITY,
   ICON_FEATURE_CONVENIENCE,
-  ICON_FEATURE_EXPORT
+  ICON_FEATURE_EXPORT,
+  ICON_EMAIL,
+  ICON_TELEGRAM
 } from '../config/icons';
 import {
   APP_VERSION,
@@ -289,13 +291,18 @@ export default function StartScreen({ applicationService, onUnlock }: StartScree
               onClick={(event) => event.stopPropagation()}
             >
               <header className="landing-modal-header">
-                <h2 id="landing-modal-title">
-                  {activeModal === 'about' && 'О приложении'}
-                  {activeModal === 'faq' && 'FAQ'}
-                  {activeModal === 'author' && 'Об авторе'}
-                  {activeModal === 'contacts' && 'Контакты'}
-                  {activeModal === 'terms' && 'Условия использования'}
-                </h2>
+                <div className="landing-modal-heading">
+                  {activeModal === 'author' && (
+                    <img src="/ava.png" alt="KeepCong" className="landing-author-avatar" />
+                  )}
+                  <h2 id="landing-modal-title">
+                    {activeModal === 'about' && 'О приложении'}
+                    {activeModal === 'faq' && 'FAQ'}
+                    {activeModal === 'author' && 'Об авторе'}
+                    {activeModal === 'contacts' && 'Контакты'}
+                    {activeModal === 'terms' && 'Условия использования'}
+                  </h2>
+                </div>
                 <button
                   type="button"
                   className="landing-modal-close"
@@ -308,11 +315,35 @@ export default function StartScreen({ applicationService, onUnlock }: StartScree
 
               {activeModal === 'about' && (
                 <div className="landing-modal-content">
+                  <h3>KeepCong — Keep Congregation</h3>
                   <p>
-                    KeepCong — приложение для управления данными собрания. Сведения о возвещателях,
-                    отчётах служения и посещаемости хранятся локально на вашем устройстве.
+                    Название приложения расшифровывается как <strong>Keep Congregation</strong> (с англ. — «Сохраняй собрание»).
+                    Это не просто база данных, а инструмент, который помогает заботиться о порядке и структуре собрания,
+                    не теряя при этом главного — людей.
                   </p>
-                  <p>Приложение работает офлайн и не отправляет данные на сервер.</p>
+
+                  <h3>Что умеет приложение:</h3>
+                  <ul>
+                    <li>Вести учёт возвещателей и пионеров.</li>
+                    <li>Формировать отчёты служения (S-21, S-88 и другие).</li>
+                    <li>Хранить составы групп ВПС (внутригрупповое служение).</li>
+                    <li>Работать с данными полностью офлайн.</li>
+                  </ul>
+
+                  <h3>Безопасность и приватность</h3>
+                  <p>
+                    Все сведения хранятся <strong>локально на вашем устройстве</strong> в зашифрованном виде (IndexedDB).
+                    Мы не отправляем данные на серверы, не собираем статистику и не имеем доступа к вашей информации.
+                    Вы сами контролируете свои данные.
+                  </p>
+
+                  <h3>Бесплатно — навсегда</h3>
+                  <p>
+                    KeepCong — это некоммерческий проект. Приложение <strong>всегда будет бесплатным</strong>,
+                    без скрытых подписок, рекламы и платных тарифов. Оно создано для помощи, а не для заработка.
+                  </p>
+
+                  <p><em>Автор: @Pozytron</em></p>
                 </div>
               )}
 
@@ -341,17 +372,66 @@ export default function StartScreen({ applicationService, onUnlock }: StartScree
               )}
 
               {activeModal === 'author' && (
-                <div className="landing-modal-content">
-                  <p>Автор: {APP_AUTHOR_TELEGRAM}</p>
-                  <p><a href={APP_AUTHOR_TELEGRAM_URL} target="_blank" rel="noopener noreferrer">Telegram автора</a></p>
-                  <p><a href="mailto:stetsenko.vitaly@gmail.com">stetsenko.vitaly@gmail.com</a></p>
+                <div className="landing-modal-content landing-author-copy">
+                  <p>Привет! Меня зовут Виталий.</p>
+                  <p>
+                    Я много лет служу секретарем собрания и хорошо знаю, как иногда не хватает удобного инструмента, где вся документация была бы под рукой: возвещатели, отчеты служения, посещаемость, группы ВПС.
+                  </p>
+                  <p>
+                    <strong>KeepCong — это проект, созданный секретарем собрания для секретарей собраний.</strong>{' '}
+                    <strong className="landing-author-highlight">Изначально я делал его для себя, чтобы упростить рутину.</strong>{' '}
+                    Но когда понял, что с этим сталкиваются многие, решил расширить проект и сделать его доступным для всех.
+                  </p>
+                  <p>
+                    Мне хотелось, чтобы люди, которые несут это служение, могли сосредоточиться на главном —{' '}
+                    <strong>заботе о братьях и сестрах</strong>, а не на бумажной работе.
+                  </p>
+                  <blockquote className="landing-author-quote">
+                    Отдельное внимание я уделил возможности быстро и безопасно передать зашифрованную базу данных районному старейшине. Вместо стопки бумаг или десятка разрозненных файлов он получает всю документацию в удобном формате в одном месте.
+                  </blockquote>
+                  <p>Я делаю этот проект для пользы и буду рад, если он поможет и вам.</p>
+                  <p className="landing-author-signature"><em>С уважением, @Pozytron</em></p>
                 </div>
               )}
 
               {activeModal === 'contacts' && (
-                <div className="landing-modal-content">
-                  <p><a href="mailto:stetsenko.vitaly@gmail.com">stetsenko.vitaly@gmail.com</a></p>
-                  <p><a href={APP_AUTHOR_TELEGRAM_URL} target="_blank" rel="noopener noreferrer">{APP_AUTHOR_TELEGRAM}</a></p>
+                <div className="landing-modal-content landing-contact-grid">
+                  <a className="landing-contact-card" href="mailto:stetsenko.vitaly@gmail.com" target="_blank" rel="noopener noreferrer">
+                    <span className="landing-contact-icon"><FontAwesomeIcon icon={ICON_EMAIL} /></span>
+                    <span className="landing-contact-copy">
+                      <small>Email</small>
+                      <strong>stetsenko.vitaly@gmail.com</strong>
+                    </span>
+                  </a>
+                  <a className="landing-contact-card" href="https://t.me/Pozytron" target="_blank" rel="noopener noreferrer">
+                    <span className="landing-contact-icon"><FontAwesomeIcon icon={ICON_TELEGRAM} /></span>
+                    <span className="landing-contact-copy">
+                      <small>Telegram</small>
+                      <strong>@Pozytron</strong>
+                    </span>
+                  </a>
+                  <a className="landing-contact-card" href="https://github.com/x-Pozytron-x" target="_blank" rel="noopener noreferrer">
+                    <span className="landing-contact-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" focusable="false">
+                        <path fill="currentColor" d="M12 .9a11.1 11.1 0 0 0-3.51 21.63c.55.1.76-.24.76-.53v-2.03c-3.1.67-3.76-1.32-3.76-1.32-.5-1.28-1.24-1.62-1.24-1.62-1.01-.69.08-.68.08-.68 1.12.08 1.71 1.15 1.71 1.15 1 .1.76 2.15 3.61 1.55.1-.72.4-1.21.72-1.49-2.48-.28-5.09-1.24-5.09-5.52 0-1.22.44-2.22 1.15-3-.12-.28-.5-1.42.11-2.96 0 0 .94-.3 3.06 1.14a10.65 10.65 0 0 1 5.58 0c2.12-1.44 3.05-1.14 3.05-1.14.61 1.54.23 2.68.11 2.96.72.78 1.15 1.78 1.15 3 0 4.29-2.61 5.24-5.1 5.52.4.35.76 1.02.76 2.06V22c0 .29.2.63.76.52A11.1 11.1 0 0 0 12 .9Z" />
+                      </svg>
+                    </span>
+                    <span className="landing-contact-copy">
+                      <small>GitHub</small>
+                      <strong>github.com/x-Pozytron-x</strong>
+                    </span>
+                  </a>
+                  <a className="landing-contact-card" href="https://www.linkedin.com/in/pozytron" target="_blank" rel="noopener noreferrer">
+                    <span className="landing-contact-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" focusable="false">
+                        <path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.44-2.13 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.26 2.37 4.26 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12Zm1.78 13.02H3.56V9h3.56v11.45ZM22.23 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0h.01Z" />
+                      </svg>
+                    </span>
+                    <span className="landing-contact-copy">
+                      <small>LinkedIn</small>
+                      <strong>linkedin.com/in/pozytron</strong>
+                    </span>
+                  </a>
                 </div>
               )}
 
@@ -641,8 +721,8 @@ export default function StartScreen({ applicationService, onUnlock }: StartScree
           }
 
           .landing-modal {
-            width: min(100%, 560px);
-            max-height: min(80vh, 720px);
+            width: min(100%, 640px);
+            max-height: min(85vh, 760px);
             overflow-y: auto;
             padding: 1.5rem;
             border: 1px solid var(--border-color);
@@ -661,6 +741,54 @@ export default function StartScreen({ applicationService, onUnlock }: StartScree
             margin-bottom: 1rem;
           }
 
+          .landing-modal-heading {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+          }
+
+          .landing-author-avatar {
+            width: 2.75rem;
+            height: 2.75rem;
+            flex: 0 0 2.75rem;
+            border: 1px solid rgba(125, 211, 252, 0.45);
+            border-radius: 50%;
+            background: var(--secondary-bg);
+            object-fit: cover;
+          }
+
+          .landing-author-copy {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+          }
+
+          .landing-author-copy p {
+            margin: 0;
+          }
+
+          .landing-author-highlight {
+            color: #60a5fa;
+          }
+
+          .landing-author-quote {
+            margin: 0;
+            padding: 1rem;
+            border-left: 4px solid #3b82f6;
+            border-radius: 0 8px 8px 0;
+            background: rgba(31, 41, 55, 0.5);
+            color: var(--text-secondary);
+            font-style: italic;
+            line-height: 1.6;
+          }
+
+          .landing-author-signature {
+            margin-top: 0.25rem !important;
+            padding-top: 1rem;
+            border-top: 1px solid #374151;
+            color: #9ca3af;
+            text-align: right;
+          }
           .landing-modal-header h2 {
             margin: 0;
           }
@@ -674,6 +802,79 @@ export default function StartScreen({ applicationService, onUnlock }: StartScree
             cursor: pointer;
           }
 
+          .landing-contact-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+          }
+
+          .landing-modal-content .landing-contact-card {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            min-width: 0;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            background: rgba(31, 41, 55, 0.5);
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+          }
+
+          .landing-modal-content .landing-contact-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(96, 165, 250, 0.5);
+            background: rgba(55, 65, 81, 0.75);
+          }
+
+          .landing-contact-icon {
+            display: grid;
+            width: 2.5rem;
+            height: 2.5rem;
+            flex: 0 0 2.5rem;
+            place-items: center;
+            color: #60a5fa;
+            font-size: 1.35rem;
+          }
+
+          .landing-contact-icon svg {
+            width: 1.35rem;
+            height: 1.35rem;
+          }
+
+          .landing-contact-copy {
+            display: flex;
+            min-width: 0;
+            flex-direction: column;
+            gap: 0.25rem;
+          }
+
+          .landing-contact-copy small {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+          }
+
+          .landing-contact-copy strong {
+            overflow-wrap: anywhere;
+            font-size: 0.9rem;
+          }
+          .landing-modal-content h3 {
+            margin: 1.25rem 0 0.5rem;
+            color: var(--primary-color);
+            font-size: 1.05rem;
+          }
+
+          .landing-modal-content h3:first-child {
+            margin-top: 0;
+          }
+
+          .landing-modal-content ul {
+            margin: 0.5rem 0 1rem;
+            padding-left: 1.4rem;
+            color: var(--text-primary);
+            line-height: 1.7;
+          }
           .landing-modal-content p {
             line-height: 1.6;
           }
@@ -703,6 +904,10 @@ export default function StartScreen({ applicationService, onUnlock }: StartScree
           }
 
           @media (max-width: 640px) {
+            .landing-contact-grid {
+              grid-template-columns: 1fr;
+            }
+
             .landing-header {
               flex-direction: column;
               align-items: stretch;

@@ -35,6 +35,8 @@ import {
   faClipboardCheck,
   faFileExport,
   faDroplet,
+  faEnvelope,
+  faPaperPlane,
   faHandshake,
   faFire,
 } from '@fortawesome/free-solid-svg-icons';
@@ -77,6 +79,8 @@ export const ICON_ARROW_LEFT = faChevronLeft;
 export const ICON_ARROW_RIGHT = faChevronRight;
 
 // Landing screen features
+export const ICON_EMAIL = faEnvelope;
+export const ICON_TELEGRAM = faPaperPlane;
 export const ICON_FEATURE_SECURITY = faShieldHalved;
 export const ICON_FEATURE_CONVENIENCE = faClipboardCheck;
 export const ICON_FEATURE_EXPORT = faFileExport;
