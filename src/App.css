@@ -195,10 +195,6 @@
   }
 }
 
-.start-screen h2 {
-  margin-bottom: 1.5em;
-}
-
 .form {
   display: flex;
   flex-direction: column;
