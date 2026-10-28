@@ -17,8 +17,8 @@ interface AttendanceProps {
 type MeetingType = 'weekday' | 'weekend';
 
 const MONTHS = [
-  'January','February','March','April','May','June',
-  'July','August','September','October','November','December'
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
 ];
 
 const weekdayMap: Record<string, number> = {
@@ -30,7 +30,7 @@ const toWeekdayNum = (v: string) =>
   weekdayMap[(v || '').toLowerCase()] ?? 2;
 
 const formatDate = (y: number, m: number, d: number) =>
-  `${y}-${String(m + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
 
 const weekIndex = (day: number, firstDow: number) =>
   Math.floor((day + firstDow - 1) / 7) + 1;
@@ -116,7 +116,7 @@ export default function Attendance({ data, onUpdate, selectedServiceYearStart, u
           date,
           meetingType: type,
           attendanceCount: num,
-          month: date.slice(0,7),
+          month: date.slice(0, 7),
           notes: ''
         })
       );
@@ -152,27 +152,24 @@ export default function Attendance({ data, onUpdate, selectedServiceYearStart, u
         currentWeekMaps.weekday = weekday;
         currentWeekMaps.weekend = weekend;
 
-        const weekdayStats = calcStats([1,2,3,4,5], 'weekday');
-        const weekendStats = calcStats([1,2,3,4,5], 'weekend');
+        const weekdayStats = calcStats([1, 2, 3, 4, 5], 'weekday');
+        const weekendStats = calcStats([1, 2, 3, 4, 5], 'weekend');
 
         return (
           <div key={idx} className="month">
-
-            <h3>{MONTHS[m.m]}</h3>
-
             <table>
               <thead>
                 <tr>
-                  <th>Type</th>
-                  <th>V1</th><th>V2</th><th>V3</th><th>V4</th><th>V5</th>
+                  <th className="month-header">{MONTHS[m.m]}</th>
+                  <th>Week 1</th><th>Week 2</th><th>Week 3</th><th>Week 4</th><th>Week 5</th>
                   <th>SUM</th>
-                  <th>AVG</th>
+                  <th className="avg-header">AVG</th>
                 </tr>
               </thead>
 
               <tbody>
 
-                {(['weekday','weekend'] as MeetingType[]).map(type => {
+                {(['weekday', 'weekend'] as MeetingType[]).map(type => {
                   const map = type === 'weekday' ? weekday : weekend;
 
                   const stats = type === 'weekday'
@@ -180,10 +177,10 @@ export default function Attendance({ data, onUpdate, selectedServiceYearStart, u
                     : weekendStats;
 
                   return (
-                    <tr key={type}>
-                      <td>{type}</td>
+                    <tr key={type} className={type === 'weekend' ? 'weekend-row' : undefined}>
+                      <td>{type === 'weekday' ? 'Weekday' : 'Weekend'}</td>
 
-                      {[1,2,3,4,5].map(w => {
+                      {[1, 2, 3, 4, 5].map(w => {
                         const cell = map[w];
                         const report = cell
                           ? getReport(cell.date, type)
@@ -205,11 +202,11 @@ export default function Attendance({ data, onUpdate, selectedServiceYearStart, u
                             }}
                           >
                             {cell ? (
-                              <>
-                                <div>{cell.day}</div>
+                              <div className="attendance-cell">
+                                <span className="attendance-day">{cell.day}</span>
                                 {isEditing ? (
                                   <input
-                                  size={3}
+                                    size={3}
                                     autoFocus
                                     className="cell-input"
                                     value={value}
@@ -225,16 +222,16 @@ export default function Attendance({ data, onUpdate, selectedServiceYearStart, u
                                     }}
                                   />
                                 ) : (
-                                  <div>{report?.attendanceCount ?? '—'}</div>
+                                  <span className="attendance-count">{report?.attendanceCount ?? <span className="empty-value">—</span>}</span>
                                 )}
-                              </>
-                            ) : '—'}
+                              </div>
+                            ) : <span className="empty-value">—</span>}
                           </td>
                         );
                       })}
 
-                      <td>{stats.sum || '—'}</td>
-                      <td>{stats.avg ? stats.avg.toFixed(1) : '—'}</td>
+                      <td>{stats.sum || <span className="empty-value">—</span>}</td>
+                      <td className="avg-cell">{stats.avg ? stats.avg.toFixed(1) : <span className="empty-value">—</span>}</td>
                     </tr>
                   );
                 })}
@@ -247,50 +244,104 @@ export default function Attendance({ data, onUpdate, selectedServiceYearStart, u
 
       <style>{`
         .s88 { padding: 16px; }
-        .header { margin-bottom: 16px; }
+        .s88 .header { margin-bottom: 16px; }
 
-        .month {
+        .s88 .month {
           margin-bottom: 24px;
-          border: 1px solid #ddd;
-          padding: 10px;
-          border-radius: 8px;
+          padding: 16px;
+          border: 1px solid rgba(148, 163, 184, 0.12);
+          border-radius: 12px;
+          background: rgba(17, 24, 39, 0.5);
         }
 
-        table {
+        .s88 .month h3 {
+          margin: 0 0 12px;
+        }
+
+        .s88 table {
           width: 100%;
           border-collapse: collapse;
-          font-size: 12px; table-layout: fixed;
+          font-size: 12px;
+          table-layout: fixed;
         }
 
-        td, th {
-          border: 1px solid #ddd;
-          text-align: center;
+        .s88 th,
+        .s88 td {
+          border: 0;
+          border-bottom: 1px solid rgba(148, 163, 184, 0.16);
           padding: 6px;
+          text-align: center;
         }
 
-        td {
+        .s88 thead th {
+          color: #9ca3af;
+          font-size: 12px;
+          font-weight: 500;
+        }
+
+        .s88 .month-header {
+          color: #5eead4;
+          font-size: 18px;
+          font-weight: 700;
+          text-align: center;
+        }
+        .s88 td {
           cursor: pointer;
         }
 
-        td div:first-child {
-          font-size: 12px;
-          color: #666;  
-        }
-          
-        td div:last-child {
-          font-size: 18px;
-          color: white;  
+        .s88 .attendance-cell {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          min-height: 44px;
+          gap: 2px;
+          padding: 2px;
         }
 
-        .cell-input {
+        .s88 .attendance-day {
+          color: #9ca3af;
+          font-size: 11px;
+          font-weight: 400;
+          line-height: 1;
+        }
+
+        .s88 .attendance-count {
+          color: #fff;
+          font-size: 20px;
+          font-weight: 700;
+          line-height: 1.1;
+          font-variant-numeric: tabular-nums;
+        }
+
+        .s88 .weekend-row {
+          color: #d8b4fe;
+          font-style: italic;
+        }
+
+        .s88 .avg-header,
+        .s88 .avg-cell {
+          background: rgba(6, 78, 59, 0.2);
+          color: #6ee7b7;
+          font-weight: 700;
+        }
+
+        .s88 .empty-value {
+          color: #374151;
+        }
+
+        .s88 .cell-input {
+          width: 3ch;
           border: none;
           background: transparent;
           text-align: center;
           font: inherit;
-          color: inherit;
+          color: #fff;
+          font-size: 20px;
+          font-weight: 700;
+          line-height: 1.1;
           padding: 0;
           outline: none;
-          font-size: 16px;
         }
       `}</style>
     </div>

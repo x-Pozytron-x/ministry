@@ -34,6 +34,9 @@ import {
   faShieldHalved,
   faClipboardCheck,
   faFileExport,
+  faDroplet,
+  faHandshake,
+  faFire,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Navigation
@@ -77,3 +80,6 @@ export const ICON_ARROW_RIGHT = faChevronRight;
 export const ICON_FEATURE_SECURITY = faShieldHalved;
 export const ICON_FEATURE_CONVENIENCE = faClipboardCheck;
 export const ICON_FEATURE_EXPORT = faFileExport;
+export const ICON_WATER = faDroplet;
+export const ICON_HANDSHAKE = faHandshake;
+export const ICON_FIRE = faFire;

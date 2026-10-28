@@ -51,6 +51,7 @@ export default function StartScreen({ applicationService, onUnlock }: StartScree
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [hasDatabase, setHasDatabase] = useState<boolean | null>(null);
+  const [showTerms, setShowTerms] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -219,15 +220,197 @@ export default function StartScreen({ applicationService, onUnlock }: StartScree
           Вход
         </button>
 
-        <div className="start-footer">
-          <span>v{APP_VERSION} · {APP_STATUS}</span>
-          <span>
-            Автор:{' '}
+        <section className="quick-start" aria-labelledby="quick-start-title">
+          <h2 id="quick-start-title">Как начать работу</h2>
+          <div className="start-features">
+            <div className="feature-card">
+              <span className="feature-icon" aria-hidden="true">1</span>
+              <h3>Создайте собрание</h3>
+              <p>Введите название и пароль для шифрования базы.</p>
+            </div>
+            <div className="feature-card">
+              <span className="feature-icon" aria-hidden="true">2</span>
+              <h3>Добавьте возвещателей</h3>
+              <p>Заполните список и настройте группы ВПС.</p>
+            </div>
+            <div className="feature-card">
+              <span className="feature-icon" aria-hidden="true">3</span>
+              <h3>Ведите учет</h3>
+              <p>Отмечайте посещаемость и формируйте отчеты.</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="start-about" aria-labelledby="faq-title">
+          <div className="about-card">
+            <h3 id="faq-title">Часто задаваемые вопросы</h3>
+            <details style={{ borderBottom: '1px solid var(--border-color)' }}>
+              <summary style={{ cursor: 'pointer', fontWeight: 600, padding: '0.75em 0' }}>
+                Безопасно ли это?
+              </summary>
+              <p>Да. База хранится локально в браузере и зашифрована мастер-паролем.</p>
+            </details>
+            <details style={{ borderBottom: '1px solid var(--border-color)' }}>
+              <summary style={{ cursor: 'pointer', fontWeight: 600, padding: '0.75em 0' }}>
+                Где хранятся данные?
+              </summary>
+              <p>
+                База хранится в IndexedDB браузера в зашифрованном виде. Экспорт можно скачать в JSON-файл.
+                Данные не отправляются на сервер.
+              </p>
+            </details>
+            <details style={{ borderBottom: '1px solid var(--border-color)' }}>
+              <summary style={{ cursor: 'pointer', fontWeight: 600, padding: '0.75em 0' }}>
+                Можно ли работать офлайн?
+              </summary>
+              <p>Да, приложение полностью работает без интернета.</p>
+            </details>
+            <details>
+              <summary style={{ cursor: 'pointer', fontWeight: 600, padding: '0.75em 0' }}>
+                Как экспортировать данные?
+              </summary>
+              <p>В режиме Admin нажмите кнопку скачивания JSON в верхней панели приложения.</p>
+            </details>
+          </div>
+        </section>
+
+        <div className="start-about">
+          <div className="about-card">
+            <h3>О приложении</h3>
+            <p>
+              KeepCong — приложение для управления данными собрания. Все сведения о возвещателях,
+              отчётах служения и посещаемости хранятся локально на вашем устройстве в зашифрованном виде.
+            </p>
+            <p>
+              Приложение работает полностью офлайн и не требует подключения к интернету для повседневного использования.
+            </p>
+          </div>
+        </div>
+
+        <footer className="start-footer">
+          <span>© 2026 KeepCong. {APP_VERSION}-{APP_STATUS}
             <a href={APP_AUTHOR_TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="about-link">
               {APP_AUTHOR_TELEGRAM}
+            </a> | <a href="mailto:stetsenko.vitaly@gmail.com" className="about-link">
+              stetsenko.vitaly@gmail.com
             </a>
           </span>
-        </div>
+          <button type="button" className="terms-link" onClick={() => setShowTerms(true)}>
+            Условия использования
+          </button>
+        </footer>
+
+        {showTerms && (
+          <div className="terms-overlay" onClick={() => setShowTerms(false)}>
+            <section
+              className="terms-dialog"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="terms-title"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="terms-dialog-header">
+                <h2 id="terms-title">Условия использования</h2>
+                <button type="button" className="terms-close" onClick={() => setShowTerms(false)} aria-label="Закрыть">
+                  ×
+                </button>
+              </div>
+              <p>
+                Приложение предоставляется «как есть». Данные хранятся локально на вашем устройстве.
+                Вы отвечаете за создание и сохранность резервных копий. Автор не несёт ответственности
+                за потерю данных.
+              </p>
+              <button type="button" className="secondary" onClick={() => setShowTerms(false)}>
+                Закрыть
+              </button>
+            </section>
+          </div>
+        )}
+
+        <style>{`
+          .start-landing .start-footer {
+            align-items: center;
+            gap: 0.5em;
+            margin-top: 2em;
+            padding: 1.25em;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background-color: var(--card-bg);
+            line-height: 1.5;
+          }
+
+          .start-landing .start-footer > * {
+            overflow-wrap: anywhere;
+          }
+
+          .start-landing .start-footer a,
+          .start-landing .start-footer button {
+            transition: color 0.2s ease;
+          }
+
+          .start-landing .start-footer a:hover,
+          .start-landing .start-footer button:hover {
+            color: var(--text-primary);
+            text-decoration: underline;
+          }
+
+          .start-landing .start-footer a:focus-visible,
+          .start-landing .start-footer button:focus-visible {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 3px;
+          }
+          .terms-link {
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: var(--primary-color);
+            font: inherit;
+            cursor: pointer;
+            text-decoration: underline;
+          }
+
+          .terms-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.65);
+          }
+
+          .terms-dialog {
+            width: min(100%, 520px);
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            text-align: left;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+          }
+
+          .terms-dialog-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+          }
+
+          .terms-dialog-header h2 {
+            margin: 0;
+          }
+
+          .terms-close {
+            padding: 0 0.25rem;
+            border: 0;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 1.75rem;
+            cursor: pointer;
+          }
+        `}</style>
       </div>
     );
   }

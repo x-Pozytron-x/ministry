@@ -24,7 +24,7 @@ const MONTH_LABELS: Record<string, string> = {
   '08': 'Август',
 };
 
-const MONTH_KEYS = ['09','10','11','12','01','02','03','04','05','06','07','08'];
+const MONTH_KEYS = ['09', '10', '11', '12', '01', '02', '03', '04', '05', '06', '07', '08'];
 
 export default function S1Page({ data, selectedServiceYearStart }: S1PageProps) {
   const currentServiceYear: ServiceYear = getServiceYear(selectedServiceYearStart);
@@ -137,7 +137,7 @@ export default function S1Page({ data, selectedServiceYearStart }: S1PageProps) 
         <h2>S-1 — Отчет собрания о служении</h2>
       </div>
 
-        <div className="s1-service-year">
+      <div className="s1-service-year">
         Служебный год: {currentServiceYear}
       </div>
 
