@@ -18,9 +18,7 @@ import {
 } from '../config/icons';
 import {
   APP_VERSION,
-  APP_STATUS,
-  APP_AUTHOR_TELEGRAM,
-  APP_AUTHOR_TELEGRAM_URL
+  APP_STATUS
 } from '../config';
 
 interface StartScreenProps {
